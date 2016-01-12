@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo 'Usage:
+    docker create -it --name nds-deploy
+    docker cp <path-to-openstack-API-rc-file> /nds/config/openstack.rc
+    docker start -ai nds-deploy'
+
+
+exit 0

@@ -1,0 +1,48 @@
+#!/bin/bash
+cd /usr/local/bin
+
+debug() {
+echo $*
+}
+
+fail() {
+    echo "OpenStack""$1"" failed:"
+    shift
+    echo "$*"
+    echo "Check OpenStack Horizon dashboard for more information"
+    exit 1
+}
+
+msg(){
+    python dialog.py  --msgbox "$*" 10 45
+}
+
+choose(){
+    RET=$(python dialog.py --menu "$1" 0 0 0 `nova $2 | cut -d\| -f$3| grep -v ^+ | sed -e s/\|\ //g | sed -e s/\ /_/g | sed s/_$//g | awk '{print NR, $0} END{print "NEW", "Create_a_new_one"}'`)
+$RET
+}
+
+msg "NDSLabs OpenStack Deployment Assitant, Enter to Continue, ctrl-C to abort" 
+
+if [ ! -f /nds/config/openstackrc.sh ]; then
+    msg "Can't find openstack API rc file, enter for instructions" 
+
+fi
+
+msg "Executing openstack API, enter your openstack password when promtped" 
+
+. /nds/config/openstackrc.sh
+
+msg "Checking Openstack accessibility"
+ERR=$(nova credentials) || (msg "Can't connect to OpenStack" && fail $ERR)
+
+#
+# OpenStack is accessible, read the available attributes, fail if necessary
+#
+NET= $(choose "Please Identify the Private Network" network-list "1-3")
+echo $NET
+choose "Select the CoreOS Image, New to Install it" image-list "1-3"
+choose "Select the Machine Flavor to Use" flavor-list "1-3"
+choose "Select the Security Group To Use" secgroup-list "1-3"
+choose "Select the KeyPair To Use for Node Logins, New to create a new one" keypair-list "1-3"
+
