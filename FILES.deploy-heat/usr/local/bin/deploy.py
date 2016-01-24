@@ -25,13 +25,21 @@ def fail(text):
     sys.exit(1);
 
 if __name__ == "__main__":
+    def error(msg):
+        d.msgbox("ERROR: "+msg, width=60, height=20)
+        sys.exit(1)
+
     d = Dialog(dialog="dialog")
     d.set_background_title("NDSLabs OpenStack Deploy Assitant")
-    if d.yesno("Ready to Deploy NDS on Openstack") != d.DIALOG_OK:
+    if d.msgbox("NDS Openstack Deploy Assistant\n\nThis assistant will help you choose OpenStack parameters from your environment to provision and start a NDSLabs cluster", width=60, height=10) != d.DIALOG_OK:
         fail()
     try:
+        creds = get_openstack_creds()
         creds = get_nova_creds()
         nova = nvclient.Client(**creds)
+    except:
+        error("Unable to connect to OpenStack")
+    try:
         keymanager = nova.keypairs;
         networks = nova.networks;
         flavors = nova.flavors;
@@ -69,5 +77,5 @@ if __name__ == "__main__":
                 
 
     except:
-        fail("Unable to read all OpenStack Information")
+        error("Unable to read all OpenStack Information")
 

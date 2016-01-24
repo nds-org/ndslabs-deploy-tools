@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo 'Usage:
+    echo "docker run -it  --name nds-deploy `export | grep OS_ | cut -f" " 3 | sed -e s/^/-e /` "
+   # `export | grep OS_ | cut -d" " -f 3 | sed -e s/^/-e /` '
+exit 0

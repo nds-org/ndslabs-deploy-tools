@@ -18,9 +18,24 @@ msg(){
 }
 
 choose(){
-    RET=$(python dialog.py --menu "$1" 0 0 0 `nova $2 | cut -d\| -f$3| grep -v ^+ | sed -e s/\|\ //g | sed -e s/\ /_/g | sed s/_$//g | awk '{print NR, $0} END{print "NEW", "Create_a_new_one"}'`)
-$RET
+    python dialog.py --menu "$1" 0 0 0 `nova $2 | cut -d\| -f$3| grep -v ^+ | sed -e s/\|\ //g | sed -e s/\ /_/g | sed s/_$//g | awk '{print NR, $0} END{print "NEW", "Create_a_new_one"}'`
 }
+
+getlist() {
+    #LIST=$(nova $2 | cut -d\| -f$3| grep -v ^+ | sed -e s/\|\ //g
+# | sed -e s/\|$/\'/ | sed -e s/\|//g | awk '{print NR, $0}'| sed ':a;N;$!ba;s/\n/ /g') || fail $2
+    #LIST=$(nova $2 |  grep -v ^+ | sed -e s/\|/\"/ | sed -e s/\|/\"\ \"/ | sed -e s/\|$/\"/ | sed -e s/\|//g | sed ':a;N;$!ba;s/\n/ /g') || fail $2 
+    #debug "getlist" $LIST
+    eval $1='$LIST'
+}
+
+select() {
+    title=$1
+    shift;
+    MENU=$* "NONE" "Create A New one"
+    python dialog.py --menu  "$title" 0 0 0 $MENU
+}
+
 
 msg "NDSLabs OpenStack Deployment Assitant, Enter to Continue, ctrl-C to abort" 
 
@@ -39,8 +54,7 @@ ERR=$(nova credentials) || (msg "Can't connect to OpenStack" && fail $ERR)
 #
 # OpenStack is accessible, read the available attributes, fail if necessary
 #
-NET= $(choose "Please Identify the Private Network" network-list "1-3")
-echo $NET
+choose "Please Identify the Private Network" network-list "1-3"
 choose "Select the CoreOS Image, New to Install it" image-list "1-3"
 choose "Select the Machine Flavor to Use" flavor-list "1-3"
 choose "Select the Security Group To Use" secgroup-list "1-3"

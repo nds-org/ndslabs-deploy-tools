@@ -6,9 +6,10 @@ RUN 	apt-get -y update \
 
 #RUN apt-get -y install python-pip && pip install pythondialog python-novaclient python-heatclient 
 
-COPY Files.deploy-heat/* /usr/local/bin/
+COPY FILES.deploy-heat /
 
 RUN mkdir -p /nds/config/
 
+WORKDIR /usr/local/bin
 CMD deploy
 
