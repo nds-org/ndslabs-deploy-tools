@@ -21,7 +21,8 @@ outputs:
     value:
       get_attr: [overlord, first_address]
 parameters:
-  coreos_image: {default: CoreCloud, description: CoreOS Image, type: string}
+  securitygroup: {description: Security Group, type: string}
+  image: {description: CoreOS Image, type: string}
   discovery_net_interface: {default: eth0, description: Host network interface for
       which the Discovery node will operate over, type: string}
   flannel_url: {default: 'http://e0c2ab32810737fd07e4-700417495149341ce4d5f2e85f203802.r26.cf1.rackcdn.com/flanneld',
@@ -29,10 +30,8 @@ parameters:
   flavor:
     constraints:
     - allowed_values: [m1.medium, m1.large, m1.xlarge]
-      description: 'Must be a valid flavor
-
+      description: 'Flavor
         '
-    default: m1.medium
     type: string
   floating-network-id: {description: UUID of the external network., label: Floating
       Network ID, type: string}
@@ -40,7 +39,7 @@ parameters:
       /usr/bin/git -C overlord checkout -qf 1f37433090ec322df4cdde10ebe6ab7b6387dc8b',
     description: Git repo checkout command, type: string}
   keyname: {description: Name of keypair to be used for compute instance, type: string}
-  kubernetes_minion_count:
+  kubernetes_nodecount:
     constraints:
     - description: Must be between 2 and 12 servers.
       range: {max: 12, min: 1}
@@ -62,7 +61,7 @@ resources:
     properties:
       config_drive: 'true'
       flavor: {get_param: flavor}
-      image: {get_param: coreos_image}
+      image: {get_param: image}
       key_name: {get_param: keyname}
       name: discovery
       networks:
@@ -132,7 +131,7 @@ resources:
     properties:
       config_drive: 'true'
       flavor: {get_param: flavor}
-      image: {get_param: coreos_image}
+      image: {get_param: image}
       key_name: {get_param: keyname}
       name: kubernetes_master
       networks:
@@ -230,12 +229,12 @@ resources:
     type: OS::Neutron::Port
   kubernetes_minions:
     properties:
-      count: {get_param: kubernetes_minion_count}
+      count: {get_param: kubernetes_nodecount}
       resource_def:
         properties:
           config_drive: 'true'
           flavor: {get_param: flavor}
-          image: {get_param: coreos_image}
+          image: {get_param: image}
           key_name: {get_param: keyname}
           name: kubernetes_minion_%index%
           networks:
@@ -309,7 +308,7 @@ resources:
     properties:
       config_drive: 'true'
       flavor: {get_param: flavor}
-      image: {get_param: coreos_image}
+      image: {get_param: image}
       key_name: {get_param: keyname}
       name: overlord
       networks:

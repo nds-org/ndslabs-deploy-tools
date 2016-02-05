@@ -1,0 +1,3 @@
+#!/bin/bash
+. /nds/config/openstackrc.sh
+python /usr/local/bin/deploy.py

@@ -1,7 +1,7 @@
 from ubuntu:wily
 
 RUN 	apt-get -y update \
-    && apt-get -y install dialog python-dialog python-heatclient python-novaclient \
+    && apt-get -y install dialog python-keystoneclient python-dialog python-heatclient python-novaclient \
     && apt-get -y clean all 
 
 #RUN apt-get -y install python-pip && pip install pythondialog python-novaclient python-heatclient 

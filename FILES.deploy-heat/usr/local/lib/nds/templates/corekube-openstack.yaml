@@ -1,13 +1,14 @@
  heat_template_version: 2013-05-23
 
  description: >
+   Maintainer- raila.    Based on-
    Deploy Kubernetes on a CoreOS cluster that operates on an
    OpenStack Powered Cloud (Openstack Kilo | Rackspace Private Cloud)
    Maintainer - Mike Metral <metral@gmail.com> | Github: @metral
 
  parameters:
-   kubernetes_minion_count:
-     description: Number of CoreOS machines to deploy as Kubernetes Minion
+   kubernetes_node_count:
+     description: Number of CoreOS Kubernetes Nodes
      type: number
      default: 3
      constraints:
@@ -31,19 +32,18 @@
    coreos_image:
      type: string
      description: CoreOS Image
-     default: "CoreCloud"
    git_command:
      type: string
      description: Git repo checkout command
-     default: "/usr/bin/git clone https://github.com/metral/overlord ; /usr/bin/git -C overlord checkout -qf 1f37433090ec322df4cdde10ebe6ab7b6387dc8b"
+     default: "/usr/bin/git clone https://github.com/metral/overlord ; /usr/bin/git -C overlord checkout -qf 66a17cc7ab1713b73dc7826c9494e60ea68ee5f5"
    flannel_url:
      type: string
-     description: Flannel (0.5.3) Binary URL
-     default: "http://e0c2ab32810737fd07e4-700417495149341ce4d5f2e85f203802.r26.cf1.rackcdn.com/flanneld"
+     description: Flannel (0.5.5) Binary URL
+     default: "http://0afbabe78c1b1691fad4-21af6827a69c3ad910ccdb6595a59d19.r49.cf1.rackcdn.com/flanneld"
    private_discovery_etcd_version:
      type: string
      description: Version of etcd used for Private Discovery node
-     default: "2.2.0"
+     default: "2.2.2"
    discovery_net_interface:
      type: string
      description: Host network interface for which the Discovery node will operate over
@@ -56,18 +56,10 @@
      description: Wait condition timeout seconds
      type: number
      default: 600
-   floating-network-id:
-     type: string
-     label: Floating Network ID
-     description: UUID of the external network.
    private-network-id:
      type: string
      label: Private Network ID
      description: UUID of the private network. 
-   private-subnet-id:
-     type: string
-     label: Private Subnet ID
-     description: UUID of the private subnet. 
 
  resources:
 
@@ -99,37 +91,15 @@
        handle: { get_resource: discovery_wait_handle }
        timeout: { get_param: timeout }
 
-   discovery_floatingip:
-     type: OS::Neutron::FloatingIP
-     properties:
-       floating_network_id:
-         get_param: floating-network-id
-
-   discovery_port:
-     type: OS::Neutron::Port
-     properties:
-       security_groups:
-         - get_resource: stack_security
-       network_id: { get_param: private-network-id }
-
-   discovery_floatingip_association:
-     type: OS::Neutron::FloatingIPAssociation
-     properties:
-       floatingip_id:
-         get_resource: discovery_floatingip
-       port_id:
-         get_resource: discovery_port
-
    discovery:
      type: OS::Nova::Server
      properties:
        key_name: { get_param: keyname }
        image: { get_param: coreos_image }
        flavor: { get_param: flavor }
-       name: "discovery"
+       name:  { str_replace: { params: { $stack_name: { get_param: 'OS::stack_name' } }, template: '$stack_name-discovery' } }
        networks:
-         - port:
-             get_resource: discovery_port
+        - network: {get_param: private-network-id}
        user_data_format: RAW
        config_drive: "true"
        user_data:
@@ -175,6 +145,7 @@
 
                      [Service]
                      EnvironmentFile=/run/IP
+                     Restart=on-failure
                      RestartSec=5s
                      ExecStartPre=/usr/bin/docker pull quay.io/coreos/etcd:v%private_discovery_etcd_version%
                      ExecStart=/usr/bin/docker run -d --name discovery \
@@ -210,37 +181,15 @@
        handle: {get_resource: overlord_wait_handle}
        timeout: {get_param: timeout}
 
-   overlord_floatingip:
-     type: OS::Neutron::FloatingIP
-     properties:
-       floating_network_id:
-         get_param: floating-network-id
-
-   overlord_port:
-     type: OS::Neutron::Port
-     properties:
-       security_groups:
-         - get_resource: stack_security
-       network_id: { get_param: private-network-id }
-
-   overlord_floatingip_association:
-     type: OS::Neutron::FloatingIPAssociation
-     properties:
-       floatingip_id:
-         get_resource: overlord_floatingip
-       port_id:
-         get_resource: overlord_port
-
    overlord:
      type: OS::Nova::Server
      properties:
        key_name: { get_param: keyname }
        image: { get_param: coreos_image }
        flavor: { get_param: flavor }
-       name: "overlord"
        networks:
-         - port:
-             get_resource: overlord_port
+        - network: {get_param: private-network-id}
+       name:  { str_replace: { params: { $stack_name: { get_param: 'OS::stack_name' } }, template: '$stack_name-overlord' } }
        user_data_format: RAW
        config_drive: "true"
        user_data:
@@ -376,37 +325,15 @@
              "%git_command%": { get_param: git_command }
              "%wc_notify%": { get_attr: [overlord_wait_handle, curl_cli] }
 
-   kubernetes_master_floatingip:
-     type: OS::Neutron::FloatingIP
-     properties:
-       floating_network_id:
-         get_param: floating-network-id
-
-   kubernetes_master_port:
-     type: OS::Neutron::Port
-     properties:
-       security_groups:
-         - get_resource: stack_security
-       network_id: { get_param: private-network-id }
-
-   kubernetes_master_floatingip_association:
-     type: OS::Neutron::FloatingIPAssociation
-     properties:
-       floatingip_id:
-         get_resource: kubernetes_master_floatingip
-       port_id:
-         get_resource: kubernetes_master_port
-
    kubernetes_master:
      type: OS::Nova::Server
      properties:
        key_name: { get_param: keyname }
        image: { get_param: coreos_image }
        flavor: { get_param: flavor }
-       name: "kubernetes_master"
+       name:  { str_replace: { params: { $stack_name: { get_param: 'OS::stack_name' } }, template: '$stack_name-k8s-master' } }
        networks:
-         - port:
-             get_resource: kubernetes_master_port
+        - network: {get_param: private-network-id}
        user_data_format: RAW
        config_drive: "true"
        user_data:
@@ -561,21 +488,19 @@
              "%flannel_url%": { get_param: flannel_url }
              "%kubernetes_net_interface%": { get_param: kubernetes_net_interface }
 
-   kubernetes_minions:
+   kubernetes_nodes:
      type: "OS::Heat::ResourceGroup"
      properties:
-       count: { get_param: kubernetes_minion_count }
+       count: { get_param: kubernetes_node_count }
        resource_def:
          type: OS::Nova::Server
          properties:
            key_name: { get_param: keyname }
            image: { get_param: coreos_image }
            flavor: { get_param: flavor }
-           name: kubernetes_minion_%index%
            networks:
-            - network: { get_param: private-network-id }
-           security_groups:
-             - get_resource: stack_security
+            - network: {get_param: private-network-id}
+           name:  { str_replace: { params: { $stack_name: { get_param: 'OS::stack_name' } }, template: '$stack_name-node-%index%' } }
            user_data_format: RAW
            config_drive: "true"
            user_data:
@@ -625,13 +550,13 @@
                        systemctl daemon-reload
                  coreos:
                    etcd:
-                     name: kubernetes_minion_%index%
+                     name: kubernetes_node_%index%
                      discovery: http://%discovery%:2379/v2/keys/discovery/%uuid%
                      addr: $private_ipv4:4001
                      peer-addr: $private_ipv4:7001
                    fleet:
                      public-ip: $private_ipv4
-                     metadata: kubernetes_role=minion
+                     metadata: kubernetes_role=node
                    update:
                      group: stable
                      reboot-strategy: off
@@ -716,6 +641,6 @@
    master_ip:
      value: { get_attr: [ kubernetes_master, first_address ] }
      description: The IP of the Kubernetes Master
-   minion_ips:
-     value: { get_attr: [ kubernetes_minions, first_address ] }
+   node_ips:
+     value: { get_attr: [ kubernetes_nodes, first_address ] }
      description: The IP of the Kubernetes Minions

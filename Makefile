@@ -2,14 +2,10 @@ IMAGES		:=	deploy-heat
 
 include ../../../../devtools/Makefiles/Makefile.nds
 
-imt: 
-	echo $(FILES.deploy-heat)
-
-
-TESTNAME=testdeploy
-test: IMAGE.deploy-heat
+TESTNAME	=	deploy-heat-test
+TESTRC		=	~/.openstack/NDSLabsDev-openrc.sh
+test:
 	-docker rm -f $(TESTNAME)
-	export | grep OS_ > $(BUILDDIR)/osenv
-	docker create --name $(TESTNAME) -it deploy-heat bash
-	docker cp $(BUILDDIR)/osenv $(TESTNAME):/nds/config/openstackrc.sh
+	docker create -it --name $(TESTNAME) -v `pwd`/FILES.deploy-heat/usr/local:/usr/local deploy-heat bash
+	docker cp $(TESTRC) $(TESTNAME):/nds/config/openstackrc.sh
 	docker start -ai $(TESTNAME)
