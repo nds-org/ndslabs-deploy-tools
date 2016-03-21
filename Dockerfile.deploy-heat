@@ -1,4 +1,5 @@
-from ubuntu:wily
+#from ubuntu:wily
+FROM ansible/ubuntu14.04-ansible
 
 RUN 	apt-get -y update \
     && apt-get -y install dialog python-keystoneclient python-dialog \
@@ -9,14 +10,9 @@ COPY FILES.deploy-heat /
 
 VOLUME /nds/config
 
-#ENV OS_REGION_NAME ''
-#ENV OS_TENANT_ID ''
-#ENV OS_PROJECT_NAME ''
-#ENV OS_PASSWORD ''
-#ENV OS_AUTH_URL ''
-#ENV OS_USERNAME ''
-#ENV OS_TENANT_NAME ''
-
-WORKDIR /usr/local/bin
-CMD deploy
+#
+## Ansible setup for coreos
+#
+RUN ansible-galaxy install defunctzombie.coreos-bootstrap 
+#CMD deploy - leave as bash for now
 
