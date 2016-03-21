@@ -1,3 +1,14 @@
 #!/bin/bash
-. /nds/config/openstackrc.sh
-python /usr/local/bin/deploy.py
+CREDFILE=/nds/config/openstack-creds.sh
+if [ -s ${CREDFILE} ] ; then
+    . ${CREDFILE} 
+    python /usr/local/bin/deploy.py 
+    exit 0
+else
+    cat > ${CREDFILE}
+    #debugging
+    cat ${CREDFILE}
+    env
+    . ${CREDFILE}
+    env
+fi

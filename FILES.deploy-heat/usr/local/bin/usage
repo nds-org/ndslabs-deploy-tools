@@ -2,8 +2,16 @@
 
 cat << EOF
     Usage:
-    docker create --name deploy -it deploy-heat
-    docker cp <your openstack-rc.sh>  deploy:/nds/config/openstackrc.sh
-    docker start -ai  --name nds-deploy
+        1. Source an openstack rc
+        2. Create a named config volume container with the credentials
+        3. Run with credentials read-only
+    Example:
+        . my-openstack-rc.sh
+        env | grep OS_ | xargs -0 | sed 's/^OS_/export OS_/' | docker run --name os_credvol -i deploy-heat
+        docker run --rm -it --volumes-from os_credvol:ro ubuntu bash
+
+    Automated - will run as above:
+        eval $(docker run --rm -t ndslabs/heat-deploy usage docker)
+        
 EOF
 exit 0
