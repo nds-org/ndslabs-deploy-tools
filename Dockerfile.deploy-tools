@@ -6,7 +6,7 @@ RUN 	apt-get -y update \
     python-heatclient python-novaclient python-glanceclient \
     && apt-get -y clean all 
 
-COPY FILES.deploy-heat /
+COPY FILES.deploy-tools /
 
 VOLUME /nds/config
 

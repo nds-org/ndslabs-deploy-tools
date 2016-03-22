@@ -1,7 +1,7 @@
-HUB_IMAGES		:=	deploy-heat
+HUB_IMAGES		:=	deploy-tools
 IMAGES			:=	$(HUB_IMAGES)
 
-include ../../../../devtools/Makefiles/Makefile.nds
+include Makefile.nds
 
 TESTNAME	=	deploy-heat-test
 TESTRC		=	~/.openstack/NDSLabsDev-openrc.sh
