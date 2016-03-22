@@ -1,0 +1,8 @@
+---
+- hosts: coreos
+  become: yes
+  tasks:
+    - service: name=update-engine state=stopped
+    - service: name=update-engine enabled=no
+    - service: name=locksmithd state=stopped
+    - service: name=locksmithd enabled=no

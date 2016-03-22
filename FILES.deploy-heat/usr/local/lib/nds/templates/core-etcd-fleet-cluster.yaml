@@ -1,0 +1,93 @@
+heat_template_version: 2013-05-23
+
+description: >
+  Maintainer - David Raila <raila@illinois.edu>
+  CoreOS cluster with etcd masters and swarm
+
+parameters:
+  etcd_master_count:
+    description: Number of etcd masters
+    type: number
+    default: 3
+    constraints:
+    - range:
+        min: 1
+  etcd_master_flavor:
+    type: string
+    default: m1.medium
+    constraints:
+    - allowed_values:
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+  etcd_discovery_url:
+    type: string
+    description: 
+        Get the URL from https://discovery.etcd.io/new?size=count
+  compute-node-count:
+    description: Number of coreos compute nodes 
+    type: number
+    default: 5
+    constraints:
+    - range:
+        min: 1
+        max: 12
+  keypair_name:
+    type: string
+    description: Name of access keypair
+  compute_flavor:
+    type: string
+    default: m1.medium
+    constraints:
+    - allowed_values:
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      description: |
+        Must be a valid flavor
+  coreos_image:
+    type: string
+    description: CoreOS Image
+  private-network-name:
+    type: string
+    description: Private network name
+
+resources: 
+  etcd_master:
+    type: "OS::Heat::ResourceGroup"
+    properties:
+      count: { get_param: etcd_master_count }
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          key_name: { get_param: keypair_name }
+          image: { get_param: coreos_image }
+          flavor: { get_param: etcd_master_flavor }
+          name:  { str_replace: { params: { $stack_name: { get_param: 'OS::stack_name' } }, template: '$stack_name-etcd-master-%index%' } }
+          networks:
+            - network: {get_param: private-network-name}
+          user_data_format: RAW
+          config_drive: "true"
+          user_data:
+            str_replace:
+              template: |
+                coreos:
+                  etcd2:
+                    # generate a new token for each unique cluster from https://discovery.etcd.io/new?size=3
+                    discovery: %discovery_url%
+                    advertise-client-urls: http://$private_ipv4:2379,http://$private_ipv4:4001
+                    initial-advertise-peer-urls: http://$private_ipv4:2380 
+                    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001 
+                    listen-peer-urls: http://$private_ipv4:2380 
+                  units: 
+                    - name: etcd2.service 
+                      command: start
+                    - name: fleet.service 
+                      command: start
+              params:
+                "%discovery_url%": { get_param: etcd_discovery_url }
+
+outputs:
+  etcd_masters:
+   value: { get_attr: [ etcd_master, iaccessIPv4 ] }
+   description: Etcd Master IPs 

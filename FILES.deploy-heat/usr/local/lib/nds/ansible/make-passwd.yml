@@ -1,0 +1,10 @@
+---- 
+- name: Create password and use it 
+   hosts: all 
+   tasks: 
+     - local_action: shell openssl passwd -in /dev/urandom | head -1
+       register: password 
+     - action: debug msg="Password is ${password.stdout}" 
+     - action: debug msg="Host ${inventory_hostname_short} failed !" fail=yes 
+---- 
+

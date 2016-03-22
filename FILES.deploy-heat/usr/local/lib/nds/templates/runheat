@@ -1,0 +1,1 @@
+heat stack-create -f core-etcd-fleet-cluster.yaml -Pcoreos_image=Core899 -Pkeypair_name=nebula-raila -Pprivate-network-name=NDSLabsDev-net -Petcd_discovery_url=https://discovery.etcd.io/51f40ffbb1e6f7a53ab9864180a55b75 t3
