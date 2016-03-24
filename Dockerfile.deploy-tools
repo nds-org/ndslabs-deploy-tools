@@ -1,9 +1,10 @@
 FROM ubuntu:wily
 
 RUN 	apt-get -y update \
-    && apt-get -y install  dialog python-dialog \
-    python-pip python-shade python-keystoneclient python-heatclient python-novaclient python-glanceclient \
+    && apt-get -y install  dialog python-dialog python-pip python-dev \
     wget curl \
+	vim nano \
+	openssh-client \
     && apt-get -y clean all && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY FILES.deploy-tools /
@@ -13,8 +14,9 @@ VOLUME /nds/config
 #
 ## Ansible setup 
 #
-RUN pip install ansible
+RUN pip install ansible python-keystoneclient python-heatclient python-novaclient python-glanceclient shade 
 RUN ansible-galaxy install defunctzombie.coreos-bootstrap 
+
 
 WORKDIR /nds/config
 #CMD deploy - leave as bash for now
