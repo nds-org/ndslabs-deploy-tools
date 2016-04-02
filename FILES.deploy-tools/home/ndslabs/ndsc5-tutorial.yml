@@ -1,0 +1,23 @@
+#
+# Playbook to provision a ndslabs developer coreos instance in openstack
+#
+# Source your opernrc.sh before running
+#
+
+- name: OpenStack Key
+  hosts: localhost
+  connection: local
+  roles:
+    - { role: openstack-key, gather_facts: false, key_name: ndsc5 }
+
+- name: NDSC5 Systems
+  hosts: ndsc5
+  gather_facts: false
+  become: true
+  roles: 
+    - { role: openstack-system, serial: true }
+    #- coreos-ansible
+    - { role: defunctzombie.coreos-bootstrap, gather_facts: false, become: false } 
+    - coreos-ndslabs-devsystem
+    - { role: saved-password-account, account_inventory: ndsc5-generated-accounts, user_name: tutorial, user_groups: docker}
+    #- docker-pull-images

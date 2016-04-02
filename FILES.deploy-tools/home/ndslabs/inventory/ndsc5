@@ -1,0 +1,9 @@
+#
+# The openstack names of the machines
+#
+[ndsc5]
+ndsc5_tutorial_[1:40]
+nds5_tutaorial_willis_test
+nds5_tutaorial_willis
+nds5_tutorial_lambert_test
+nds5_tutorial_lambert

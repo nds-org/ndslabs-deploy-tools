@@ -1,0 +1,11 @@
+#
+# Playbook to provision a ndslabs developer coreos instance in openstack
+#
+# Source your opernrc.sh before running
+#
+
+- name: prepull
+  hosts: ndsc5
+  gather_facts: false
+  roles:
+    - { role: docker-pull-images, gather_facts: false }
