@@ -1,6 +1,0 @@
----
-- hosts: coreos
-  become: yes
-  tasks:
-    - service: name=docker state=stopped
-    - get_url: url=https://get.docker.com/builds/Linux/x86_64/docker-latest dest=/home/core/bin/docker

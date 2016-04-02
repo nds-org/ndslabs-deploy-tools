@@ -1,0 +1,29 @@
+#- debug: var=docker_prepull
+
+- name: rm old pull script
+  connection: local
+  become: false
+  run_once: true
+  local_action: file dest=/tmp/docker-pull.sh state=absent
+
+- name: Build pull script
+  connection: local
+  become: false
+  run_once: true
+  local_action: lineinfile create=yes dest=/tmp/docker-pull.sh line="#!/bin/bash" insertbefore=BOF
+
+- name: add images
+  connection: local
+  become: false
+  run_once: true
+  local_action: lineinfile dest=/tmp/docker-pull.sh line="docker pull {{ item }} "
+  with_items: "{{ docker_prepull }}"
+
+- name: copy pull script
+  copy: src=/tmp/docker-pull.sh dest=/tmp/docker-pull.sh mode=0655
+
+- name: copy background runner
+  copy: src=run-docker-pull.sh dest=/tmp/run-docker-pull.sh mode=0655
+
+- name: run the puller 
+  shell: docker run -v /tmp/:/prepull -v /var/run/docker.sock:/var/run/docker.sock ndslabs/system-shell bash -c ". ~/.bashrc-nds-sys && /prepull/docker-pull.sh"

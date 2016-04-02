@@ -1,0 +1,55 @@
+#- debug: var=accounts_file
+#- debug: var=user_name
+#- debug: var=user_groups
+#- debug: var=ansible_host
+#- debug: var=ansible_ssh_host
+#- debug: var=inventory_hostname
+
+- name: User account 
+  user: name="{{ user_name }}" state=present groups="{{ user_groups }}" append=yes system=yes createhome=yes
+  register: user_added
+
+- name: Set the line match
+  set_fact:
+    line_match: "{{ user_name }}@{{ ansible_ssh_host }}:" 
+#- debug: var=line_match
+
+- name: Lookup saved passwd
+  connection: local
+  become: false
+  shell: grep ^"{{line_match}}" "{{accounts_file}}" | cut -d':' -f2
+  register: filepasswd
+  changed_when: False
+- set_fact:
+    pw_on_record: true
+- set_fact:
+    pw_on_record: false
+  when: filepasswd['stdout'] == ""
+#- debug: var=filepasswd
+
+- name: New random password
+  connection: local
+  become: false
+  shell: openssl rand -base64 6
+  register: randpasswd
+  when: not pw_on_record
+#- debug: var=randpasswd
+
+- set_fact:
+    newpass: "{{ filepasswd['stdout'] }}"
+  when: pw_on_record
+- set_fact:
+    newpass: "{{ randpasswd['stdout'] }}"
+  when: not pw_on_record
+#- debug: var=newpass
+
+- name: Set or reset passwd 
+  become: true
+  shell: "echo {{ user_name }}:{{ newpass }} | chpasswd"
+  changed_when: False
+
+- name: Update account inventory
+  become: false
+  local_action: lineinfile state=present create=yes dest="{{accounts_file}}" line="{{user_name}}@{{ansible_ssh_host}}:{{newpass}}:{{inventory_hostname}}"
+  when: not pw_on_record
+  changed_when: False

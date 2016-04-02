@@ -1,0 +1,10 @@
+
+- name: OpenStack Key
+  os_keypair:
+    state: present
+    name: "{{ key_name }}"
+  register: newkey
+
+- name: Save new key
+  local_action: copy mode=0600 content="{{ newkey.key.private_key }}" dest=./{{ key_name }}.pem
+  when: newkey.changed

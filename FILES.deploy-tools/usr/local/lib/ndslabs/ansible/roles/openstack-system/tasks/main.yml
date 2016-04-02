@@ -1,0 +1,30 @@
+---
+#- debug: var=os_host
+
+- name: Provision
+  connection: local
+  become: false
+  os_server:
+    state: present
+    name: "{{ inventory_hostname }}"
+    image: "{{ os_image }}"
+    flavor: "{{ flavor }}"
+    key_name: "{{ key_name }}"
+    auto_ip: "{{ public_address }}"
+    security_groups: "{{ security_groups }}"
+  register: os_host
+
+- name: Set ansible IP for host
+  set_fact:
+    ansible_ssh_host: "{{ os_host.server.public_v4 }}"
+
+- name: Wait for host up
+  become: false
+  connection: local
+  local_action: shell ssh -i "{{ key_name }}".pem -o StrictHostKeyChecking=no -o BatchMode=yes core@"{{ ansible_ssh_host }}" echo "{{ ansible_ssh_host }}"
+  register: result
+  until: result['stdout'] == "{{ ansible_ssh_host }}"
+  retries: 30
+  delay: 5
+
+- debug: var=result

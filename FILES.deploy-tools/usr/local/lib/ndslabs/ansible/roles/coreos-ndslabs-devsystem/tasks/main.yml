@@ -1,0 +1,9 @@
+
+- name: Fix hosts file
+  lineinfile: state=present create=yes dest="/etc/hosts" line="127.0.0.1 localhost"
+
+- name: CoreOS no update-engine
+  service: name=update-engine state=stopped enabled=no
+
+- name: CoreOS no locksmithd
+  service: name=locksmithd state=stopped enabled=no
