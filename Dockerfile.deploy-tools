@@ -19,3 +19,5 @@ RUN chmod a+x /etc/ansible/hosts/openstack.py && \
 COPY FILES.deploy-tools /
 VOLUME /root/SAVED_AND_SENSITIVE_VOLUME
 WORKDIR /root
+
+CMD bash
