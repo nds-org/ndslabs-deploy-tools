@@ -1,30 +1,48 @@
 ---
-#- debug: var=os_host
 
-- name: Provision
+
+- name: OpenStack System
   connection: local
   become: false
   os_server:
     state: present
+    wait: yes
     name: "{{ inventory_hostname }}"
-    image: "{{ os_image }}"
+    image: "{{ image }}"
     flavor: "{{ flavor }}"
     key_name: "{{ key_name }}"
-    auto_ip: "{{ public_address }}"
     security_groups: "{{ security_groups }}"
+    auto_ip: "{{ public_ip | default(false) }}"
   register: os_host
 
-- name: Set ansible IP for host
+#- debug: var=os_host
+
+- name: Grab Private IP 
   set_fact:
-    ansible_ssh_host: "{{ os_host.server.public_v4 }}"
+    ansible_ssh_host: "{{ os_host.server.private_v4 }}"
+  register: os_priv_addr
+
+#- debug: var=os_host.server.public_v4
+
+#- name: Public IP overrides private
+#  set_fact:
+#    ansible_ssh_host: "{{ os_host.server.public_v4 }}"
+#    when: os_host.server.public_v4 != ""
+
+#- debug: var=ansible_ssh_host
 
 - name: Wait for host up
   become: false
   connection: local
-  local_action: shell ssh -i "{{ key_name }}".pem -o StrictHostKeyChecking=no -o BatchMode=yes core@"{{ ansible_ssh_host }}" echo "{{ ansible_ssh_host }}"
+  local_action: shell ssh -i {{key_path}}/{{key_name}}.pem -o BatchMode=yes -o StrictHostKeyChecking=no {{ansible_ssh_user}}@{{ansible_ssh_host}} echo "{{ansible_ssh_host}}"
   register: result
-  until: result['stdout'] == "{{ ansible_ssh_host }}"
+  until: result['stdout'] == "{{ansible_ssh_host}}"
   retries: 30
   delay: 5
+  when: os_host.changed
 
-- debug: var=result
+- name: register key for host
+  set_fact:
+    ansible_ssh_private_key_file: "{{key_path}}/{{key_name}}.pem"
+
+#- debug: var=result

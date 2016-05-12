@@ -1,0 +1,27 @@
+---
+
+- name: Security Group
+  connection: local
+  become: false
+  os_security_group:
+    state: present
+    wait: yes
+    name: k8s_loadbalancer
+    description: security group k8s in-cluster sw load balancer
+
+- name: Security Group Wide Open V6
+  connection: local
+  become: false
+  os_security_group_rule:
+    security_group: k8s_loadbalancer
+    protocol: tcp
+    ethertype: IPv6
+    remote_ip_prefix: ::/0
+
+- name: Security Group Wide Open V4
+  connection: local
+  become: false
+  os_security_group_rule:
+    security_group: k8s_loadbalancer
+    protocol: tcp
+    remote_ip_prefix: 0.0.0.0/0

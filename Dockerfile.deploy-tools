@@ -1,27 +1,21 @@
-FROM ubuntu:wily
+#FROM ubuntu:xenial
+FROM alpine:3.3
 
-RUN 	apt-get -y update \
-    && \
-    apt-get -y install  dialog python-dialog python-pip python-dev \
+RUN 	 \
+    apk add --update python python-dev py-pip \
     wget curl \
-	vim nano \
-	openssh-client \
-    && \
-    useradd ndslabs --system --create-home \
-    && \
-    apt-get -y clean all && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+	bash vim nano \
+	build-base linux-headers libffi-dev openssl-dev \
+	openssh-client && \
+    pip install --upgrade pip && pip install --upgrade ansible shade &&\
+    apk del build-base python-dev libffi-dev openssl-dev linux-headers &&\
+    rm -rf /var/cache/apk/* 
+
+
+ADD https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/openstack.py /etc/ansible/hosts/openstack.py
+RUN chmod a+x /etc/ansible/hosts/openstack.py && \
+    ansible-galaxy install defunctzombie.coreos-bootstrap
 
 COPY FILES.deploy-tools /
-
-#
-## Ansible setup 
-#
-RUN pip install ansible python-keystoneclient python-heatclient python-novaclient python-glanceclient shade 
-RUN ansible-galaxy install defunctzombie.coreos-bootstrap 
-
-USER ndslabs
-WORKDIR /home/ndslabs
-
-CMD bash
-
-
+VOLUME /root/SAVED_AND_SENSITIVE_VOLUME
+WORKDIR /root

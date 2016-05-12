@@ -1,0 +1,8 @@
+
+[etcd]
+[node]
+[master]
+[lb]
+[glfs]
+[test-os]
+[dr-test1:3]
