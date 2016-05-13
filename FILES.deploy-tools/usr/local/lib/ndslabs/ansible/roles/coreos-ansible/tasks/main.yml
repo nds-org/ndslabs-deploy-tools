@@ -1,3 +1,0 @@
-
-- name: CoreOS Ansible Setup
-  defunctzombie.coreos-bootstrap
