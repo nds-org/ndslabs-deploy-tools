@@ -1,0 +1,69 @@
+
+
+#
+# Cluster
+#
+[all:vars]
+cluster_name=k1
+
+#
+# Servers 
+#
+[etcd]
+k1_etcd[1:3]
+
+[glfs]
+#k1_gfs[1:4]
+#k1_gfs1
+
+[masters]
+#k1_master[1:2]
+k1_master1
+
+[compute]
+k1_node[1:3]
+#k1_node1
+
+[loadbal]
+k1_loadbal
+
+#
+# Groups - assigned according to roles
+#
+
+#Compute nodes
+[nodes:children]
+glfs
+compute
+loadbal
+
+#all nodes
+[cluster:children]
+nodes
+masters
+etcd
+
+[all:children]
+cluster
+
+[openstack:children]
+cluster
+[coreos:children]
+cluster
+[publicip:children]
+loadbal
+
+#
+# Cluster-Specific Group Variables/overrides
+#
+[glfs:vars]
+vol_size= 200
+vol_name= brick0
+mount_path= /media/brick0
+service_name=media-brick0.mount
+
+[all:vars]
+key_name= k1
+# Default image/flavor
+image= CoreOSAlpha
+flavor= m1.medium

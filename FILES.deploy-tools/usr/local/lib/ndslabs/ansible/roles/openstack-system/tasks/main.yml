@@ -20,9 +20,12 @@
 - name: Grab Private IP 
   set_fact:
     ansible_ssh_host: "{{ os_host.server.private_v4 }}"
+    ansible_host: "{{ os_host.server.private_v4 }}"
   register: os_priv_addr
 
 #- debug: var=os_host.server.public_v4
+#- debug: var=ansible_ssh_host
+#- debug: var=ansible_host
 
 #- name: Public IP overrides private
 #  set_fact:

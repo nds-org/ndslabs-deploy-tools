@@ -1,0 +1,2 @@
+---
+k8_initial_labels: "ndslabs_node_role=loadbalancer"

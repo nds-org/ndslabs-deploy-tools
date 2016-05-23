@@ -13,8 +13,7 @@ RUN 	 \
 
 
 ADD https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/openstack.py /etc/ansible/hosts/openstack.py
-RUN chmod a+x /etc/ansible/hosts/openstack.py && \
-    ansible-galaxy install defunctzombie.coreos-bootstrap
+RUN chmod a+x /etc/ansible/hosts/openstack.py 
 
 COPY FILES.deploy-tools /
 VOLUME /root/SAVED_AND_SENSITIVE_VOLUME

@@ -1,0 +1,11 @@
+---
+
+- name: hostname checks
+  become: false
+  connection: local
+  shell: echo "{{ ansible_host }}"
+  register:  hname
+
+- name: bad hostname
+  fail: msg="Hostname not RFC compliant, see RFC 606 and 608 and thank the the TTY for not having an underscore key!"
+  when: hname.stdout.find("_") != -1

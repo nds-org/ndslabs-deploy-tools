@@ -19,7 +19,7 @@
   register: glvol
   when: osvol.changed
 
-- name: Attachment Path
+- name: Register block_dev for mount 
   set_fact:
     block_dev: "{{ glvol.attachments[0].device }}"
   when: glvol.changed
