@@ -1,38 +1,56 @@
-
+#
+# Cluster
+#
+[all:vars]
+cluster_name=cluster.local
+native_dns=os.ncsa.edu
+key_name= k1
+image= CoreOSAlpha
+flavor= m1.small
+kube_version= 1.2.4
+kube-ui= true                                          
+kube-dash= true
 #
 # Servers 
 #
-[etcd]
-c1_etcd[1:3]
+[masters]
+sd1-master1
+
+[etcd:children]
+masters
 
 [glfs]
-c1_gfs[1:4]
+sd1-gfs1
 
-[master]
-c1_master[1:2]
-
-[k8compute]
-c1_node[1:3]
+[compute]
+sd1-node1
 
 [loadbal]
-c1_loadbal
+sd1-loadbal
 
 #
 # Groups - assigned according to roles
 #
-[cluster1:children]
-etcd
+
+#Compute nodes
+[nodes:children]
 glfs
-master
-k8compute
+compute
 loadbal
 
+#all nodes
+[cluster:children]
+nodes
+masters
+etcd
+
+[all:children]
+cluster
+
 [openstack:children]
-cluster1
-
+cluster
 [coreos:children]
-cluster1
-
+cluster
 [publicip:children]
 loadbal
 
@@ -44,10 +62,4 @@ vol_size= 200
 vol_name= brick0
 mount_path= /media/brick0
 service_name=media-brick0.mount
-
-[cluster1:vars]
-key_name= cluster1
-# Default image/flavor
-image= CoreOSAlpha
-flavor= m1.medium
 
