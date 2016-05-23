@@ -76,3 +76,7 @@
   roles:
     - ndslabs-k8-init-labels
 
+- name: NDSLabs Gluster Server
+  hosts: glfs
+  roles:
+    - k8-glfs-server-pods
