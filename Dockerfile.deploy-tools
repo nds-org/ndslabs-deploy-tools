@@ -1,9 +1,13 @@
 #FROM ubuntu:xenial
 FROM alpine:3.3
 
+#
+# Add the tools
+# 
 RUN 	 \
     apk add --update python python-dev py-pip \
     wget curl \
+	subversion \
 	bash vim nano \
 	build-base linux-headers libffi-dev openssl-dev \
 	openssh-client && \
@@ -11,10 +15,22 @@ RUN 	 \
     apk del build-base python-dev libffi-dev openssl-dev linux-headers &&\
     rm -rf /var/cache/apk/* 
 
+#
+# add the k8s contrib/ansible from git
+#
+RUN mkdir -p /usr/local/lib/kubernetes/contrib && \
+    cd /usr/local/lib/kubernetes/contrib && \
+    svn checkout https://github.com/kubernetes/contrib.git/trunk/ansible
 
+#
+# Add the openstack inventory script for anisble
+#
 ADD https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/openstack.py /etc/ansible/hosts/openstack.py
 RUN chmod a+x /etc/ansible/hosts/openstack.py 
 
+#
+# Add the nds stuff
+# 
 COPY FILES.deploy-tools /
 VOLUME /root/SAVED_AND_SENSITIVE_VOLUME
 WORKDIR /root
