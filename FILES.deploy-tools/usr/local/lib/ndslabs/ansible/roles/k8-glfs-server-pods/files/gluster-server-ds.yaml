@@ -22,25 +22,9 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-            - name: hostroot
-              mountPath: /media/host
-              readOnly: true
-            - name: glfs
-              mountPath: /var/glfs
-            - name: run
-              mountPath: /run
             - name: dev
               mountPath: /dev
       volumes:
-        - name: hostroot
-          hostPath:
-              path: /
-        - name: glfs
-          hostPath:
-              path: /var/glfs
-        - name: run
-          hostPath:
-              path: /run
         - name: dev
           hostPath:
               path: /dev

@@ -2,6 +2,13 @@
 # NDSLabs cluster on OpenStack - HW Setup
 #
 
+- name: prepend logical cluster name for all cluster resources
+  hosts: all 
+  gather_facts: false
+  tasks:
+    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+    #- set_fact:  inventory_hostname={{ ansible_host }}
+
 - name: Pre Checks
   hosts: cluster
   gather_facts: false
@@ -51,11 +58,6 @@
   roles: 
     - openstack-glfs
 
-
-- name: CoreOS Mount GLFS
-  hosts: glfs:&coreos
-  roles: 
-    - coreos-mount
 
 - name: CoreOS Mount GLFS
   hosts: glfs:&coreos

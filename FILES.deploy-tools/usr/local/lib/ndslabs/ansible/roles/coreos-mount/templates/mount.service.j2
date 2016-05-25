@@ -1,8 +1,8 @@
 [Unit]
-Description=Mount {{ block_dev }} on {{ mount_path }}
+Description=Mount {{ block_dev }} on {{ brick_mount_path }}
 After=local-fs.target
 [Mount]
 What={{ block_dev }}
-Where={{ mount_path }}
+Where={{ brick_mount_path }}
 Type=xfs
 Options=noatime

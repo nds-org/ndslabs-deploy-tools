@@ -1,9 +1,9 @@
 ---
 
-- name: create {{ mount_path }} 
+- name: create {{ brick_mount_path }} 
   become: true
   file:  
-    path: "{{ mount_path}}"
+    path: "{{ brick_mount_path}}"
     state: directory
   when: glvol.changed
 
@@ -37,7 +37,7 @@
 - name: make brick dir
   become: true
   file:  
-    path: "{{ mount_path }}/brick"
+    path: "{{ brick_mount_path }}/brick"
     state: directory
   when: glvol.changed
 

@@ -1,2 +1,4 @@
 ---
 k8_initial_labels: "ndslabs-node-role=glfs"
+clusterfs_vol_name: "global"
+clusterfs_vol_path: "/var/glfs/global"
