@@ -91,4 +91,4 @@
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: compute
   roles:
-    - k8-glfs-client-pods
+    - k8-glfs-client-set
