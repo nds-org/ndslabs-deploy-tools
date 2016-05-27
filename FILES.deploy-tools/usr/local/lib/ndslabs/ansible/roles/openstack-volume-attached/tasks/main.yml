@@ -16,11 +16,11 @@
     state: present
     server: "{{ ansible_host }}"
     volume: "{{ ansible_host }}-{{vol_name}}"
-  register: glvol
-  when: osvol.changed
+  register: vol_attached
+#when: osvol.changed
 
 - name: Register block_dev for mount 
   set_fact:
-    block_dev: "{{ glvol.attachments[0].device }}"
-  when: glvol.changed
+    block_dev: "{{ vol_attached.attachments[0].device }}"
+  when: vol_attached.changed
 

@@ -40,7 +40,6 @@
   become: true
   roles:
     - pre-ansible
-    #- defunctzombie.coreos-bootstrap
 
 - name: NDSLabs environment setup
   hosts: cluster
@@ -56,18 +55,24 @@
 - name: OpenStack GLFS provision volume and attach
   hosts: glfs:&openstack
   roles: 
-    - openstack-glfs
-
-
-- name: CoreOS Mount GLFS
-  hosts: glfs:&coreos
-  roles: 
+    - openstack-volume-attached
     - coreos-mount
 
 ##########################################################################################################################
 # Now to kubernetes, back again after
 ##########################################################################################################################
 - include: /usr/local/lib/kubernetes/contrib/ansible/cluster.yml
+ 
+##########################################################################################################################
+# Clean up known K8's troubles
+##########################################################################################################################
+
+- name: stop and disable kube-addons
+  hosts: masters
+  become: true
+  tasks:
+    - service: name=kube-addons state=stopped enabled=false
+
 
 ##########################################################################################################################
 # Now additional setup now that the cluster is running
@@ -78,7 +83,12 @@
   roles:
     - ndslabs-k8-init-labels
 
-- name: NDSLabs Gluster Server
+- name: NDSLabs GLFS Global Clusterr Filesystem Servers
   hosts: glfs
   roles:
     - k8-glfs-server-pods
+
+- name: NDSLabs GLFS Cluster FileSystem Clients
+  hosts: compute
+  roles:
+    - k8-glfs-client-pods

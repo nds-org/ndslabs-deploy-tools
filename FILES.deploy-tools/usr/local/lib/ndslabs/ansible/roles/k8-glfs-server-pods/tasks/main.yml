@@ -1,18 +1,24 @@
 
 - name: Gluster Server Pods Deploy
-  copy: src=gluster-server-ds.yaml dest=/tmp/gluster-server-ds.yaml
+  template: src=gluster-server-ds.yaml.j2 dest=/tmp/gluster-server-ds.yaml
   delegate_to: "{{ groups['masters'][0] }}"
   register: deploy
+  run_once: true
 
 - name: Gluster Server Pods Deploy
   command: kubectl create -f  /tmp/gluster-server-ds.yaml
   delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
   when:  deploy.changed
 
-- name: Gluster Init Cluster get a server
-  shell: kubectl get pods --selector=name=glusterfs-server | grep Running | cut -d' ' -f1 | tail -1
+- name: Gluster Init Cluster get a server pod
+  shell: "kubectl get pods --selector=name=glusterfs-server | grep Running | cut -d' ' -f1 | tail -1"
+  run_once: true
   delegate_to: "{{ groups['masters'][0] }}"
   register: shellout
+  until: shellout.stdout != ""
+  retries: 10
+  delay: 20
 
 - name: Gluster get server part 2
   set_fact: 
@@ -24,19 +30,21 @@
   command: "kubectl exec -it {{ glpod }} gluster peer probe {{ ansible_ssh_host }}"
   delegate_to: "{{ groups['masters'][0] }}"
 
-- debug: msg="kubectl exec -it {{ glpod }} gluster volume create" 
-- debug: msg="{{ clusterfs_vol_name }} stripe 2 replica 2 transport tcp "
-- debug: msg="{{ hostvars[groups['glfs'][0]]['ansible_ssh_host'] }}:{{ brick_mount_path }}"
+
+
+#- debug: msg="kubectl exec -it {{ glpod }} gluster volume create" 
+#- debug: msg="{{ clusterfs_vol_name }} stripe 2 replica 2 transport tcp "
+#- debug: msg="{{ hostvars[groups['glfs'][0]]['ansible_ssh_host'] }}:{{ brick_mount_path }}"
 #- debug: msg="{{ groups['glfs'][0]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][f]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][2]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][3]['ansible_ssh_host'] }}:{{ brick_mount_path }}"
 
 - name: Gluster Full Cluster FS Volume 2x2 strip/mirror
   command: "kubectl exec -it {{ glpod }} gluster volume create {{ clusterfs_vol_name }} stripe 2 replica 2 transport tcp  {{ hostvars[groups['glfs'][0]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][1]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][3]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick"
   delegate_to: "{{ groups['masters'][0] }}"
   run_once: true
+  ignore_errors: true
 
-#{{ groups['glfs'][0]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][f]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][2]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][3]['ansible_ssh_host'] }}:{{ brick_mount_path }}"
-#clusterfs_vol_name=global                                                                                                                   
-#3lusterfs_vol_path=/var/glfs/global    
-#3luster volume create scratch transport tcp 172.16.1.162:/var/glfs/scratch/brick0 172.16.1.163:/var/glfs/scratch/brick0 gluster volume create rvol1 replica 2 transport tcp 172.16.1.162:/var/glfs/HA/brick0 172.16.1.163:/var/glfs/HA/brick0 gluster volume start HA gluster volume start scratch cluster volume list
-#command: "kubectl exec -it {{ glpod }} peer-probe {% for host in groups['glfs'] %} {{ hostvars[host]['ansible_ssh_host'] }} {% endfor %}"
+- name: Gluster Start volume
+  command: "kubectl exec -it {{ glpod }} gluster volume start {{ clusterfs_vol_name }}"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
 

@@ -16,15 +16,15 @@ spec:
       hostIPC: true
       hostNetwork: true
       containers:
-        - image: ndslabs/gluster:test
+        - image: ndslabs/gluster:iassist
           imagePullPolicy: Always
           name: glusterfs-server
           securityContext:
             privileged: true
           volumeMounts:
-            - name: dev
-              mountPath: /dev
+            - name: brick0
+              mountPath: {{ brick_mount_path }}
       volumes:
-        - name: dev
+        - name: brick0
           hostPath:
-              path: /dev
+              path: {{ brick_mount_path }}

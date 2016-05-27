@@ -22,3 +22,8 @@
   hosts: glfs
   roles:
     - k8-glfs-server-pods
+
+- name: NDSLabs Gluster Cluster FileSystem
+  hosts: compute
+  roles:
+    - k8-glfs-client-pods
