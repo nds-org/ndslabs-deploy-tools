@@ -1,32 +1,44 @@
 #
-# Cluster
+# Minimal resource usage test cluster to test deploy tooling only
+# Do not use for production or any other purpose
 #
 [all:vars]
+logical_cluster_name=DEPLOYTEST
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
-key_name= k1
-image= CoreOSAlpha
-flavor= m1.small
-kube_version= 1.2.4
-kube-ui= true                                          
-kube-dash= true
+image=CoreOSAlpha
+flavor=m1.small
+kube_version=1.2.4
+kube-ui=true                                          
+kube-dash=true
+key_name={{logical_cluster_name}}
+cluster_fs_hostpath=/media/glfs 
+
+#
+# Some optional things
+# 
+cluster_monitoring=false
+cluster_logging=false
+kube-dash=false
+kube-ui=false
+
 #
 # Servers 
 #
 [masters]
-sd1-master1
+master1
 
 [etcd:children]
 masters
 
 [glfs]
-sd1-gfs1
+gfs[1:4]
 
 [compute]
-sd1-node1
+node1
 
 [loadbal]
-sd1-loadbal
+loadbal
 
 #
 # Groups - assigned according to roles
@@ -60,6 +72,6 @@ loadbal
 [glfs:vars]
 vol_size= 200
 vol_name= brick0
-mount_path= /media/brick0
+brick_mount_path= /media/brick0
 service_name=media-brick0.mount
 
