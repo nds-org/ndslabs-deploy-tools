@@ -1,0 +1,44 @@
+#
+# NDSLabs cluster on OpenStack - HW Setup
+#
+
+- name: OpenStack Key
+  hosts: k1
+  gather_facts: false
+  run_once: true
+  roles: 
+    - openstack-key
+
+- name: NDSLabs OpenStack Cluster
+  hosts: k1
+  gather_facts: false
+  roles: 
+    - openstack-system
+
+- name: CoreOS Setup
+  hosts: coreos
+  gather_facts: false
+  roles: 
+    - defunctzombie.coreos-bootstrap
+
+- name: OpenStack LoadBalancer Security Group
+  hosts: publicip
+  gather_facts: false
+  roles: 
+    - openstack-securitygroup-open
+
+- name: OpenStack GLFS Vols
+  hosts: glfs:&openstack
+  roles: 
+    - openstack-glfs
+
+- name: GLFS Format
+  hosts: glfs
+  roles: 
+    - format-mount-glfs
+
+- name: CoreOS Mount
+  hosts: glfs:&coreos
+  roles: 
+    - coreos-mount
+

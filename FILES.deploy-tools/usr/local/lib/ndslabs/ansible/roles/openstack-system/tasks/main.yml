@@ -7,7 +7,7 @@
   os_server:
     state: present
     wait: yes
-    name: "{{ inventory_hostname }}"
+    name: "{{ ansible_host }}"
     image: "{{ image }}"
     flavor: "{{ flavor }}"
     key_name: "{{ key_name }}"
@@ -23,6 +23,8 @@
   register: os_priv_addr
 
 #- debug: var=os_host.server.public_v4
+#- debug: var=ansible_ssh_host
+#- debug: var=ansible_host
 
 #- name: Public IP overrides private
 #  set_fact:

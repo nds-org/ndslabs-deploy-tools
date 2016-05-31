@@ -1,0 +1,72 @@
+---
+- name: Install openssl for easy-rsa stuff
+  action: "{{ ansible_pkg_mgr }}"
+  args:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - openssl
+    - curl
+  when: not is_atomic and not is_coreos
+
+#- name: Get create ca cert script from Kubernetes
+#  get_url:
+#    url=https://raw.githubusercontent.com/GoogleCloudPlatform/kubernetes/master/cluster/saltbase/salt/generate-cert/make-ca-cert.sh
+#    dest={{ kube_script_dir }}/make-ca-cert.sh mode=0500
+#    force=yes
+
+- name: HACK | overwrite make-ca-cert.sh from local copy
+  copy:
+    src=make-ca-cert.sh
+    dest={{ kube_script_dir }}
+    mode=0500
+  changed_when: false
+
+- debug: msg=MASTER_IP is "{{ kube_cert_ip }}"
+- debug: var=kube_cert_ip
+- debug: msg=MASTER_NAME is "{{ inventory_hostname }}"
+- debug: var=inventory_hostname
+- debug: msg=DNS_DOMAIN is "{{ dns_domain }}"
+- debug: var=dns_domain
+- debug: msg=SERVICE_CLUSTER_IP_RANGE is "{{ kube_service_addresses }}"
+- debug: var=kube_service_addresses
+- debug: msg=CERT_DIR is "{{ kube_cert_dir }}"
+- debug: var=kube_cert_dir
+- debug: msg=CERT_GROUP is "{{ kube_cert_group }}"
+- debug: var=kube_cert_group
+- debug: msg=HTTP_PROXY is "{{ http_proxy|default('') }}"
+- debug: var=http_proxy|default('')
+- debug: msg=HTTPS_PROXY is "{{ https_proxy|default('') }}"
+- debug: var=https_proxy|default('')
+- debug: msg=all_ip_v4s is "{{ hostvars[inventory_hostname]['ansible_all_ipv4_addresses'] }}"
+- debug: var=hostvars[inventory_hostname]['ansible_all_ipv4_addresses']
+
+# FIXME This only generates a cert for one master...
+- name: Run create cert script on master
+  command:
+    "{{ kube_script_dir }}/make-ca-cert.sh"
+  args:
+    creates: "{{ kube_cert_dir }}/server.crt"
+  environment:
+    MASTER_IP: "{{ kube_cert_ip }}"
+    MASTER_NAME: "{{ inventory_hostname }}"
+    DNS_DOMAIN: "{{ dns_domain }}"
+    SERVICE_CLUSTER_IP_RANGE: "{{ kube_service_addresses }}"
+    CERT_DIR: "{{ kube_cert_dir }}"
+    CERT_GROUP: "{{ kube_cert_group }}"
+    HTTP_PROXY: "{{ http_proxy|default('') }}"
+    HTTPS_PROXY: "{{ https_proxy|default('') }}"
+
+- name: Verify certificate permissions
+  file:
+    path={{ item }}
+    group={{ kube_cert_group }}
+    owner=kube
+    mode=0440
+  with_items:
+    - "{{ kube_cert_dir }}/ca.crt"
+    - "{{ kube_cert_dir }}/server.crt"
+    - "{{ kube_cert_dir }}/server.key"
+    - "{{ kube_cert_dir }}/kubecfg.crt"
+    - "{{ kube_cert_dir }}/kubecfg.key"
+

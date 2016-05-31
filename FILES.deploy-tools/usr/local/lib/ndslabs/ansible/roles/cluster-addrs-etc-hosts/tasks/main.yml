@@ -1,0 +1,4 @@
+---
+- name: write a hosts file for the cluster
+  become: true
+  template: src=host-file.j2 dest=/etc/hosts

@@ -1,0 +1,13 @@
+---
+
+- name: Reboot
+  become: true
+  raw: reboot
+  ignore_errors: true
+
+- debug: msg="reboot done"
+
+- name: Wait for host up again
+  become: false
+  connection: local
+  local_action: wait_for host={{ ansible_ssh_host }} state=started connect_timeout=10 timeout=120 port=22

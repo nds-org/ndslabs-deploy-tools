@@ -1,0 +1,6 @@
+---
+
+- name: Fix hosts file
+  become: true
+  lineinfile: state=present create=yes dest="/etc/hosts" line="127.0.0.1 localhost"
+
