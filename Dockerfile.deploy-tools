@@ -7,7 +7,7 @@ RUN 	 \
 	bash vim nano \
 	build-base linux-headers libffi-dev openssl-dev \
 	openssh-client && \
-    pip install --upgrade pip && pip install --upgrade ansible shade &&\
+    pip install --upgrade pip && pip install --upgrade ansible==2.0.2.0 shade &&\
     apk del build-base python-dev libffi-dev openssl-dev linux-headers &&\
     rm -rf /var/cache/apk/* 
 
