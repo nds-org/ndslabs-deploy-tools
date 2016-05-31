@@ -80,3 +80,8 @@
   hosts: glfs
   roles:
     - k8-glfs-server-pods
+
+- name: NDSLabs Ingress Loadbalancer
+  hosts: loadbal
+  roles:
+    - ndslabs-loadbalancer

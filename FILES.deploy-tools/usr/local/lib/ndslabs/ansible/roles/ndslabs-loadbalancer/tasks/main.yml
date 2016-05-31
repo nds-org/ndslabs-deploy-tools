@@ -1,0 +1,12 @@
+- name: NDSLabs NGINX Loadbalancer Deploy
+  template:
+  args:
+    src: "{{ item }}.j2"
+    dest: "/tmp/{{ item }}"
+    mode: 0644
+    owner: root
+    group: root
+  with_items:
+    - default-backend.yaml
+    - loadbalancer.yaml
+    - default-ingress.yaml

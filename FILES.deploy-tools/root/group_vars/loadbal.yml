@@ -1,2 +1,9 @@
 ---
 k8_initial_labels: "ndslabs-node-role=loadbalancer"
+
+# Default domain name used for the Ingress loadbalancer
+dns_domain: test.nationaldataservice.org
+
+# Whether to use TLS for 
+use_tls: false
+
