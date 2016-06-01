@@ -58,6 +58,13 @@
     - openstack-volume-attached
     - coreos-mount
 
+- name: GLFS brick dir
+  hosts: glfs
+  become: true
+  tasks:
+    - file: path=/media/brick0/brick state=directory mode=0777
+
+
 ##########################################################################################################################
 # Now to kubernetes, back again after
 ##########################################################################################################################
@@ -77,6 +84,14 @@
 ##########################################################################################################################
 # Now additional setup now that the cluster is running
 ##########################################################################################################################
+
+#
+# This should go in the LB role
+#
+- name: LoadBalancer public interface
+  hosts: loadbal
+  tasks:
+    - os_floating_ip: server="{{ ansible_host }}" 
 
 - name: NDSLabs initial labels
   hosts: all
