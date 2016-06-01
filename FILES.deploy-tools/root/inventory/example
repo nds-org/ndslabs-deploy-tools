@@ -10,7 +10,6 @@ flavor= m1.small
 kube_version= 1.2.4
 kube-ui= true                                          
 kube-dash= true
-use_tls= false
 
 #
 # Servers 

@@ -9,4 +9,3 @@
   with_items:
     - default-backend.yaml
     - loadbalancer.yaml
-    - default-ingress.yaml

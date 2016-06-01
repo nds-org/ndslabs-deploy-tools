@@ -1,5 +1,5 @@
 ---
 
 key_path: /root/SAVED_AND_SENSITIVE_VOLUME
-security_groups: k8s_loadbalancer
+security_groups: default
 
