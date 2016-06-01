@@ -41,7 +41,7 @@
   until: result['stdout'] == "{{ansible_ssh_host}}"
   retries: 30
   delay: 5
-  when: os_host.changed
+  #when: os_host.changed
 
 - name: register key for host
   set_fact:
