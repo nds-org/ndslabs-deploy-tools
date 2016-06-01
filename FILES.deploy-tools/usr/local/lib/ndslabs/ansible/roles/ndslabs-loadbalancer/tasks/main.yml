@@ -1,10 +1,10 @@
-- name: Loadbalancer: copy yaml
+- name: Loadbalancer| copy yaml
   copy: src="{{ item }}" dest="/tmp/{{ item }}"
   with_items:
     - default-backend.yaml
     - loadbalancer.yaml
 
-- name: Loadbalancer: create pods
+- name: Loadbalancer| create pods
   command: kubectl create -f "/tmp/{{ item }}"
   with_items:
     - default-backend.yaml
