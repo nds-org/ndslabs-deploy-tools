@@ -1,0 +1,25 @@
+- name: NDSLabs| copy yaml
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - ndslabs-apiserver.yaml
+    - ndslabs-gui.yaml
+
+- name: ApiServer status
+  command: kubectl get rc ndslabs-apiserver
+  ignore_errors: yes
+  register: apiserver
+
+- name: WebUI status
+  command: kubectl get rc ndslabs-gui
+  ignore_errors: yes
+  register: webui
+
+- name: ApiServer| create ndslabs-apiserver
+  command: kubectl create -f "/tmp/ndslabs-apiserver.yaml"
+  when: apiserver.rc != 0
+
+- name: WebUI| create loadbalancer
+  command: kubectl create -f "/tmp/ndslabs-gui.yaml"
+  when: webui.rc != 0
+
+

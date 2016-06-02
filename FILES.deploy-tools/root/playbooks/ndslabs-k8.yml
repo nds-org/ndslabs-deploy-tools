@@ -80,3 +80,8 @@
   hosts: glfs
   roles:
     - k8-glfs-server-pods
+
+- name: NDSLabs ApiServer and WebUI
+  hosts: master
+  roles:
+    - ndslabs-api-gui
