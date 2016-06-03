@@ -1,4 +1,50 @@
 {
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"prometheus",
+        "labels":{
+            "name":"prometheus"
+        }
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9090,
+            "targetPort":9090,
+                "protocol":"TCP"
+        }],
+        "selector":{
+            "name":"kube-prometheus"
+        }
+    }
+}
+----
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"pushgateway",
+        "labels":{
+            "name":"pushgateway"
+        }
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9091,
+            "targetPort":9091,
+                "protocol":"TCP"
+        }],
+        "selector":{
+            "name":"kube-prometheus"
+        }
+    }
+}
+----
+{
     "apiVersion": "v1",
     "kind": "ReplicationController",
     "metadata": {
@@ -119,3 +165,4 @@
         }
     }
 }
+
