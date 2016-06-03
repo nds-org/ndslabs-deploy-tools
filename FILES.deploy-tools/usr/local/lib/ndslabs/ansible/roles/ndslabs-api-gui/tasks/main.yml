@@ -2,7 +2,7 @@
   copy: src="{{ item }}" dest="/tmp/{{ item }}"
   with_items:
     - ndslabs-apiserver.yaml
-    - ndslabs-gui.yaml
+    - ndslabs-webui.yaml
 
 - name: ApiServer status
   command: kubectl get rc ndslabs-apiserver
