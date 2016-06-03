@@ -27,7 +27,7 @@
 #   Kubernetes Dashboard
 ##########################
 - name: Kube Dashboard status
-  command: kubectl get rc kubernetes-dashboard --namespace=kube-system
+  command: kubectl get rc kubedash --namespace=kube-system
   ignore_errors: yes
   register: kubedash
 
@@ -41,12 +41,12 @@
 #   KubeUI
 ######################
 - name: Kube UI status
-  command: kubectl get rc kubernetes-ui --namespace=kube-system
+  command: kubectl get rc kubernetes-dashboard --namespace=kube-system
   ignore_errors: yes
   register: kubeui
 
 - name: Kube Addons| create kube-ui
-  command: kubectl create -f "/tmp/kube-dash.yaml"
+  command: kubectl create -f "/tmp/kube-ui.yaml"
   when: kubeui.rc != 0
 
 
