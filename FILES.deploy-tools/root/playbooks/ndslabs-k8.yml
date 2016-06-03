@@ -82,6 +82,6 @@
     - k8-glfs-server-pods
 
 - name: NDSLabs ApiServer and WebUI
-  hosts: master
+  hosts: masters
   roles:
     - ndslabs-api-gui

@@ -38,9 +38,9 @@ spec:
             mountPath: /ndslabs/data/volumes
         env:
           - name: ETCD_ADDR
-            value: "{{ansible_default_ipv4.address}}:2379"
+            value: "{{ ansible_default_ipv4.address }}:2379"
           - name: KUBERNETES_ADDR
-            value: "https://{{ansible_default_ipv4.address}}:443"
+            value: "https://{{ ansible_default_ipv4.address }}:443"
           - name: CORS_ORIGIN_ADDR
             value: "https://www.{{dns_domain}}"
           - name: SPEC_GIT_REPO
