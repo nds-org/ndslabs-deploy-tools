@@ -80,7 +80,7 @@
 
 - name: Kube Addons| create elk
   command: kubectl create -f "/tmp/elk.yaml"
-  when: (elastic.rc != 0 || kibana.rc != 0)
+  when: (elastic.rc != 0 or kibana.rc != 0)
 
 
 
@@ -99,4 +99,4 @@
 
 - name: Kube Addons| create grafana
   command: kubectl create -f "/tmp/grafana.yaml"
-  when: (grafana.rc != 0 || heapster.rc != 0)
+  when: (grafana.rc != 0 or heapster.rc != 0)
