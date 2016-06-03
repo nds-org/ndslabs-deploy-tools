@@ -1,0 +1,23 @@
+- name: KubeDNS| copy yaml
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - kube-system-namespace.yaml
+    - kube-dns.yaml
+
+- name: Kube-System status
+  command: kubectl get ns kube-system
+  ignore_errors: yes
+  register: namespace
+
+- name: DNS status
+  command: kubectl get rc kube-dns-v11 --namespace=kube-system
+  ignore_errors: yes
+  register: dns
+
+- name: KubeDNS| create kube-system namespace
+  command: kubectl create -f "/tmp/kube-system-namespace.yaml"
+  when: namespace.rc != 0
+
+- name: KubeDNS| create kube-dns 
+  command: kubectl create -f "/tmp/kube-dns.yaml"
+  when: dns.rc != 0
