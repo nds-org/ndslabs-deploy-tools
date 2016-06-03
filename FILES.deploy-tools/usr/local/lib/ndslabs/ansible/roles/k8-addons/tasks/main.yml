@@ -59,7 +59,7 @@
   ignore_errors: yes
   register: promdash
 
-- name: Kube Addons| create kube-dash
+- name: Kube Addons| create prom-dash
   command: kubectl create -f "/tmp/prom-dash.yaml"
   when: promdash.rc != 0
 
