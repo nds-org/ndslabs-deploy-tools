@@ -1,0 +1,25 @@
+- name: Cluster Metrics - Prometheus Dashboard| copy yaml
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - prometheus-all.json
+    - prometheus-service.yaml
+    - pushgateway-service.yaml
+
+###########################
+#   Prometheus Dashboard
+###########################
+- name: Prometheus Dashboard status
+  command: kubectl get svc prometheus --namespace=kube-system
+  ignore_errors: yes
+  register: promdash
+
+- name: PushGateway status
+  command: kubectl get svc pushgateway --namespace=kube-system
+  ignore_errors: yes
+  register: pushgateway
+
+- name: Cluster Metrics - Prometheus Dashboard| create prometheus stack
+  command: kubectl create --namespace=kube-system -f "/tmp/prometheus-service.yaml" -f "/tmp/pushgateway-service.yaml" -f "/tmp/prometheus-all.json"
+  when: (promdash.rc != 0 or pushgateway.rc != 0)
+
+

@@ -84,4 +84,9 @@
 - name: Kubernetes LMA
   hosts: masters
   roles:
-    - k8-addons
+    - cluster-addon-init
+    - cluster-addon-kubeui
+    - cluster-addon-kubedash
+    - cluster-addon-prometheus
+    - cluster-addon-grafana
+    - cluster-addon-kibana

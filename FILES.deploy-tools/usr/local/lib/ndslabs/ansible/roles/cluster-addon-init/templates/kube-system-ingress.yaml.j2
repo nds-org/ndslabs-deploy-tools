@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ndslabs-ingress
+  name: kube-lma-ingress
   namespace: kube-system
 spec:
   tls:
@@ -21,11 +21,14 @@ spec:
           serviceName: kubernetes-dashboard
           servicePort: 80
       - path: /prometheus
+        backend:
           serviceName: prometheus
           servicePort: 9090
       - path: /kibana
+        backend:
           serviceName: logging-kibana
           servicePort: 5601
       - path: /grafana
+        backend:
           serviceName: monitoring-grafana
           servicePort: 80 

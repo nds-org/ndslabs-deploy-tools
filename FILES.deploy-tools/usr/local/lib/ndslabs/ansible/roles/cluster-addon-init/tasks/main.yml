@@ -1,0 +1,36 @@
+- name: Cluster Addon init| copy yaml
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - kube-system-namespace.yaml
+
+- name: Cluster Addon init| populate templates
+  template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
+  with_items:
+    - kube-system-ingress.yaml
+
+###########################
+#  Namespace: kube-system
+###########################
+- name: Kube-System namespace status
+  command: kubectl get ns kube-system
+  ignore_errors: yes
+  register: namespace
+
+- name: Cluster Addon init| create kube-system namespace
+  command: kubectl create -f "/tmp/kube-system-namespace.yaml"
+  when: namespace.rc != 0
+
+
+
+################################
+#  Ingress Rules: kube-system
+################################
+- name: Kube-System ingress status
+  command: kubectl get ing kube-lma-ingress --namespace=kube-system
+  ignore_errors: yes
+  register: ingress
+
+- name: Cluster Addon init| create kube-system ingress rules
+  command: kubectl create --namespace=kube-system -f "/tmp/kube-system-ingress.yaml"
+  when: ingress.rc != 0
+

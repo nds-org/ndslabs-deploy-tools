@@ -1,0 +1,23 @@
+- name: Cluster Profiling - Grafana| copy grafana.yaml
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - grafana.yaml
+
+
+
+##########################
+#   Grafana and InfluxDB
+##########################
+- name: Grafana status
+  command: kubectl get svc monitoring-grafana --namespace=kube-system
+  ignore_errors: yes
+  register: grafana
+
+- name: InfluxDB status
+  command: kubectl get svc monitoring-influxdb --namespace=kube-system
+  ignore_errors: yes
+  register: heapster
+
+- name: Cluster Profiling - Grafana| create grafana stack
+  command: kubectl create --namespace=kube-system -f "/tmp/grafana.yaml"
+  when: (grafana.rc != 0 or heapster.rc != 0)
