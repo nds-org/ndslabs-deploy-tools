@@ -6,7 +6,9 @@
     - kube-ui.yaml
     - elk.yaml
     - grafana.yaml
-    - prom-dash.yaml
+    - prometheus-all.json
+    - prometheus-service.yaml
+    - pushgateway-service.yaml
 
 
 ###########################
@@ -27,12 +29,12 @@
 #   Kubernetes Dashboard
 ##########################
 - name: Kube Dashboard status
-  command: kubectl get rc kubedash --namespace=kube-system
+  command: kubectl get svc kubedash --namespace=kube-system
   ignore_errors: yes
   register: kubedash
 
 - name: Kube Addons| create kube-dash 
-  command: kubectl create -f "/tmp/kube-dash.yaml"
+  command: kubectl create --namespace=kube-system -f "/tmp/kube-dash.yaml"
   when: kubedash.rc != 0
 
 
@@ -41,12 +43,12 @@
 #   KubeUI
 ######################
 - name: Kube UI status
-  command: kubectl get rc kubernetes-dashboard --namespace=kube-system
+  command: kubectl get svc kubernetes-dashboard --namespace=kube-system
   ignore_errors: yes
   register: kubeui
 
 - name: Kube Addons| create kube-ui
-  command: kubectl create -f "/tmp/kube-ui.yaml"
+  command: kubectl create --namespace=kube-system -f "/tmp/kube-ui.yaml"
   when: kubeui.rc != 0
 
 
@@ -55,31 +57,36 @@
 #   Prometheus Dashboard
 ###########################
 - name: Prometheus Dashboard status
-  command: kubectl get rc kube-prometheus --namespace=kube-system
+  command: kubectl get svc prometheus --namespace=kube-system
   ignore_errors: yes
   register: promdash
 
-- name: Kube Addons| create prom-dash
-  command: kubectl create -f "/tmp/prom-dash.yaml"
-  when: promdash.rc != 0
+- name: PushGateway status
+  command: kubectl get svc pushgateway --namespace=kube-system
+  ignore_errors: yes
+  register: pushgateway
+
+- name: Kube Addons| create prometheus stack
+  command: kubectl create --namespace=kube-system -f "/tmp/prometheus-service.yaml" -f "/tmp/pushgateway-service.yaml" -f "/tmp/prometheus-all.json"
+  when: (promdash.rc != 0 or pushgateway.rc != 0)
 
 
 
 #######################
-#  Logging: ELK
+#  Logging: ELK (Kibana)
 #######################
 - name: Elasticsearch status
-  command: kubectl get rc elasticsearch-logging-v1 --namespace=kube-system
+  command: kubectl get svc elasticsearch-logging --namespace=kube-system
   ignore_errors: yes
   register: elastic
 
 - name: Kibana status
-  command: kubectl get rc kibana-logging-v1 --namespace=kube-system
+  command: kubectl get svc kibana-logging --namespace=kube-system
   ignore_errors: yes
   register: kibana
 
-- name: Kube Addons| create elk
-  command: kubectl create -f "/tmp/elk.yaml"
+- name: Kube Addons| create elk stack
+  command: kubectl create --namespace=kube-system -f "/tmp/elk.yaml"
   when: (elastic.rc != 0 or kibana.rc != 0)
 
 
@@ -88,15 +95,15 @@
 #   Grafana and InfluxDB
 ##########################
 - name: Grafana status
-  command: kubectl get rc monitoring-influxdb-grafana-v3 --namespace=kube-system
+  command: kubectl get svc monitoring-grafana --namespace=kube-system
   ignore_errors: yes
   register: grafana
 
-- name: Heapster status
-  command: kubectl get rc heapster-v1.1.0.beta2 --namespace=kube-system
+- name: InfluxDB status
+  command: kubectl get svc monitoring-influxdb --namespace=kube-system
   ignore_errors: yes
   register: heapster
 
-- name: Kube Addons| create grafana
-  command: kubectl create -f "/tmp/grafana.yaml"
+- name: Kube Addons| create grafana stack
+  command: kubectl create --namespace=kube-system -f "/tmp/grafana.yaml"
   when: (grafana.rc != 0 or heapster.rc != 0)

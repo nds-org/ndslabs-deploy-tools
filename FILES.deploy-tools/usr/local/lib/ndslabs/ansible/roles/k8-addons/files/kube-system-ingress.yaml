@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ndslabs-ingress
+  namespace: kube-system
+spec:
+  tls:
+  - hosts:
+    - www.{{dns_domain}}
+    secretName: ndslabs-tls-secret
+  rules:
+  - host: www.{{dns_domain}}
+    http:
+      paths:
+      - path: /kubedash
+        backend:
+          serviceName: kubedash
+          servicePort: 30001
+      - path: /kubeui
+        backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 80

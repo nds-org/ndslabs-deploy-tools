@@ -80,3 +80,8 @@
   hosts: glfs
   roles:
     - k8-glfs-server-pods
+
+- name: Kubernetes LMA
+  hosts: masters
+  roles:
+    - k8-addons
