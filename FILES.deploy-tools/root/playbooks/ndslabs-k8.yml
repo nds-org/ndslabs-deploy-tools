@@ -84,5 +84,5 @@
 - name: NDSLabs ApiServer and WebUI
   hosts: masters
   roles:
-    - kube-dns
+    - cluster-addon-skydns
     - ndslabs-api-gui

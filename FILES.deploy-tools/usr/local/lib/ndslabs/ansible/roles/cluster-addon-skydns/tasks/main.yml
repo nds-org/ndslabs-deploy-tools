@@ -1,4 +1,4 @@
-- name: KubeDNS| copy yaml
+- name: Cluster Addon - SkyDNS| copy yaml
   copy: src="{{ item }}" dest="/tmp/{{ item }}"
   with_items:
     - kube-system-namespace.yaml
@@ -14,10 +14,10 @@
   ignore_errors: yes
   register: dns
 
-- name: KubeDNS| create kube-system namespace
+- name: Cluster Addon - SkyDNS| create kube-system namespace
   command: kubectl create -f "/tmp/kube-system-namespace.yaml"
   when: namespace.rc != 0
 
-- name: KubeDNS| create kube-dns 
+- name: Cluster Addon - SkyDNS| create kube-dns 
   command: kubectl create -f "/tmp/kube-dns.yaml"
   when: dns.rc != 0
