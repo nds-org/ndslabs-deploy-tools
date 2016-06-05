@@ -81,7 +81,7 @@
   roles:
     - k8-glfs-server-pods
 
-- name: Kubernetes LMA
+- name: Kubernetes Cluster Addons
   hosts: masters
   roles:
     - cluster-addon-init

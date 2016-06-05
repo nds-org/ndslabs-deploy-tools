@@ -9,26 +9,38 @@ spec:
     - www.{{dns_domain}}
     secretName: ndslabs-tls-secret
   rules:
-  - host: www.{{dns_domain}}
+  - host: www.kubedash.{{dns_domain}}
     http:
       paths:
-      - path: /kubedash
-        backend:
+      - backend:
           serviceName: kubedash
-          servicePort: 30001
-      - path: /kubeui
-        backend:
+          servicePort: 80
+        path: /
+  - host: www.kubeui.{{dns_domain}}
+    http:
+      paths:
+      - backend:
           serviceName: kubernetes-dashboard
           servicePort: 80
-      - path: /prometheus
-        backend:
+        path: /
+  - host: www.prometheus.{{dns_domain}}
+    http:
+      paths:
+      - backend:
           serviceName: prometheus
           servicePort: 9090
-      - path: /kibana
-        backend:
-          serviceName: logging-kibana
+        path: /
+  - host: www.kibana.{{dns_domain}}
+    http:
+      paths:
+      - backend:
+          serviceName: kibana-logging
           servicePort: 5601
-      - path: /grafana
-        backend:
+        path: /
+  - host: www.grafana.{{dns_domain}}
+    http:
+      paths:
+      - backend:
           serviceName: monitoring-grafana
-          servicePort: 80 
+          servicePort: 80
+        path: /
