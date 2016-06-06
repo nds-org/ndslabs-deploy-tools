@@ -86,3 +86,4 @@
   roles:
     - cluster-addon-skydns
     - ndslabs-api-gui
+    - ndslabs-loadbalancer
