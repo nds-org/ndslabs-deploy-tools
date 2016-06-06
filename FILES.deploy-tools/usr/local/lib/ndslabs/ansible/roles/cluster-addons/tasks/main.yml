@@ -12,7 +12,7 @@
     
     
 - name: Cluster Addons| populate template
-  copy: src="{{ item }}.j2" dest="/tmp/{{ item }}"
+  template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
   with_items:
     - kube-system-ingress.yaml
     
