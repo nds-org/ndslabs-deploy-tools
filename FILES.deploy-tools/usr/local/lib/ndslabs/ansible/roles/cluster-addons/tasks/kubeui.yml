@@ -1,9 +1,3 @@
-- name: Cluster Addon - KubeUI| copy yaml
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
-  with_items:
-    - kube-ui.yaml
-
-
 
 ######################
 #   KubeUI

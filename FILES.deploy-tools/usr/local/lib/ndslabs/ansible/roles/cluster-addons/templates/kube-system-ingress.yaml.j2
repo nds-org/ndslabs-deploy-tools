@@ -4,40 +4,40 @@ metadata:
   name: kube-lma-ingress
   namespace: kube-system
 spec:
-  tls:
-  - hosts:
-    - www.{{dns_domain}}
-    secretName: ndslabs-tls-secret
+#  tls:
+#  - hosts:
+#    - www.{{ndslabs_domain}}
+#    secretName: ndslabs-tls-secret
   rules:
-  - host: www.kubedash.{{dns_domain}}
+  - host: www.kubedash.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: kubedash
           servicePort: 80
         path: /
-  - host: www.kubeui.{{dns_domain}}
+  - host: www.kubeui.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: kubernetes-dashboard
           servicePort: 80
         path: /
-  - host: www.prometheus.{{dns_domain}}
+  - host: www.prometheus.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: prometheus
           servicePort: 9090
         path: /
-  - host: www.kibana.{{dns_domain}}
+  - host: www.kibana.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: kibana-logging
           servicePort: 5601
         path: /
-  - host: www.grafana.{{dns_domain}}
+  - host: www.grafana.{{ndslabs_domain}}
     http:
       paths:
       - backend:

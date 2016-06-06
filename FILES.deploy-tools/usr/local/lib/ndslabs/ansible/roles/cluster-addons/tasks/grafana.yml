@@ -1,9 +1,3 @@
-- name: Cluster Profiling - Grafana| copy grafana.yaml
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
-  with_items:
-    - grafana.yaml
-
-
 
 ##########################
 #   Grafana and InfluxDB

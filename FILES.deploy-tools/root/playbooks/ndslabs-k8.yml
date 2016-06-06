@@ -84,9 +84,9 @@
 - name: Kubernetes Cluster Addons
   hosts: masters
   roles:
-    - cluster-addon-init
-    - cluster-addon-kubeui
-    - cluster-addon-kubedash
-    - cluster-addon-prometheus
-    - cluster-addon-grafana
-    - cluster-addon-kibana
+    - cluster-addons
+    
+- name: NDSLabs Ingress Loadbalancer
+  hosts: masters
+  roles:
+    - ndslabs-loadbalancer

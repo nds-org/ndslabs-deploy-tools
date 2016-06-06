@@ -1,9 +1,3 @@
-- name: Cluster Metrics - Prometheus Dashboard| copy yaml
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
-  with_items:
-    - prometheus-all.json
-    - prometheus-service.yaml
-    - pushgateway-service.yaml
 
 ###########################
 #   Prometheus Dashboard

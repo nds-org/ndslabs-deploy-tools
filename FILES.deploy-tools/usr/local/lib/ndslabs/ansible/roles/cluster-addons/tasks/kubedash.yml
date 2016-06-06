@@ -1,9 +1,3 @@
-- name: Cluster Addon - Kubernetes Dashboard| copy yaml
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
-  with_items:
-    - kube-dash.yaml
-
-
 
 ##########################
 #   Kubernetes Dashboard

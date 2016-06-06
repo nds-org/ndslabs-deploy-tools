@@ -1,10 +1,4 @@
-- name: Cluster Logging - Kibana| copy yaml
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
-  with_items:
-    - kibana.yaml
-    
-    
-    
+   
 #######################
 #  Logging: ELK (Kibana)
 # 

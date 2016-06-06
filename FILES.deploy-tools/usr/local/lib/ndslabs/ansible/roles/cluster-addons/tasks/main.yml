@@ -1,0 +1,53 @@
+- name: Cluster Addons| copy yaml
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - kube-system-namespace.yaml
+    - kube-ui.yaml
+    - kube-dash.yaml
+    - kibana.yaml
+    - grafana.yaml
+    - prometheus-all.json
+    - prometheus-service.yaml
+    - pushgateway-service.yaml
+    
+    
+- name: Cluster Addons| populate template
+  copy: src="{{ item }}.js" dest="/tmp/{{ item }}"
+  with_items:
+    - kube-system-ingress.yaml
+    
+    
+##########################################################################################################################
+# Create kube-system namespace and ingress rules
+##########################################################################################################################
+- include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/init.yml
+
+
+##########################################################################################################################
+# Start KubeUI
+##########################################################################################################################
+- include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/kubeui.yml
+
+
+##########################################################################################################################
+# Start Kubernetes Dashboard
+##########################################################################################################################
+- include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/kubedash.yml
+
+    
+##########################################################################################################################
+# Start Grafana (Monitoring)
+##########################################################################################################################
+- include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/grafana.yml
+    
+    
+##########################################################################################################################
+# Start Kibana (Logging)
+##########################################################################################################################
+- include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/kibana.yml
+
+
+##########################################################################################################################
+# Start Prometheus (Metrics)
+##########################################################################################################################
+- include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/promdash.yml

@@ -1,12 +1,3 @@
-- name: Cluster Addon init| copy yaml
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
-  with_items:
-    - kube-system-namespace.yaml
-
-- name: Cluster Addon init| populate templates
-  template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
-  with_items:
-    - kube-system-ingress.yaml
 
 ###########################
 #  Namespace: kube-system
@@ -33,4 +24,3 @@
 - name: Cluster Addon init| create kube-system ingress rules
   command: kubectl create --namespace=kube-system -f "/tmp/kube-system-ingress.yaml"
   when: ingress.rc != 0
-
