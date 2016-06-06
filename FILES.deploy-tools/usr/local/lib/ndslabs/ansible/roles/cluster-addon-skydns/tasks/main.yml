@@ -9,14 +9,14 @@
   ignore_errors: yes
   register: namespace
 
+- name: Cluster Addon - SkyDNS| create kube-system namespace
+  command: kubectl create -f "/tmp/kube-system-namespace.yaml"
+  when: namespace.rc != 0
+
 - name: DNS status
   command: kubectl get rc kube-dns-v11 --namespace=kube-system
   ignore_errors: yes
   register: dns
-
-- name: Cluster Addon - SkyDNS| create kube-system namespace
-  command: kubectl create -f "/tmp/kube-system-namespace.yaml"
-  when: namespace.rc != 0
 
 - name: Cluster Addon - SkyDNS| create kube-dns 
   command: kubectl create -f "/tmp/kube-dns.yaml"
