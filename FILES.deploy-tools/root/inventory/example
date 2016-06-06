@@ -10,7 +10,7 @@ flavor= m1.small
 kube_version= 1.2.4
 kube-ui= true                                          
 kube-dash= true
-dns_domain= example.ndslabs.org
+ndslabs_domain= example.ndslabs.org
 
 #
 # Servers 

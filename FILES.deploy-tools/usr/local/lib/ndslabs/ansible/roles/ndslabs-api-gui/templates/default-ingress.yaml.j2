@@ -5,10 +5,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - www.{{dns_domain}}
+    - www.{{ndslabs_domain}}
     secretName: ndslabs-tls-secret
   rules:
-  - host: www.{{dns_domain}}
+  - host: www.{{ndslabs_domain}}
     http:
       paths:
       - path: /api
