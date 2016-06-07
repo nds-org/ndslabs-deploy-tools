@@ -5,6 +5,7 @@
 - name: Kube UI status
   command: kubectl get svc kubernetes-dashboard --namespace=kube-system
   ignore_errors: yes
+  no_log: True
   register: kubeui
 
 - name: Cluster Addon - KubeUI| create kube-ui

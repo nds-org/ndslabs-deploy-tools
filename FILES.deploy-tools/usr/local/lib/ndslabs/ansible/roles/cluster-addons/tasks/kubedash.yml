@@ -5,6 +5,7 @@
 - name: Kube Dashboard status
   command: kubectl get svc kubedash --namespace=kube-system
   ignore_errors: yes
+  no_log: True
   register: kubedash
 
 - name: Cluster Addon - Kubernetes Dashboard| create kube-dash 

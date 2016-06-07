@@ -5,11 +5,13 @@
 - name: Prometheus Dashboard status
   command: kubectl get svc prometheus --namespace=kube-system
   ignore_errors: yes
+  no_log: True
   register: promdash
 
 - name: PushGateway status
   command: kubectl get svc pushgateway --namespace=kube-system
   ignore_errors: yes
+  no_log: True
   register: pushgateway
 
 - name: Cluster Metrics - Prometheus Dashboard| create prometheus stack
