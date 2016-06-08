@@ -1,0 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: glusterfs-client
+  labels:
+    app: glusterfs-client
+spec:
+  template:
+    metadata:
+      labels:
+        name: glusterfs-client
+    spec:
+      nodeSelector:
+        ndslabs-node-role: compute
+      hostPID: true
+      hostIPC: true
+      hostNetwork: true
+      containers:
+        - image: ndslabs/gluster:NDS-237
+          imagePullPolicy: Always
+          name: glusterfs-client
+          command: ["client", "{{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ clusterfs_vol_name }}", "{{ clusterfs_vol_path }}"]
+          lifecycle:
+            preStop:
+              exec:
+                command: ["chroot", "/media/host", "nsenter", "--mount=/proc/1/ns/mnt", "umount", "-f", "{{ clusterfs_vol_path }}"]
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: hostroot
+              mountPath: /media/host
+              readOnly: true
+            - name: run
+              mountPath: /run
+            - name: dev
+              mountPath: /dev
+            - name: var
+              mountPath: /var
+      volumes:
+        - name: hostroot
+          hostPath:
+              path: /
+        - name: run
+          hostPath:
+              path: /run
+        - name: dev
+          hostPath:
+              path: /dev
+        - name: var
+          hostPath:
+              path: /var
+

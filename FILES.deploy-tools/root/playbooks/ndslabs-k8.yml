@@ -2,6 +2,13 @@
 # NDSLabs cluster on OpenStack - HW Setup
 #
 
+- name: prepend logical cluster name for all cluster resources
+  hosts: all 
+  gather_facts: false
+  tasks:
+    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+    #- set_fact:  inventory_hostname={{ ansible_host }}
+
 - name: Pre Checks
   hosts: cluster
   gather_facts: false
@@ -33,7 +40,6 @@
   become: true
   roles:
     - pre-ansible
-    #- defunctzombie.coreos-bootstrap
 
 - name: NDSLabs environment setup
   hosts: cluster
@@ -49,12 +55,18 @@
 - name: OpenStack GLFS provision volume and attach
   hosts: glfs:&openstack
   roles: 
-    - openstack-glfs
+    - openstack-volume-attached
+    - coreos-mount
 
+- name: GLFS brick dir
+  hosts: glfs
+  become: true
+  tasks:
+    - file: path=/media/brick0/brick state=directory mode=0777
 
 - name: CoreOS Mount GLFS
   hosts: glfs:&coreos
-  roles: 
+  roes: 
     - coreos-mount
 
 - name: CoreOS Mount GLFS
@@ -66,20 +78,44 @@
 # Now to kubernetes, back again after
 ##########################################################################################################################
 - include: /usr/local/lib/kubernetes/contrib/ansible/cluster.yml
+ 
+##########################################################################################################################
+# Clean up known K8's troubles
+##########################################################################################################################
+
+- name: stop and disable kube-addons
+  hosts: masters
+  become: true
+  tasks:
+    - service: name=kube-addons state=stopped enabled=false
+
 
 ##########################################################################################################################
 # Now additional setup now that the cluster is running
 ##########################################################################################################################
 
+- name: LoadBalancer public interface
+  hosts: loadbal
+  gather_facts: false
+  connection: local
+  tasks:
+    - os_floating_ip: server="{{ inventory_hostname }}" 
+
 - name: NDSLabs initial labels
-  hosts: all
+  hosts: loadbal compute glfs
   roles:
     - ndslabs-k8-init-labels
 
-- name: NDSLabs Gluster Server
+- name: NDSLabs GLFS Global Cluster Filesystem Servers
   hosts: glfs
+  #gather_facts: false
   roles:
     - k8-glfs-server-pods
+
+- name: NDSLabs GLFS Cluster FileSystem Clients
+  hosts: nodes
+  roles:
+    - k8-glfs-client-set
 
 - name: NDSLabs Ingress Loadbalancer
   hosts: masters

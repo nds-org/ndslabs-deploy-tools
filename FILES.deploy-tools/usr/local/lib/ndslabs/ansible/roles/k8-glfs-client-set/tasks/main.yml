@@ -1,0 +1,13 @@
+
+- name: Gluster Clients DaemonSet Spec
+  template: src=gluster-client-ds.yaml.j2 dest=/tmp/gluster-client-ds.yaml
+  delegate_to: "{{ groups['masters'][0] }}"
+  register: deploy
+  run_once: true
+
+- name: Gluster Clients Deploy DaemonSet
+  command: kubectl create -f  /tmp/gluster-client-ds.yaml
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+  when:  deploy.changed
+

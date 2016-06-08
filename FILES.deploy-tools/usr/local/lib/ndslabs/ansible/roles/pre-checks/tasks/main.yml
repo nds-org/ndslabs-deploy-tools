@@ -1,6 +1,6 @@
 ---
 
-- name: hostname checks
+- name: check for bad hostname
   become: false
   connection: local
   shell: echo "{{ ansible_host }}"

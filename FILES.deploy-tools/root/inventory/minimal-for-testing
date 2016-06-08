@@ -1,5 +1,5 @@
 #
-# Cluster - NDS test setup.....   minimal for testing deployments ONLY - no runtimes
+# Cluster
 #
 [all:vars]
 logical_cluster_name=dr
