@@ -1,9 +1,8 @@
 #
-# Minimal resource usage test cluster to test deploy tooling only
-# Do not use for production or any other purpose
+# Cluster
 #
 [all:vars]
-logical_cluster_name=DEPLOYTEST
+logical_cluster_name=dr
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
 image=CoreOSAlpha

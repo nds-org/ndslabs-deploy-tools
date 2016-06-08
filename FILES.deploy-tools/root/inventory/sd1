@@ -1,8 +1,8 @@
 #
-# Cluster
+# Cluster - NDS test setup.....   minimal for testing deployments ONLY - no runtimes
 #
 [all:vars]
-logical_cluster_name=sd1
+logical_cluster_name=dr
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
 image=CoreOSAlpha
