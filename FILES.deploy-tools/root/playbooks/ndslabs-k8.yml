@@ -7,7 +7,6 @@
   gather_facts: false
   tasks:
     - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
-    #- set_fact:  inventory_hostname={{ ansible_host }}
 
 - name: Pre Checks
   hosts: cluster
@@ -66,7 +65,7 @@
 
 - name: CoreOS Mount GLFS
   hosts: glfs:&coreos
-  roes: 
+  roles: 
     - coreos-mount
 
 - name: CoreOS Mount GLFS
@@ -108,7 +107,6 @@
 
 - name: NDSLabs GLFS Global Cluster Filesystem Servers
   hosts: glfs
-  #gather_facts: false
   roles:
     - k8-glfs-server-pods
 
