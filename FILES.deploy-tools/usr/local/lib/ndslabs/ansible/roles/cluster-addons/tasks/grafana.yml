@@ -4,15 +4,13 @@
 ##########################
 - name: Grafana status
   command: kubectl get svc monitoring-grafana --namespace=kube-system
-  ignore_errors: yes
-  no_log: True
   register: grafana
+  failed_when: grafana.rc < 0
 
 - name: InfluxDB status
   command: kubectl get svc monitoring-influxdb --namespace=kube-system
-  ignore_errors: yes
-  no_log: True
   register: heapster
+  failed_when: heapster.rc < 0
 
 - name: Cluster Profiling - Grafana| create grafana stack
   command: kubectl create --namespace=kube-system -f "/tmp/grafana.yaml"

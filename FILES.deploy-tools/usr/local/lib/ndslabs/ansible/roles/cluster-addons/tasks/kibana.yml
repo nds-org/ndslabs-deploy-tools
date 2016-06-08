@@ -11,15 +11,13 @@
 #######################
 - name: Elasticsearch status
   command: kubectl get svc elasticsearch-logging --namespace=kube-system
-  ignore_errors: yes
-  no_log: True
   register: elastic
+  failed_when: elastic.rc < 0
 
 - name: Kibana status
   command: kubectl get svc kibana-logging --namespace=kube-system
-  ignore_errors: yes
-  no_log: True
   register: kibana
+  failed_when: kibana.rc < 0
 
 - name: Cluster Logging - Kibana| create kibana stack
   command: kubectl create --namespace=kube-system -f "/tmp/kibana.yaml"

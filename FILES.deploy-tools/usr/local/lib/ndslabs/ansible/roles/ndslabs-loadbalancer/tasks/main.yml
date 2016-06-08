@@ -6,13 +6,13 @@
 
 - name: Loadbalancer status
   command: kubectl get rc nginx-ilb-rc
-  ignore_errors: yes
   register: loadbalancer
+  failed_when: loadbalancer.rc < 0
 
 - name: Default-http-backend status
   command: kubectl get rc default-http-backend
-  ignore_errors: yes
   register: backend
+  failed_when: backend.rc < 0
 
 - name: Loadbalancer| create default-http-backend
   command: kubectl create -f "/tmp/default-backend.yaml"
