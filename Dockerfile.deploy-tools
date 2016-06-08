@@ -16,18 +16,16 @@ RUN 	 \
     rm -rf /var/cache/apk/* 
 
 #
-# add the k8s contrib/ansible from git
-#
-RUN mkdir -p /usr/local/lib/kubernetes/contrib && \
-    cd /usr/local/lib/kubernetes/contrib && \
-    svn checkout https://github.com/kubernetes/contrib.git/trunk/ansible && \
-    rm -rf /usr/local/lib/kubernetes/contrib/ansible/.svn
-
-#
 # Add the openstack inventory script for anisble
 #
 ADD https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/openstack.py /etc/ansible/hosts/openstack.py
 RUN chmod a+x /etc/ansible/hosts/openstack.py 
+
+#
+# NDS fork of contrib/ansible
+# 
+WORKDIR /usr/local/lib/kubernetes/contrib
+RUN svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/tags/ndslabs-1.0.0/ansible && rm -rf ansible/.svn
 
 #
 # Add the nds stuff
@@ -35,5 +33,6 @@ RUN chmod a+x /etc/ansible/hosts/openstack.py
 COPY FILES.deploy-tools /
 VOLUME /root/SAVED_AND_SENSITIVE_VOLUME
 WORKDIR /root
+
 
 CMD bash
