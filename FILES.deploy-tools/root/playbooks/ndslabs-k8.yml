@@ -85,25 +85,27 @@
 # Now additional setup now that the cluster is running
 ##########################################################################################################################
 
-#
-# This should go in the LB role
-#
 - name: LoadBalancer public interface
   hosts: loadbal
+  gather_facts: false
+  connection: local
   tasks:
-    - os_floating_ip: server="{{ ansible_host }}" 
+    - os_floating_ip: server="{{ inventory_hostname }}" 
 
 - name: NDSLabs initial labels
-  hosts: all
+  hosts: loadbal compute glfs
+  #gather_facts: false
   roles:
     - ndslabs-k8-init-labels
 
-- name: NDSLabs GLFS Global Clusterr Filesystem Servers
+- name: NDSLabs GLFS Global Cluster Filesystem Servers
   hosts: glfs
+  #gather_facts: false
   roles:
     - k8-glfs-server-pods
 
 - name: NDSLabs GLFS Cluster FileSystem Clients
-  hosts: compute
+  hosts: nodes
+  #gather_facts: false
   roles:
     - k8-glfs-client-set
