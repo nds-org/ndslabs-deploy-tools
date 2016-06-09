@@ -7,6 +7,7 @@
   gather_facts: false
   tasks:
     - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+    #- set_fact:  inventory_hostname={{ ansible_host }}
 
 - name: Pre Checks
   hosts: cluster
@@ -63,15 +64,6 @@
   tasks:
     - file: path=/media/brick0/brick state=directory mode=0777
 
-- name: CoreOS Mount GLFS
-  hosts: glfs:&coreos
-  roles: 
-    - coreos-mount
-
-- name: CoreOS Mount GLFS
-  hosts: glfs:&coreos
-  roles: 
-    - coreos-mount
 
 ##########################################################################################################################
 # Now to kubernetes, back again after
@@ -98,24 +90,34 @@
   gather_facts: false
   connection: local
   tasks:
-    - os_floating_ip: server="{{ ansible_host }}" 
+    - os_floating_ip: server="{{ inventory_hostname }}" 
 
 - name: NDSLabs initial labels
   hosts: loadbal compute glfs
+  #gather_facts: false
   roles:
     - ndslabs-k8-init-labels
 
-- name: NDSLabs GLFS Global Cluster Filesystem Servers
+<<<<<<< HEAD
+- name: NDSLabs Gluster Server
   hosts: glfs
   roles:
     - k8-glfs-server-pods
-
-- name: NDSLabs GLFS Cluster FileSystem Clients
-  hosts: nodes
-  roles:
-    - k8-glfs-client-set
 
 - name: NDSLabs Ingress Loadbalancer
   hosts: masters
   roles:
     - ndslabs-loadbalancer
+=======
+- name: NDSLabs GLFS Global Cluster Filesystem Servers
+  hosts: glfs
+  #gather_facts: false
+  roles:
+    - k8-glfs-server-pods
+
+- name: NDSLabs GLFS Cluster FileSystem Clients
+  hosts: nodes
+  #gather_facts: false
+  roles:
+    - k8-glfs-client-set
+>>>>>>> remotes/dr/237
