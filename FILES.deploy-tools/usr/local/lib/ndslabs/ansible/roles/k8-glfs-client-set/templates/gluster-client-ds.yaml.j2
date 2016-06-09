@@ -23,7 +23,7 @@ spec:
           lifecycle:
             preStop:
               exec:
-                command: ["chroot", "/media/host", "nsenter", "--mount=/proc/1/ns/mnt", "umount", "-f", "{{ clusterfs_vol_path }}"]
+                command: ["cleanup", "{{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ clusterfs_vol_name }}", "{{ clusterfs_vol_path }}"]
           securityContext:
             privileged: true
           volumeMounts:
