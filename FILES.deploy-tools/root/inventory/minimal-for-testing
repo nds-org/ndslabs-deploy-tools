@@ -2,7 +2,7 @@
 # Cluster
 #
 [all:vars]
-logical_cluster_name=dr
+logical_cluster_name=example
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
 image=CoreOSAlpha
