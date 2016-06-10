@@ -10,3 +10,9 @@
 - name: CoreOS no locksmithd
   become: true
   service: name=locksmithd state=stopped enabled=no
+
+- name: CoreOS set our timezone
+  become: true
+  command:  timedatectl set-timezone America/Chicago
+
+

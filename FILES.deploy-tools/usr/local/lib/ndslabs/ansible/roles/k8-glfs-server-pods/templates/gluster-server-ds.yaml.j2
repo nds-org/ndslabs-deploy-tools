@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glfs-config-globalfs
+  namespace: default
+data:
+  brickpath: "{{ brick_mount_path }}"
+  volname: "global"
+  endpoints: "{% for node in groups['glfs'] %}{{ hostvars[node]['ansible_ssh_host'] }}:{% endfor %}"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: glusterfs-server-globalfs
+  name: glfs-srv-global
+spec:
+  ports:
+    - port: 24007
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: glusterfs-global-cluster
+  namespace: default
+subsets:
+- addresses:
+{% for node in groups['glfs'] %}  - ip: {{ hostvars[node]['ansible_ssh_host'] }}
+{% endfor %}
+  ports:
+  - port: 24007
+    protocol: TCP
+
+
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: glusterfs-server-globalfs
+  labels:
+    app: glusterfs-server-globalfs
+spec:
+  template:
+    metadata:
+      labels:
+        name: glusterfs-server-globalfs
+    spec:
+      nodeSelector:
+        ndslabs-node-role: glfs
+      hostNetwork: true
+      containers:
+        - image: ndslabs/gluster:NDS-237
+          imagePullPolicy: Always
+          name: glusterfs-server
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: gluster-state
+              mountPath: /var/lib/glusterd
+            - name: brick0
+              mountPath: {{ brick_mount_path }}
+            - name: config-volume
+              mountPath: /etc/config
+          command:  ["/usr/sbin/glusterd", "-N", "--log-file=/dev/stdout"]
+          readinessProbe:
+            tcpSocket:
+              port: 24007
+          livenessProbe:
+            tcpSocket:
+              port: 24007
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+      volumes:
+        - name: brick0
+          hostPath:
+              path: {{ brick_mount_path }}
+        - name: gluster-state
+          hostPath:
+              path: /var/lib/glusterd
+        - name: config-volume
+          configMap:
+            name: glfs-config-globalfs
+
