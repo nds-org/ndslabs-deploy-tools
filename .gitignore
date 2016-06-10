@@ -1,3 +1,5 @@
 _output/
 nds-build/
 *.pem
+*.swp
+.bash_history

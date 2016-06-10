@@ -1,5 +1,6 @@
 HUB_IMAGES		:=	deploy-tools
 IMAGES			:=	$(HUB_IMAGES)
+#RELEASE				:=  nds223-3
 
 include Makefile.nds
 
