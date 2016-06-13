@@ -59,6 +59,8 @@
   metadata:
     labels:
       name: "kubedash"
+      kubernetes.io/cluster-service: "true"
+      kubernetes.io/name: "KubeDash"
     name: "kubedash"
     namespace: "kube-system"
   spec:

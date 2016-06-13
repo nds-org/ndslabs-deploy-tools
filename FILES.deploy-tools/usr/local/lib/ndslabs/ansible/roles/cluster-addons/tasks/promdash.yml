@@ -14,6 +14,6 @@
 
 - name: Cluster Metrics - Prometheus Dashboard| create prometheus stack
   command: kubectl create --namespace=kube-system -f "/tmp/prometheus-service.yaml" -f "/tmp/pushgateway-service.yaml" -f "/tmp/prometheus-all.json"
-  when: (promdash.rc != 0 or pushgateway.rc != 0)
+  when: enablepromdash is defined and (promdash.rc != 0 or pushgateway.rc != 0)
 
 

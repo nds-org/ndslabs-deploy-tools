@@ -9,5 +9,5 @@
 
 - name: Cluster Addon - KubeUI| create kube-ui
   command: kubectl create --namespace=kube-system -f "/tmp/kube-ui.yaml"
-  when: kubeui.rc != 0
+  when: enablekubeui is defined and kubeui.rc != 0
 

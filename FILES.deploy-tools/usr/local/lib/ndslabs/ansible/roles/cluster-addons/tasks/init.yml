@@ -1,11 +1,11 @@
 
 ###########################
-#  Namespace: kube-system
+#  Create Namespace: kube-system
 ###########################
 - name: Kube-System namespace status
   command: kubectl get ns kube-system
-  ignore_errors: yes
   register: namespace
+  failed_when: namespace.rc < 0
   
 - name: Cluster Addon init| create kube-system namespace
   command: kubectl create -f "/tmp/kube-system-namespace.yaml"
@@ -13,13 +13,13 @@
 
 
 ################################
-#  Ingress Rules: kube-system
+#  Create Ingress Rules: kube-lma-ingress
 ################################
 - name: Kube-System ingress status
   command: kubectl get ing kube-lma-ingress --namespace=kube-system
   register: ingress
   failed_when: ingress.rc < 0
 
-- name: Cluster Addon init| create kube-system ingress rules
+- name: Cluster Addon init| create kube-lma-ingress rules
   command: kubectl create --namespace=kube-system -f "/tmp/kube-system-ingress.yaml"
   when: ingress.rc != 0

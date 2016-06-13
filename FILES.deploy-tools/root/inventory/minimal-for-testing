@@ -15,10 +15,17 @@ ndslabs_domain= {{logical_cluster_name}}.ndslabs.org
 #
 # Some optional things
 # 
-cluster_monitoring=false
-cluster_logging=false
-kube-dash=false
-kube-ui=false
+
+# Cluster Logging: Kibana
+enablekibana=true
+
+# Cluster Monitoring: Grafana / Prometheus
+enablegrafana=true
+#enablepromdash=true
+
+# KubeUI / Kubernetes Dashboard
+#enablekubeui=true
+enablekubedash=true
 
 #
 # Servers 

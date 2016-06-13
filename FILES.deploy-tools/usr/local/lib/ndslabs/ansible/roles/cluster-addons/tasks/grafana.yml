@@ -14,4 +14,4 @@
 
 - name: Cluster Profiling - Grafana| create grafana stack
   command: kubectl create --namespace=kube-system -f "/tmp/grafana.yaml"
-  when: (grafana.rc != 0 or heapster.rc != 0)
+  when: enablegrafana is defined and (grafana.rc != 0 or heapster.rc != 0)

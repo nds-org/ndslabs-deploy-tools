@@ -9,6 +9,6 @@
 
 - name: Cluster Addon - Kubernetes Dashboard| create kube-dash 
   command: kubectl create --namespace=kube-system -f "/tmp/kube-dash.yaml"
-  when: kube-dash == "true" and kubedash.rc != 0
+  when: enablekubedash is defined and kubedash.rc != 0
 
 

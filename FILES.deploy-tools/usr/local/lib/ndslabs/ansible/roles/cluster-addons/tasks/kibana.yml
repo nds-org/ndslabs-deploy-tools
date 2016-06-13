@@ -21,5 +21,5 @@
 
 - name: Cluster Logging - Kibana| create kibana stack
   command: kubectl create --namespace=kube-system -f "/tmp/kibana.yaml"
-  when: (elastic.rc != 0 or kibana.rc != 0)
+  when: enablekibana is defined and (elastic.rc != 0 or kibana.rc != 0)
 
