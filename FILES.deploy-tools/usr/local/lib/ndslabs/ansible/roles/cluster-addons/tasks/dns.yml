@@ -1,11 +1,11 @@
 
 ######################
-#   KubeUI
+#   KubeDNS
 ######################
 - name: DNS status
   command: kubectl get rc kube-dns-v11 --namespace=kube-system
-  ignore_errors: yes
   register: dns
+  failed_when: dns.rc < 0
 
 - name: Cluster Addon - SkyDNS| create kube-dns 
   command: kubectl create -f "/tmp/kube-dns.yaml"
