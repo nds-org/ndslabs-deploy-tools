@@ -78,12 +78,11 @@
 ##########################################################################################################################
 # Clean up known K8's troubles
 ##########################################################################################################################
-
-- name: stop and disable kube-addons
-  hosts: masters
-  become: true
-  tasks:
-    - service: name=kube-addons state=stopped enabled=false
+#- name: stop and disable kube-addons
+#  hosts: masters
+#  become: true
+#  tasks:
+#    - service: name=kube-addons state=stopped enabled=false
 
 
 ##########################################################################################################################
