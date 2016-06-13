@@ -1,0 +1,24 @@
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"pushgateway",
+        "labels":{
+            "name":"pushgateway",
+            "kubernetes.io/cluster-service": "true",
+            "kubernetes.io/name": "PushGateway"
+        }
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9091,
+            "targetPort":9091,
+                "protocol":"TCP"
+        }],
+        "selector":{
+            "name":"kube-prometheus"
+        }
+    }
+}

@@ -1,9 +1,13 @@
 #FROM ubuntu:xenial
 FROM alpine:3.3
 
+#
+# Add the tools
+# 
 RUN 	 \
     apk add --update python python-dev py-pip \
     wget curl \
+	subversion \
 	bash vim nano \
 	build-base linux-headers libffi-dev openssl-dev \
 	openssh-client && \
@@ -11,12 +15,24 @@ RUN 	 \
     apk del build-base python-dev libffi-dev openssl-dev linux-headers &&\
     rm -rf /var/cache/apk/* 
 
-
+#
+# Add the openstack inventory script for anisble
+#
 ADD https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/openstack.py /etc/ansible/hosts/openstack.py
 RUN chmod a+x /etc/ansible/hosts/openstack.py 
 
+#
+# NDS fork of contrib/ansible
+# 
+WORKDIR /usr/local/lib/kubernetes/contrib
+RUN svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/tags/ndslabs-1.0.1/ansible && rm -rf ansible/.svn
+
+#
+# Add the nds stuff
+# 
 COPY FILES.deploy-tools /
 VOLUME /root/SAVED_AND_SENSITIVE_VOLUME
 WORKDIR /root
+
 
 CMD bash

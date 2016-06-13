@@ -1,25 +1,41 @@
 #
-# Cluster - NDS test setup.....   minimal for testing deployments ONLY - no runtimes
+# Cluster
 #
 [all:vars]
-logical_cluster_name=dr
+logical_cluster_name=example
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
+<<<<<<< HEAD:FILES.deploy-tools/root/inventory/example
+key_name= k1
+image= CoreOSAlpha
+flavor= m1.small
+kube_version= 1.2.4
+kube-ui= true                                          
+kube-dash= true
+ndslabs_domain= example.ndslabs.org
+=======
 image=CoreOSAlpha
 flavor=m1.small
 kube_version=1.2.4
-kube-ui=true                                          
-kube-dash=true
 key_name={{logical_cluster_name}}
 cluster_fs_hostpath=/media/glfs 
+ndslabs_domain= {{logical_cluster_name}}.ndslabs.org
 
 #
 # Some optional things
 # 
-cluster_monitoring=false
-cluster_logging=false
-kube-dash=false
-kube-ui=false
+
+# Cluster Logging: Kibana
+#enablekibana=true
+
+# Cluster Monitoring: Grafana / Prometheus
+enablegrafana=true
+#enablepromdash=true
+
+# KubeUI / Kubernetes Dashboard
+#enablekubeui=true
+enablekubedash=true
+>>>>>>> 503d9f9729ac76df2116be35f4b77cf3f2045faa:FILES.deploy-tools/root/inventory/minimal-for-testing
 
 #
 # Servers 
@@ -69,7 +85,7 @@ loadbal
 # Cluster-Specific Group Variables/overrides
 #
 [glfs:vars]
-vol_size= 200
+vol_size= 20
 vol_name= brick0
 brick_mount_path= /media/brick0
 service_name=media-brick0.mount

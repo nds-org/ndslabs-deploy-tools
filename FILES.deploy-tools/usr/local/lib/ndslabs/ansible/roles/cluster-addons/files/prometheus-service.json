@@ -1,0 +1,24 @@
+{
+    "kind":"Service",
+    "apiVersion":"v1",
+    "metadata":{
+        "name":"prometheus",
+        "labels":{
+            "name":"prometheus",
+            "kubernetes.io/cluster-service": "true",
+            "kubernetes.io/name": "Prometheus"
+        }
+    },
+    "spec":{
+        "type": "NodePort",
+        "ports": [
+        {
+            "port":9090,
+            "targetPort":9090,
+                "protocol":"TCP"
+        }],
+        "selector":{
+            "name":"kube-prometheus"
+        }
+    }
+}
