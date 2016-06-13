@@ -1,23 +1,23 @@
 - name: NDSLabs| copy yaml
   template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
   with_items:
-    - default-ingress.yaml
+    - ndslabs-ingress.yaml
     - ndslabs-apiserver.yaml
     - ndslabs-webui.yaml
 
 - name: Ingress status
   command: kubectl get ing ndslabs-ingress
-  ignore_errors: yes
   register: ingress
+  failed_when: ingress.rc < 0
 
-- name: NDSLabs| create default-ingress
-  command: kubectl create -f "/tmp/default-ingress.yaml"
+- name: NDSLabs| create ndslabs-ingress
+  command: kubectl create -f "/tmp/ndslabs-ingress.yaml"
   when: ingress.rc != 0
 
 - name: ApiServer status
   command: kubectl get rc ndslabs-apiserver
-  ignore_errors: yes
   register: apiserver
+  failed_when: apiserver.rc < 0
 
 - name: NDSLabs| create ndslabs-apiserver
   command: kubectl create -f "/tmp/ndslabs-apiserver.yaml"
@@ -25,8 +25,8 @@
 
 - name: WebUI status
   command: kubectl get rc ndslabs-gui
-  ignore_errors: yes
   register: webui
+  when: webui.rc < 0
 
 - name: NDSLabs| create ndslabs-gui
   command: kubectl create -f "/tmp/ndslabs-webui.yaml"
