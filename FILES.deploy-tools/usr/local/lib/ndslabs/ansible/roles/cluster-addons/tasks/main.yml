@@ -2,6 +2,7 @@
   copy: src="{{ item }}" dest="/tmp/{{ item }}"
   with_items:
     - kube-system-namespace.yaml
+    - kube-dns.yaml
     - kube-ui.yaml
     - kube-dash.yaml
     - kibana.yaml
@@ -21,6 +22,12 @@
 # Create kube-system namespace and ingress rules
 ##########################################################################################################################
 - include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/init.yml
+
+
+##########################################################################################################################
+# Start KubeDNS
+##########################################################################################################################
+- include: /usr/local/lib/ndslabs/ansible/roles/cluster-addons/tasks/dns.yml
 
 
 ##########################################################################################################################
