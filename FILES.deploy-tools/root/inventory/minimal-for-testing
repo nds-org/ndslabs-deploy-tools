@@ -17,7 +17,7 @@ ndslabs_domain= {{logical_cluster_name}}.ndslabs.org
 # 
 
 # Cluster Logging: Kibana
-enablekibana=true
+#enablekibana=true
 
 # Cluster Monitoring: Grafana / Prometheus
 enablegrafana=true
