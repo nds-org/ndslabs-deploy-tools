@@ -7,8 +7,8 @@
     - kibana.yaml
     - grafana.yaml
     - prometheus-all.json
-    - prometheus-service.yaml
-    - pushgateway-service.yaml
+    - prometheus-service.json
+    - pushgateway-service.json
     
     
 - name: Cluster Addons| populate template
