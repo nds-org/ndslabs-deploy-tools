@@ -2,6 +2,12 @@
 # NDSLabs cluster on OpenStack - HW Setup
 #
 
+- name: prepend logical cluster name for all cluster resources
+  hosts: all 
+  gather_facts: false
+  tasks:
+    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+    
 - name: Pre Checks
   hosts: cluster
   gather_facts: false

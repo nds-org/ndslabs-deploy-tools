@@ -2,15 +2,14 @@
 ###########################
 #  Namespace: kube-system
 ###########################
-- name: Kube-System namespace delete
-  command: kubectl delete ns kube-system
+- name: Kube-System namespace status
+  command: kubectl get ns kube-system
   ignore_errors: yes
   register: namespace
-  failed_when: namespace.rc < 0
-
+  
 - name: Cluster Addon init| create kube-system namespace
   command: kubectl create -f "/tmp/kube-system-namespace.yaml"
-
+  when: namespace.rc != 0
 
 
 ################################
