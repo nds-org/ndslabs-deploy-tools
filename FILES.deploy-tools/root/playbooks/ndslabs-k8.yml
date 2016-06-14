@@ -8,12 +8,14 @@
   tasks:
     - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
     
+# Verify OpenStack credentials / check for bad hostname
 - name: Pre Checks
   hosts: cluster
   gather_facts: false
   roles: 
     - pre-checks
 
+# Create or reuse existing SSH key
 - name: OpenStack Key
   hosts: cluster
   gather_facts: false
@@ -21,18 +23,21 @@
   roles: 
     - openstack-key
 
+# Create security groups for the loadbalancer
 - name: OpenStack LoadBalancer Security Group
   hosts: publicip
   gather_facts: false
   roles: 
     - openstack-securitygroup-open
 
+# Grab private IPs and wait for host up
 - name: NDSLabs OpenStack Cluster
   hosts: cluster
   gather_facts: false
   roles: 
     - openstack-system
 
+# Prepare CoreOS nodes to execute ansible (install pypy, etc)
 - name: CoreOS Setup
   hosts: cluster
   gather_facts: false
@@ -40,29 +45,33 @@
   roles:
     - pre-ansible
 
+# Create a base /etc/hosts file
 - name: NDSLabs environment setup
   hosts: cluster
   become: true
   roles:
     - cluster-addrs-etc-hosts
 
+# Update /etc/hosts for localhost and disable update-engine/locksmithd
 - name: CoreOS NDSLabs Preferences
   hosts: coreos
   roles:
     - coreos-ndslabs-devsystem
 
+# Provision and attach OpenStack volume to glfs nodes
 - name: OpenStack GLFS provision volume and attach
   hosts: glfs:&openstack
   roles: 
     - openstack-volume-attached
-    - coreos-mount
 
+# Create brick directory on glfs nodes
 - name: GLFS brick dir
   hosts: glfs
   become: true
   tasks:
     - file: path=/media/brick0/brick state=directory mode=0777
 
+# Mount OpenStack volume to CoreOS glfs nodes
 - name: CoreOS Mount GLFS
   hosts: glfs:&coreos
   roles: 
@@ -73,22 +82,13 @@
 # Now to kubernetes, back again after
 ##########################################################################################################################
 - include: /usr/local/lib/kubernetes/contrib/ansible/cluster.yml
- 
- 
-##########################################################################################################################
-# Clean up known K8's troubles
-##########################################################################################################################
-#- name: stop and disable kube-addons
-#  hosts: masters
-#  become: true
-#  tasks:
-#    - service: name=kube-addons state=stopped enabled=false
 
 
 ##########################################################################################################################
 # Now additional setup now that the cluster is running
 ##########################################################################################################################
 
+# Associate a public IP to the loadbalancer
 - name: LoadBalancer public interface
   hosts: loadbal
   gather_facts: false
@@ -96,26 +96,31 @@
   tasks:
     - os_floating_ip: server="{{ ansible_host }}" 
 
+# Apply Kubernetes node labels
 - name: NDSLabs initial labels
   hosts: loadbal compute glfs
   roles:
     - ndslabs-k8-init-labels
 
+# Deploy glfs server daemonset
 - name: NDSLabs GLFS Global Cluster Filesystem Servers
   hosts: glfs
   roles:
     - k8-glfs-server-pods
     
+# Deploy glfs client daemonset
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: nodes
   roles:
     - k8-glfs-client-set
 
+# Deploy Kubernetes Addons: DNS + LMA
 - name: Kubernetes Cluster Addons
   hosts: masters
   roles:
     - cluster-addons
-    
+  
+# Deploy NDS Labs and LoadBalancer  
 - name: Start NDS Labs ApiServer and WebUI
   hosts: masters
   roles:
