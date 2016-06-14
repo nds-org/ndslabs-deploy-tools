@@ -13,7 +13,7 @@
   failed_when: pushgateway.rc < 0
 
 - name: Cluster Metrics - Prometheus Dashboard| create prometheus stack
-  command: kubectl create --namespace=kube-system -f "/tmp/prometheus-service.yaml" -f "/tmp/pushgateway-service.yaml" -f "/tmp/prometheus-all.json"
+  command: kubectl create --namespace=kube-system -f "/tmp/prometheus-service.json" -f "/tmp/pushgateway-service.json" -f "/tmp/prometheus-all.json"
   when: enablepromdash is defined and (promdash.rc != 0 or pushgateway.rc != 0)
 
 
