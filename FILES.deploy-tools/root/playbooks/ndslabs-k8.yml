@@ -7,7 +7,7 @@
   gather_facts: false
   tasks:
     - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
-
+    
 - name: Pre Checks
   hosts: cluster
   gather_facts: false
@@ -67,26 +67,22 @@
   hosts: glfs:&coreos
   roles: 
     - coreos-mount
-
-- name: CoreOS Mount GLFS
-  hosts: glfs:&coreos
-  roles: 
-    - coreos-mount
+    
 
 ##########################################################################################################################
 # Now to kubernetes, back again after
 ##########################################################################################################################
 - include: /usr/local/lib/kubernetes/contrib/ansible/cluster.yml
  
+ 
 ##########################################################################################################################
 # Clean up known K8's troubles
 ##########################################################################################################################
-
-- name: stop and disable kube-addons
-  hosts: masters
-  become: true
-  tasks:
-    - service: name=kube-addons state=stopped enabled=false
+#- name: stop and disable kube-addons
+#  hosts: masters
+#  become: true
+#  tasks:
+#    - service: name=kube-addons state=stopped enabled=false
 
 
 ##########################################################################################################################
@@ -109,12 +105,17 @@
   hosts: glfs
   roles:
     - k8-glfs-server-pods
-
+    
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: nodes
   roles:
     - k8-glfs-client-set
 
+- name: Kubernetes Cluster Addons
+  hosts: masters
+  roles:
+    - cluster-addons
+    
 - name: NDSLabs Ingress Loadbalancer
   hosts: masters
   roles:

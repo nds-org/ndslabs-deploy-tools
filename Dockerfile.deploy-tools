@@ -25,7 +25,7 @@ RUN chmod a+x /etc/ansible/hosts/openstack.py
 # NDS fork of contrib/ansible
 # 
 WORKDIR /usr/local/lib/kubernetes/contrib
-RUN svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/tags/ndslabs-1.0.0/ansible && rm -rf ansible/.svn
+RUN svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/tags/ndslabs-1.0.1/ansible && rm -rf ansible/.svn
 
 #
 # Add the nds stuff
