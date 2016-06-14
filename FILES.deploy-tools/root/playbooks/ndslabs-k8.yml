@@ -121,7 +121,7 @@
     - cluster-addons
   
 # Deploy NDS Labs and LoadBalancer  
-- name: Start NDS Labs ApiServer and WebUI
+- name: Start NDSLabs ApiServer and WebUI
   hosts: masters
   roles:
     - ndslabs-api-gui
