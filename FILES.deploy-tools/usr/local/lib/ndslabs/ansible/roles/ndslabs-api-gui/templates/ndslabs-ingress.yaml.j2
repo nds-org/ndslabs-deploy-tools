@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ndslabs-ingress
+spec:
+#  tls:
+#  - hosts:
+#    - www.{{ndslabs_domain}}
+#    secretName: ndslabs-tls-secret
+  rules:
+  - host: www.{{ndslabs_domain}}
+    http:
+      paths:
+      - path: /api
+        backend:
+          serviceName: ndslabs-apiserver
+          servicePort: 30001
+      - path: /
+        backend:
+          serviceName: ndslabs-gui
+          servicePort: 80

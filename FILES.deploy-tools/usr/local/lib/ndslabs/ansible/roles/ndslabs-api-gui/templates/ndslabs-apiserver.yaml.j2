@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndslabs-apiserver
+  labels:
+    component: ndslabs-apiserver
+spec:
+  selector:
+    component: ndslabs-apiserver
+  ports:
+    - port: 30001
+      protocol: TCP
+#      nodePort: 30001
+#  type: NodePort
+----
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ndslabs-apiserver
+spec:
+  replicas: 1
+  selector:
+    component: ndslabs-apiserver
+  template:
+    metadata:
+      labels:
+        component: ndslabs-apiserver
+    spec:
+      containers:
+      - name: ndslabs-apiserver
+        image: ndslabs/apiserver:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 30001
+          protocol: TCP
+        volumeMounts:
+          - name: volumes
+            mountPath: /ndslabs/data/volumes
+        env:
+          - name: ETCD_ADDR
+            value: "{{ ansible_default_ipv4.address }}:2379"
+          - name: KUBERNETES_ADDR
+            value: "https://{{ ansible_default_ipv4.address }}:443"
+          - name: CORS_ORIGIN_ADDR
+            value: "https://www.{{ndslabs_domain}}"
+          - name: SPEC_GIT_REPO
+            value: "https://github.com/nds-org/ndslabs-specs.git"
+          - name: SPEC_GIT_BRANCH
+            value: "master"
+          - name: INGRESS
+            value: "LoadBalancer"
+          - name: DOMAIN
+            value: "{{ndslabs_domain}}"
+          - name: VOLUME_PATH
+            value: "/ndslabs/data/volumes"
+      volumes:
+       - hostPath:
+            path: /ndslabs/data/volumes
+         name: volumes
+      nodeSelector:
+          ndslabs-node-role: compute

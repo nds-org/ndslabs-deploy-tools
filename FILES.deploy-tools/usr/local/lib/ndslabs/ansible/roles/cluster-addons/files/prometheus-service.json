@@ -2,9 +2,9 @@
     "kind":"Service",
     "apiVersion":"v1",
     "metadata":{
-        "name":"prometheus",
+        "name":"promdash",
         "labels":{
-            "name":"prometheus",
+            "name":"promdash",
             "kubernetes.io/cluster-service": "true",
             "kubernetes.io/name": "Prometheus"
         }
