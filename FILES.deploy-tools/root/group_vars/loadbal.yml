@@ -1,2 +1,3 @@
 ---
 k8_initial_labels: "ndslabs-node-role=loadbalancer"
+security_groups: "default,remote HTTP,HTTPS"
