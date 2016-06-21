@@ -6,7 +6,7 @@ logical_cluster_name=example
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
 image=CoreOSAlpha
-flavor=m1.small
+flavor=m1.medium
 kube_version=1.2.4
 key_name={{logical_cluster_name}}
 cluster_fs_hostpath=/media/glfs 
@@ -42,6 +42,9 @@ gfs[1:4]
 [compute]
 node1
 
+[monitor]
+lma
+
 [loadbal]
 loadbal
 
@@ -54,6 +57,7 @@ loadbal
 glfs
 compute
 loadbal
+monitor
 
 #all nodes
 [cluster:children]

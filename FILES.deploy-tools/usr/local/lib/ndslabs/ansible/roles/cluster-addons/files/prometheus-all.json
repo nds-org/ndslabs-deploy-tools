@@ -19,6 +19,9 @@
                 }
             },
             "spec": {
+                "nodeSelector" : {
+                  "ndslabs-node-role": "lma"  
+                },
                 "containers": [
                     {
                         "image": "prom/promdash",

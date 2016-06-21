@@ -98,7 +98,7 @@
 
 # Apply Kubernetes node labels
 - name: NDSLabs initial labels
-  hosts: loadbal compute glfs
+  hosts: nodes
   roles:
     - ndslabs-k8-init-labels
 

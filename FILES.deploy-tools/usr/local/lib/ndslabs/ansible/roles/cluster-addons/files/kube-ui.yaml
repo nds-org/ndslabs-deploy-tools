@@ -39,6 +39,8 @@ spec:
         version: v1.0.1
         kubernetes.io/cluster-service: "true"
     spec:
+      nodeSelector:
+          ndslabs-node-role: lma
       containers:
       - name: kubernetes-dashboard
         image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.0.1
