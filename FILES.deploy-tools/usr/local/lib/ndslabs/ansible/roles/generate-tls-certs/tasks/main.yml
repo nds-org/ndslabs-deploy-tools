@@ -1,0 +1,65 @@
+# Save certificate directory for later
+- name: Store certificate directory
+  connection: local
+  set_fact:
+    cert_path: "{{ key_path }}/certs"
+
+# Ensure certificate directory exists
+- file: path={{ cert_path }} state=directory mode=0755
+  connection: local
+
+# Check if a .key file exists. If it does, skip generation and reuse it
+- stat: path="{{ cert_path }}/ndslabs.key"
+  connection: local
+  register: keyfile
+
+# If no .key exists, generate a new one
+- name: Generate TLS certificates| Generate .key
+  connection: local
+  command: openssl genrsa 2048 
+  register: newkey 
+  when: keyfile.stat.exists == False
+ 
+# If we generated a new key, copy it to the certificates directory
+- local_action: copy content={{ newkey.stdout }} dest="{{ cert_path }}/ndslabs.key"
+  when: newkey.changed
+
+# Check if a .cert file exists. If it does, skip generation and reuse it
+- stat: path="{{ cert_path }}/ndslabs.cert"
+  connection: local
+  register: certfile
+  
+# If no .cert exists, generate a new one using the .key from above
+- name: Generate TLS certificates| Generate .cert
+  connection: local
+  command: openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.ndslabs.org" -key "{{ cert_path }}/ndslabs.key" -out "{{ cert_path }}/ndslabs.cert"
+  register: newcert
+  when: newkey.changed or certfile.stat.exists == False
+
+# Check if a .info file exists. If it does, skip generation and reuse it
+- stat: path="{{ cert_path }}/ndslabs.info"
+  connection: local
+  register: infofile
+
+# If no .info exists, generate a new one using the .cert from above
+- name: Generate TLS certificates| Generate .info
+  connection: local
+  command: openssl x509 -noout -fingerprint -text -in {{ cert_path }}/ndslabs.cert -out {{ cert_path }}/ndslabs.info
+  register: newinfo
+  when: newcert.changed or infofile.stat.exists == False
+
+# Check if a .pem file exists. If it does, skip generation and reuse it
+- stat: path="{{ cert_path }}/ndslabs.pem"
+  connection: local
+  register: pemfile
+  
+# If no .pem exists, generate a new one using the .key and .cert from above
+- name: Generate TLS certificates| Generate .pem
+  connection: local
+  command: cat "{{ cert_path }}/ndslabs.cert" "{{ cert_path }}/ndslabs.key"
+  register: newpem
+  when: newkey.changed or newcert.changed or pemfile.stat.exists == False
+  
+# Write out the result to a .pem file if one was created
+- local_action: copy content={{ newpem.stdout }} dest="{{ cert_path }}/ndslabs.pem"
+  when: newpem.changed

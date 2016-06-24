@@ -13,6 +13,19 @@
 
 
 ################################
+#  Create TLS Secret: ndslabs-tls-secret
+################################
+- name: Secret status - kube-system
+  command: kubectl get secret ndslabs-tls-secret --namespace=kube-system
+  register: kubesyssecret
+  failed_when: kubesyssecret.rc < 0
+
+- name: NDSLabs TLS Secret| create ndslabs-tls-secret - kube-system
+  command: kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt=/tmp/ndslabs.cert --from-file=tls.key=/tmp/ndslabs.key --namespace=kube-system
+  when: kubesyssecret.rc != 0
+
+
+################################
 #  Create Ingress Rules: kube-lma-ingress
 ################################
 - name: Kube-System ingress status
@@ -23,3 +36,5 @@
 - name: Cluster Addon init| create kube-lma-ingress rules
   command: kubectl create --namespace=kube-system -f "/tmp/kube-system-ingress.yaml"
   when: ingress.rc != 0
+  
+  
