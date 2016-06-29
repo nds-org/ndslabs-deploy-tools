@@ -1,0 +1,77 @@
+#
+# Cluster
+#
+[all:vars]
+logical_cluster_name=example
+cluster_name=cluster.local
+native_dns=os.ncsa.edu
+image=CoreOSAlpha
+flavor=m1.small
+kube_version=1.2.4
+key_name={{logical_cluster_name}}
+cluster_fs_hostpath=/media/glfs 
+ndslabs_domain= {{logical_cluster_name}}
+
+#
+# Some optional things
+# 
+#enablegrafana=true
+#enablepromdash=true
+
+#enablekibana=true
+
+#enablekubedash=true
+#enablekubeui=true
+
+#
+# Servers 
+#
+[masters]
+develop
+
+[etcd:children]
+masters
+
+[loadbal:children]
+dev
+
+[compute:children]
+dev
+
+#[glfs]
+#dev
+
+[dev]
+develop
+
+#
+# Groups - assigned according to roles
+#
+
+#Compute nodes
+[nodes:children]
+loadbal
+compute
+#glfs
+
+#all nodes
+[cluster:children]
+nodes
+masters
+etcd
+
+[all:children]
+cluster
+
+[openstack:children]
+cluster
+[coreos:children]
+cluster
+[publicip:children]
+dev
+
+#
+# Cluster-Specific Group Variables/overrides
+#
+
+

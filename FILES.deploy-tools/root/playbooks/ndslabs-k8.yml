@@ -118,9 +118,9 @@
     
 # Deploy glfs client daemonset
 - name: NDSLabs GLFS Cluster FileSystem Clients
-  hosts: nodes
+  hosts: compute
   roles:
-    - k8-glfs-client-set
+    - { role: k8-glfs-client-set, when: "'glfs' in group_names" }
     
 # Import TLS certs as kubernetes secrets
 - name: Create TLS secret
