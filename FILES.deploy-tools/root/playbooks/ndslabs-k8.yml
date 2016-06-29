@@ -124,7 +124,7 @@
     
 # Import TLS certs as kubernetes secrets
 - name: Create TLS secret
-  hosts: master
+  hosts: masters
   run_once: true
   roles: 
     - k8-tls-secret
