@@ -54,6 +54,8 @@ spec:
         version: v1
         kubernetes.io/cluster-service: "true"
     spec:
+      nodeSelector:
+          ndslabs-node-role: lma
       containers:
       - image: gcr.io/google_containers/elasticsearch:1.8
         name: elasticsearch-logging         
@@ -98,6 +100,8 @@ spec:
         version: v1
         kubernetes.io/cluster-service: "true"
     spec:
+      nodeSelector:
+          ndslabs-node-role: lma
       containers:
       - name: kibana-logging
         image: gcr.io/google_containers/kibana:1.3

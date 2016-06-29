@@ -73,6 +73,8 @@ spec:
         k8s-app: heapster
         version: v1.1.0.beta2
     spec:
+      nodeSelector:
+          ndslabs-node-role: lma
       containers:
         - image: gcr.io/google_containers/heapster:v1.1.0-beta2
           name: heapster
@@ -180,6 +182,8 @@ spec:
         version: v3
         kubernetes.io/cluster-service: "true"
     spec: 
+      nodeSelector:
+          ndslabs-node-role: lma
       containers: 
         - image: gcr.io/google_containers/heapster_influxdb:v0.5
           name: influxdb
