@@ -112,7 +112,7 @@
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: compute
   roles:
-    - { roles: k8-glfs-client-set, when: "'glfs' in group_names" }
+    - { role: k8-glfs-client-set, when: "'glfs' in group_names" }
 
 # Deploy Kubernetes Addons: DNS + LMA
 - name: Kubernetes Cluster Addons
