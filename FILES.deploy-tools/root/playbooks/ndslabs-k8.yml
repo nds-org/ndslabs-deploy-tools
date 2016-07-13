@@ -22,6 +22,14 @@
   run_once: true
   roles: 
     - openstack-key
+    
+# Create or reuse existing TLS certs
+- name: Generate TLS certificates
+  hosts: cluster
+  gather_facts: false
+  run_once: true
+  roles: 
+    - generate-tls-certs
 
 # Create security groups for the loadbalancer
 - name: OpenStack LoadBalancer Security Group
@@ -113,6 +121,13 @@
   hosts: compute
   roles:
     - { role: k8-glfs-client-set, when: "'glfs' in group_names" }
+    
+# Import TLS certs as kubernetes secrets
+- name: Create TLS secret
+  hosts: masters
+  run_once: true
+  roles: 
+    - k8-tls-secret
 
 # Deploy Kubernetes Addons: DNS + LMA
 - name: Kubernetes Cluster Addons
