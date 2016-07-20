@@ -26,7 +26,7 @@ spec:
       volumes:
         - name: image-store
           hostPath:
-              path: /mnt/sda1/docker-registry
+              path: /var/glfs/global/docker-registry
         - name: config
           configMap:
               name: docker-registry-config

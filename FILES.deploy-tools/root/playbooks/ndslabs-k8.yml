@@ -104,11 +104,24 @@
   tasks:
     - os_floating_ip: server="{{ ansible_host }}" 
 
+# Make kubectl work local
+# After this you can use  {{ kubectl }} create -f <...>
+- name: Get master kube config and register kubectl with the configuration
+  hosts: master1
+  roles:
+    - k8s-local-kubectl
+
 # Apply Kubernetes node labels
 - name: NDSLabs initial labels
   hosts: nodes
   roles:
     - ndslabs-k8-init-labels
+
+# Add the cluster-local registry, mapped to all hosts on localhost:5000
+- name: cluster-local-docker-registry
+  hosts: master1
+  roles:
+    - k8s-local-docker-registry
 
 # Deploy glfs server daemonset
 - name: NDSLabs GLFS Global Cluster Filesystem Servers

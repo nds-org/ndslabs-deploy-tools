@@ -1,24 +1,23 @@
 ---
 
-- name: Make a local dir for the cluster info
-  become: false
-  connection: local
-  file: state=directory path=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }} mode=0755
-
 - name: pull the kubeconfig from the master
-  become: true
-  fetch: src=/etc/kubernetes/kubectl.kubeconfig dest=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/kubectl.kubeconfig
+  fetch: src="{{ item }}" dest=/root/SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}
+  with_items:
+    - /etc/hosts 
+    - /etc/kubernetes/kubectl.kubeconfig   
+    - /etc/kubernetes/config
+    - /etc/kubernetes/apiserver
 
-- name: Pull the hostsfile for the initial provisioning
-  become: true
-  fetch: src=/etc/hosts dest=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/etc_hosts
+#
+# This relies on the clusters added to /etc/hosts from local-etc-hosts-cluster-include
+#
+- name: set kubectl command
+  set_fact: 
+    kubectl: "kubectl --kubeconfig=/root/SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name}}/{{ inventory_hostname }}/etc/kubernetes/kubectl.kubeconfig"
 
-- name: kube config exists locally
-  become: false
+#
+# should be blockinfile prolly elsewhere
+#
+- name: Cluster hosts/IP in local hosts
   connection: local
-  local_action: shell mkdir -p SAVED_AND_SENSITIVE_VOLUME/kubeconfig && ln -s SAVED_AND_SENSITIVE_VOLUME/kubeconfig .kube
-
-- name: Replace the host name with the address and put in .kube/config
-  connection: local
-  become: false
-  local_action:  shell $( grep "{{ groups['masters'][0] }}" SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/etc_hosts | awk '{printf("sed -e s/%s/%s/", $2,$1)}') SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/kubectl.kubeconfig >>  .kube/confi
+  local_action: shell cat /root/SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name}}/{{ inventory_hostname }}/etc/hosts >> /etc/hosts
