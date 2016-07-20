@@ -1,31 +1,24 @@
+---
 
 - name: Make a local dir for the cluster info
-  hosts:  "{{ groups['masters'][0] }}"
   become: false
   connection: local
-  shell: mkdir -p SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}
+  file: state=directory path=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }} mode=0755
 
 - name: pull the kubeconfig from the master
-  hosts:  "{{ groups['masters'][0] }}"
   become: true
-  fetch: 
-    src=/etc/kubernetes/kubectl.kubeconfig dest=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/kubectl.kubeconfig
+  fetch: src=/etc/kubernetes/kubectl.kubeconfig dest=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/kubectl.kubeconfig
 
 - name: Pull the hostsfile for the initial provisioning
-  hosts:  "{{ groups['masters'][0] }}"
   become: true
-  fetch: 
-    src=/etc/hosts dest=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/etc_hosts
+  fetch: src=/etc/hosts dest=SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/etc_hosts
 
 - name: kube config exists locally
   become: false
   connection: local
-  hosts:  "{{ groups['masters'][0] }}"
-  local_action:
-    shell:  mkdir -p SAVED_AND_SENSITIVE_VOLUME/kubeconfig && ln -s SAVED_AND_SENSITIVE_VOLUME/kubeconfig .kube
+  local_action: shell mkdir -p SAVED_AND_SENSITIVE_VOLUME/kubeconfig && ln -s SAVED_AND_SENSITIVE_VOLUME/kubeconfig .kube
 
 - name: Replace the host name with the address and put in .kube/config
   connection: local
   become: false
-  local_action: 
-    shell: $( grep "{{ groups['masters'][0] }}" SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/etc_hosts | awk '{printf("sed -e s/%s/%s/", $2,$1)}') SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/kubectl.kubeconfig >>  .kube/config
+  local_action:  shell $( grep "{{ groups['masters'][0] }}" SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/etc_hosts | awk '{printf("sed -e s/%s/%s/", $2,$1)}') SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/kubectl.kubeconfig >>  .kube/confi
