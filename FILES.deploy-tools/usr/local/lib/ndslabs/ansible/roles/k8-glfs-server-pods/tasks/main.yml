@@ -80,3 +80,9 @@
   delegate_to: "{{ groups['masters'][0] }}"                                                                                                 
   run_once: true                                                                                                                            
   when: fcreated.changed
+
+- name: Gluster enable quota
+  command: "kubectl exec -it {{ glpod }} gluster volume quota {{ clusterfs_vol_name }} enable"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true 
+  when: fcreated.changed
