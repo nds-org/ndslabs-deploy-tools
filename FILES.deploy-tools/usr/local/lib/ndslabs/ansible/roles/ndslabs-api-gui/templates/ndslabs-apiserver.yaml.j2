@@ -53,9 +53,11 @@ spec:
             value: "{{ndslabs_domain}}"
           - name: VOLUME_PATH
             value: "/ndslabs/data/volumes"
+          - name: VOLUME_NAME
+            value: "{{ clusterfs_vol_name }} "
       volumes:
        - hostPath:
-            path: /ndslabs/data/volumes
+            path: {{ clusterfs_vol_path }}
          name: volumes
       nodeSelector:
           ndslabs-node-role: compute
