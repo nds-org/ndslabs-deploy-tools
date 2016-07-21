@@ -21,12 +21,7 @@ spec:
         volumeMounts:
           - name: image-store
             mountPath: /var/lib/registry
-          - name: config
-            mountPath: /etc/docker/registry
       volumes:
         - name: image-store
           hostPath:
               path: /var/glfs/global/docker-registry
-        - name: config
-          configMap:
-              name: docker-registry-config
