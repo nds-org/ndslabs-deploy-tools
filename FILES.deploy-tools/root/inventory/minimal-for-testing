@@ -9,7 +9,6 @@ image=CoreOSAlpha
 flavor=m1.medium
 kube_version=1.2.4
 key_name={{logical_cluster_name}}
-cluster_fs_hostpath=/media/glfs 
 ndslabs_domain= {{logical_cluster_name}}.ndslabs.org
 
 #
