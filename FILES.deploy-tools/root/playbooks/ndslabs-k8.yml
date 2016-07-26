@@ -120,7 +120,7 @@
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: compute
   roles:
-    - { role: k8-glfs-client-set, when: "'glfs' in group_names" }
+    - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
     
 # Import TLS certs as kubernetes secrets
 - name: Create TLS secret
