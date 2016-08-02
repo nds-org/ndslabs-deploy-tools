@@ -103,7 +103,7 @@
   connection: local
   tasks:
     - os_floating_ip: server={{ ansible_host }}
-    - command: nova add-secgroup {{ ansible_host}} k8s_loadbalancer                                                       
+    - command: nova add-secgroup {{ ansible_host}} {{ security_group }}
 
 # Make kubectl work local
 # After this you can use  {{ kubectl }} create -f <...>
