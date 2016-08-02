@@ -11,8 +11,7 @@
     image: "{{ image }}"
     flavor: "{{ flavor }}"
     key_name: "{{ key_name }}"
-    security_groups: "{{ security_groups }}"
-    auto_ip: "{{ public_ip | default(false) }}"
+    auto_ip: false
   register: os_host
 
 #- debug: var=os_host

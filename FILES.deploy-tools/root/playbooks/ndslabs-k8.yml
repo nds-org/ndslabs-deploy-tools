@@ -96,13 +96,14 @@
 # Now additional setup now that the cluster is running
 ##########################################################################################################################
 
-# Associate a public IP to the loadbalancer
+# Fix publicip nodes
 - name: LoadBalancer public interface
-  hosts: loadbal
+  hosts: publicip
   gather_facts: false
   connection: local
   tasks:
-    - os_floating_ip: server="{{ ansible_host }}" 
+    - os_floating_ip: server={{ ansible_host }}
+    - command: nova add-secgroup {{ ansible_host}} k8s_loadbalancer                                                       
 
 # Make kubectl work local
 # After this you can use  {{ kubectl }} create -f <...>
