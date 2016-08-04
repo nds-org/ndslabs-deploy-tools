@@ -1,6 +1,7 @@
 #
 # NDSLabs cluster on OpenStack - HW Setup
 #
+
 - name: prepend logical cluster name for all cluster resources
   hosts: all 
   gather_facts: false
@@ -21,6 +22,14 @@
   run_once: true
   roles: 
     - openstack-key
+  
+# Create or reuse existing TLS certs
+- name: Generate TLS certificates
+  hosts: cluster
+  gather_facts: false
+  run_once: true
+  roles: 
+    - generate-tls-certs
 
 # Create security groups for the loadbalancer
 - name: OpenStack LoadBalancer Security Group
@@ -75,6 +84,7 @@
   hosts: glfs:&coreos
   roles: 
     - coreos-mount
+   
 
 ##########################################################################################################################
 # Now to kubernetes, back again after
@@ -152,4 +162,3 @@
   roles:
     - ndslabs-api-gui
     - ndslabs-loadbalancer
-

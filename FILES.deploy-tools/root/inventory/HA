@@ -12,7 +12,6 @@ kube_version=1.2.4
 kube-ui=true                                          
 kube-dash=true
 key_name={{logical_cluster_name}}
-cluster_fs_hostpath=/media/glfs 
 
 [compute:vars]
 flavor=n-rc1.large

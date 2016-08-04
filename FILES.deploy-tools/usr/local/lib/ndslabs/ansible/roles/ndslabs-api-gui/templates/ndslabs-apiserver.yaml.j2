@@ -35,7 +35,7 @@ spec:
           protocol: TCP
         volumeMounts:
           - name: volumes
-            mountPath: /ndslabs/data/volumes
+            mountPath: {{ clusterfs_vol_path }}
         env:
           - name: ETCD_ADDR
             value: "{{ ansible_default_ipv4.address }}:2379"
@@ -52,10 +52,12 @@ spec:
           - name: DOMAIN
             value: "{{ndslabs_domain}}"
           - name: VOLUME_PATH
-            value: "/ndslabs/data/volumes"
+            value: "{{ clusterfs_vol_path }}"
+          - name: VOLUME_NAME
+            value: "{{ clusterfs_vol_name }} "
       volumes:
        - hostPath:
-            path: /ndslabs/data/volumes
+            path: {{ clusterfs_vol_path }}
          name: volumes
       nodeSelector:
           ndslabs-node-role: compute

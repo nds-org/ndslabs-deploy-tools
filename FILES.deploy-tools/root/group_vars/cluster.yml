@@ -1,0 +1,3 @@
+---
+clusterfs_vol_name: "global"
+clusterfs_vol_path: "/var/glfs/global"
