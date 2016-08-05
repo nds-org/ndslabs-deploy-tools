@@ -120,7 +120,7 @@
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: compute
   roles:
-    - k8-glfs-client-set
+    - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
     
 # Create or reuse existing TLS certs
 - name: Generate TLS certificates
