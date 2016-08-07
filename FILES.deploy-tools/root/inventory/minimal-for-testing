@@ -20,17 +20,11 @@ loadbal_image_name=ndslabs/nginx-ingress-controller:latest
 gluster_image_name=ndslabs/gluster:latest
 
 #
-# Some optional things
+# Logging and monitoring
 # 
-
-# Cluster Logging: Kibana
 #enablekibana=true
-
-# Cluster Monitoring: Grafana / Prometheus
 enablegrafana=true
 #enablepromdash=true
-
-# KubeUI / Kubernetes Dashboard
 #enablekubeui=true
 enablekubedash=true
 

@@ -20,13 +20,11 @@ loadbal_image_name=ndslabs/nginx-ingress-controller:latest
 gluster_image_name=ndslabs/gluster:latest
 
 #
-# Some optional things
+# Logging and monitoring
 # 
 #enablegrafana=true
 #enablepromdash=true
-
 #enablekibana=true
-
 #enablekubedash=true
 #enablekubeui=true
 
