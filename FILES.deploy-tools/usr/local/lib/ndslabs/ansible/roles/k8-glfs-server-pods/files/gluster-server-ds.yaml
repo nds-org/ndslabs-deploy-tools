@@ -16,7 +16,7 @@ spec:
       hostIPC: true
       hostNetwork: true
       containers:
-        - image: ndslabs/gluster:test
+        - image: {{ gluster_image_name }}
           imagePullPolicy: Always
           name: glusterfs-server
           securityContext:

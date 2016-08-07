@@ -16,7 +16,7 @@ spec:
       hostIPC: true
       hostNetwork: true
       containers:
-        - image: ndslabs/gluster:NDS-237
+        - image: {{ gluster_image_name }}
           imagePullPolicy: Always
           name: glusterfs-client
           command: ["client", "{{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ clusterfs_vol_name }}", "{{ clusterfs_vol_path }}"]
