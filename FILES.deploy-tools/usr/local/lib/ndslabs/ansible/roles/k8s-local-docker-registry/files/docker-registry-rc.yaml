@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: cluster-registry
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector: 
+    role: cluster-registry
+  template:
+    metadata:
+      labels:
+        role: cluster-registry
+    spec:
+      containers:
+      - name: cluster-registry
+        image: registry:2
+        ports:
+        - name: registry
+          containerPort: 5000
+        volumeMounts:
+          - name: image-store
+            mountPath: /var/lib/registry
+      volumes:
+        - name: image-store
+          hostPath:
+              path: /var/glfs/global/docker-registry

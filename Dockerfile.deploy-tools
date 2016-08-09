@@ -1,5 +1,5 @@
 #FROM ubuntu:xenial
-FROM alpine:3.3
+FROM alpine:3.4
 
 #
 # Add the tools
@@ -26,6 +26,15 @@ RUN chmod a+x /etc/ansible/hosts/openstack.py
 # 
 WORKDIR /usr/local/lib/kubernetes/contrib
 RUN svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/tags/ndslabs-1.0.1/ansible && rm -rf ansible/.svn
+
+#
+## Kubectl
+#
+ADD http://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl /usr/local/bin/kubectl
+RUN chmod 555 /usr/local/bin/kubectl
+
+
+
 
 #
 # Add the nds stuff
