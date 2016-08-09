@@ -1,5 +1,5 @@
 - name: Loadbalancer| copy yaml
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
   with_items:
     - default-backend.yaml
     - loadbalancer.yaml
