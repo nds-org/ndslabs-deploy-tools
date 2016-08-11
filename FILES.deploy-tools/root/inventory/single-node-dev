@@ -6,7 +6,7 @@ logical_cluster_name=example
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
 image=CoreOSAlpha
-flavor=m1.small
+flavor=m1.medium
 kube_version=1.2.4
 key_name={{logical_cluster_name}}
 ndslabs_domain= {{logical_cluster_name}}
@@ -15,7 +15,7 @@ ndslabs_domain= {{logical_cluster_name}}
 # Docker images
 #
 apiserver_image_name=ndslabs/apiserver:latest
-webui_image_name=ndslabs/ndslabs-gui:latest
+webui_image_name=ndslabs/angular-ui:latest
 loadbal_image_name=ndslabs/nginx-ingress-controller:latest
 gluster_image_name=ndslabs/gluster:latest
 
