@@ -12,13 +12,19 @@ key_name={{logical_cluster_name}}
 ndslabs_domain= {{logical_cluster_name}}
 
 #
-# Some optional things
+# Docker images
+#
+apiserver_image_name=ndslabs/apiserver:latest
+webui_image_name=ndslabs/ndslabs-gui:latest
+loadbal_image_name=ndslabs/nginx-ingress-controller:latest
+gluster_image_name=ndslabs/gluster:latest
+
+#
+# Logging and monitoring
 # 
 #enablegrafana=true
 #enablepromdash=true
-
 #enablekibana=true
-
 #enablekubedash=true
 #enablekubeui=true
 

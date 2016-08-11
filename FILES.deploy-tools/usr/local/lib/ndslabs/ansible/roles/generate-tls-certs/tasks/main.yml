@@ -32,7 +32,7 @@
 # If no .cert exists, generate a new one using the .key from above
 - name: Generate TLS certificates| Generate .cert
   connection: local
-  command: openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.ndslabs.org" -key "{{ cert_path }}/ndslabs.key" -out "{{ cert_path }}/ndslabs.cert"
+  command: openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.{{ ndslabs_domain }}" -key "{{ cert_path }}/ndslabs.key" -out "{{ cert_path }}/ndslabs.cert"
   register: newcert
   when: newkey.changed or certfile.stat.exists == False
 

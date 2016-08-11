@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: ndslabs-apiserver
-        image: ndslabs/apiserver:latest
+        image: {{ apiserver_image_name }}
         imagePullPolicy: Always
         ports:
         - containerPort: 30001

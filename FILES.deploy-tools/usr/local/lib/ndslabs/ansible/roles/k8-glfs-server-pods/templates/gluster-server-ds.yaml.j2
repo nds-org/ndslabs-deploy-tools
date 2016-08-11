@@ -52,7 +52,7 @@ spec:
         ndslabs-node-role: glfs
       hostNetwork: true
       containers:
-        - image: ndslabs/gluster:NDS-237
+        - image: {{ gluster_image_name }}
           imagePullPolicy: Always
           name: glusterfs-server
           securityContext:
