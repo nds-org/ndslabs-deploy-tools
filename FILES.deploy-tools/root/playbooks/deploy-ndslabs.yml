@@ -1,0 +1,77 @@
+#
+# NDSLabs cluster on OpenStack - HW Setup
+#
+
+- name: prepend logical cluster name for all cluster resources
+  hosts: all 
+  gather_facts: false
+  tasks:
+    - set_fact: ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+    - set_fact: ansible_hostname={{ logical_cluster_name }}-{{ inventory_hostname }}
+    - set_fact: ansible_ssh_host={{ ansible_default_ipv4.address }}
+    - set_fact: ansible_ssh_private_key_file={{key_path}}/{{key_name}}.pem
+
+##########################################################################################################################
+# Now additional ndslabs setup now that the cluster is running
+##########################################################################################################################
+
+# Fix publicip nodes
+- name: LoadBalancer public interface
+  hosts: publicip
+  gather_facts: false
+  connection: local
+  tasks:
+    - os_floating_ip: server={{ ansible_host }}
+    - command: nova add-secgroup {{ ansible_host}} {{ security_groups }}
+
+# Apply Kubernetes node labels
+- name: NDSLabs initial labels
+  hosts: nodes
+  roles:
+    - ndslabs-k8-init-labels
+
+# Deploy glfs server daemonset
+- name: NDSLabs GLFS Global Cluster Filesystem Servers
+  hosts: glfs
+  roles:
+    - k8-glfs-server-pods
+    
+# Deploy glfs client daemonset
+- name: NDSLabs GLFS Cluster FileSystem Clients
+  hosts: compute
+  roles:
+    - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
+    
+# Create or reuse existing TLS certs
+- name: Generate TLS certificates
+  hosts: cluster
+  gather_facts: false
+  run_once: true
+  roles: 
+    - generate-tls-certs
+
+# Import TLS certs as kubernetes secrets
+- name: Create TLS secret
+  hosts: masters
+  run_once: true
+  roles: 
+    - k8-tls-secret
+
+# Deploy Kubernetes Addons: DNS + LMA
+- name: Kubernetes Cluster Addons
+  hosts: masters
+  roles:
+    - cluster-addons
+  
+# Deploy NDS Labs and LoadBalancer  
+- name: Start NDSLabs ApiServer and WebUI
+  hosts: masters
+  roles:
+    - ndslabs-api-gui
+    - ndslabs-loadbalancer
+
+# Add the cluster-local registry, mapped to all hosts on localhost:5000
+- name: cluster-local-docker-registry
+  hosts: master1
+  roles:
+    - k8s-local-docker-registry

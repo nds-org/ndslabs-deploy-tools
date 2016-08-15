@@ -1,0 +1,59 @@
+#
+# Deallocate the OpenStack systems
+# Does NOT destroy the key or security groups
+#
+
+- name: prepend logical cluster name for all cluster resources
+  hosts: all 
+  gather_facts: false
+  tasks:
+    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+
+- name: set facts from cache
+  hosts: all 
+  gather_facts: false
+  tasks:
+    - set_fact: ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+    - set_fact: ansible_hostname={{ logical_cluster_name }}-{{ inventory_hostname }}
+    - set_fact: ansible_ssh_host={{ ansible_default_ipv4.address }}
+    - set_fact: ansible_ssh_private_key_file={{key_path}}/{{key_name}}.pem
+
+# Read the cache
+- name: get facts
+  hosts: openstack
+  gather_facts: true
+
+
+# delete the system
+- name: Remote OpenStack system
+  hosts: cluster
+  gather_facts: false
+  connection: local
+  tasks:
+    - os_server: state=absent wait=yes name={{ ansible_host }}
+
+# delete any volumes
+- name: Remove volumes
+  hosts: glfs:&openstack
+  connection: local
+  tasks:
+    - os_volume: state=absent display_name="{{ ansible_host }}-{{vol_name}}"
+
+# Delete the hosts lines
+- name: start with original /etc/hosts
+  hosts: localhost                                                      
+  connection: local               
+  tasks:       
+    - shell: cp /etc/hosts /tmp/hosts
+
+- name: Add cluster host entries
+  hosts: cluster                                                      
+  connection: local               
+  tasks:
+    - lineinfile: state=absent dest=/tmp/hosts line="{{ ansible_ssh_host }} {{ ansible_host }}"
+- name: replace /etc/hosts
+  hosts: localhost                                                      
+  connection: local               
+  tasks:       
+    - shell: cat /tmp/hosts > /etc/hosts
+
