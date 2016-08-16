@@ -1,15 +1,11 @@
 #
-# NDSLabs cluster on OpenStack - HW Setup
+# NDSLabs cluster on OpenStack - deploy ndslabs on kubernetes
 #
-
-- name: prepend logical cluster name for all cluster resources
-  hosts: all 
-  gather_facts: false
-  tasks:
-    - set_fact: ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
-    - set_fact: ansible_hostname={{ logical_cluster_name }}-{{ inventory_hostname }}
-    - set_fact: ansible_ssh_host={{ ansible_default_ipv4.address }}
-    - set_fact: ansible_ssh_private_key_file={{key_path}}/{{key_name}}.pem
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - pre-checks
+    - ansible_host_vars_setup
 
 ##########################################################################################################################
 # Now additional ndslabs setup now that the cluster is running
@@ -18,7 +14,6 @@
 # Fix publicip nodes
 - name: LoadBalancer public interface
   hosts: publicip
-  gather_facts: false
   connection: local
   tasks:
     - os_floating_ip: server={{ ansible_host }}
@@ -45,7 +40,7 @@
 # Create or reuse existing TLS certs
 - name: Generate TLS certificates
   hosts: cluster
-  gather_facts: false
+  
   run_once: true
   roles: 
     - generate-tls-certs

@@ -3,31 +3,15 @@
 # Does NOT destroy the key or security groups
 #
 
-- name: prepend logical cluster name for all cluster resources
-  hosts: all 
-  gather_facts: false
-  tasks:
-    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
-
-- name: set facts from cache
-  hosts: all 
-  gather_facts: false
-  tasks:
-    - set_fact: ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
-    - set_fact: ansible_hostname={{ logical_cluster_name }}-{{ inventory_hostname }}
-    - set_fact: ansible_ssh_host={{ ansible_default_ipv4.address }}
-    - set_fact: ansible_ssh_private_key_file={{key_path}}/{{key_name}}.pem
-
-# Read the cache
-- name: get facts
-  hosts: openstack
-  gather_facts: true
-
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - pre-checks
+    - ansible_host_vars_setup
 
 # delete the system
 - name: Remote OpenStack system
   hosts: cluster
-  gather_facts: false
   connection: local
   tasks:
     - os_server: state=absent wait=yes name={{ ansible_host }}

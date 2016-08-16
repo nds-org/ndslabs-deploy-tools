@@ -1,24 +1,17 @@
 #
-# NDSLabs cluster on OpenStack - HW Setup
+# NDSLabs cluster on OpenStack - provision systems in openstack
 #
 
 - name: prepend logical cluster name for all cluster resources
   hosts: all 
-  gather_facts: false
   tasks:
+    - pre-checks
     - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
 
-# Verify OpenStack credentials / check for bad hostname
-- name: Pre Checks
-  hosts: cluster
-  gather_facts: false
-  roles: 
-    - pre-checks
 
 # Create or reuse existing SSH key
 - name: OpenStack Key
   hosts: cluster
-  gather_facts: false
   run_once: true
   roles: 
     - openstack-key
@@ -26,7 +19,6 @@
 # Create or reuse existing TLS certs
 - name: Generate TLS certificates
   hosts: cluster
-  gather_facts: false
   run_once: true
   roles: 
     - generate-tls-certs
@@ -34,21 +26,18 @@
 # Create security groups for the loadbalancer
 - name: OpenStack LoadBalancer Security Group
   hosts: publicip
-  gather_facts: false
   roles: 
     - openstack-securitygroup-open
 
 # Grab private IPs and wait for host up
 - name: NDSLabs OpenStack Cluster
   hosts: cluster
-  gather_facts: false
   roles: 
     - openstack-system
 
 # Prepare CoreOS nodes to execute ansible (install pypy, etc)
 - name: CoreOS Setup
   hosts: cluster
-  gather_facts: false
   become: true
   roles:
     - { role: pre-ansible, when oshost is defined and oshost.changed }

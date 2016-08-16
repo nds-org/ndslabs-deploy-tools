@@ -17,26 +17,10 @@ Tested primarily on openstack - but usable in other environments.
   * Ansible playbooks used by NDSLabs are in ${HOME} and are available as examples and to copy/modify
 
 # Playbooks - under playbooks
-There are 3 stages of install:   1.systems, 2.kubernetes, and 3.ndslabs
-  * provision-openstack.yml - Render the OpenStack systems
-  * deploy-k8s.yml - deploy kubernetes onto the provisioned OpenStack systems
-  * deploy-ndslabs.yml - deploy the ndslabs PaaS on top of kubernetes
-  * uninstall-k8s.yml - Reset the OpenStack system to initial provisioned state, implies destroying ndslabs
-  * unprovision-openstack.yml - destroy the OpenStack system resources, servers and volumes
-
-# Create Cluster
-  * Copy and customize and inventory file
-  * ansible-playbook -i inventory/<inventory-file> playbooks/provision-openstack.yml
-  * ansible-playbook -i inventory/<inventory-file> playbooks/deploy-k8s.yml
-  * ansible-playbook -i inventory/<inventory-file> playbooks/deploy-ndslabs.yml
-
-# Destroy Cluster
-  * ansible-playbook -i inventory/<inventory-file> playbooks/unprovision-openstack.yml
-
-# Redeploy/reset Cluster
-  * ansible-playbook -i inventory/<inventory-file> playbooks/unprovision-openstack.yml
-  * ansible-playbook -i inventory/<inventory-file> playbooks/deploy-k8s.yml
-  * ansible-playbook -i inventory/<inventory-file> playbooks/deploy-ndslabs.yml
+There are 3 layers of install:   1.systems, 2.kubernetes, and 3.ndslabs
+  * openstack-provision.yml, openstack-delete.yml - Render/delete the OpenStack resources (except keys and secgroups)
+  * k8s-install.yml, k8s-delete.yml - install/delete kubernetes onto the systems
+  * ndslabs-k8s-install.yml - deploy the ndslabs PaaS on top of kubernetes
 
 # Inventory/group_vars:
   * The inventory file has 3 sections: names, groups, variables
