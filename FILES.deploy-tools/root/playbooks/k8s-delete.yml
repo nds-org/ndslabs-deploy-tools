@@ -11,10 +11,17 @@
   hosts: masters
   tasks:
     - command: rm -f /tmp/*
+  ignore_errors: true
 
 ########################################################################################
 # Unwind K8s 
 ########################################################################################
 - include:  /usr/local/lib/kubernetes/contrib/ansible/playbooks/adhoc/uninstall.yml
+
+- name: Reinstall k8s uninstalled python bootstrap
+  hosts: all
+  become: true
+  roles:
+    - pre-ansible
 
 

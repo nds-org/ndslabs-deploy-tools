@@ -3,11 +3,11 @@
 #
 
 - name: prepend logical cluster name for all cluster resources
-  hosts: all 
+  hosts: cluster 
   tasks:
-    - pre-checks
     - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
-
+  roles:
+   - pre-checks
 
 # Create or reuse existing SSH key
 - name: OpenStack Key
