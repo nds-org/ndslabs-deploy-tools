@@ -10,7 +10,7 @@
 - name: Clean master /tmp
   hosts: masters
   tasks:
-    - command: rm -f /tmp/*
+    - shell: rm -f /tmp/*
   ignore_errors: true
 
 ########################################################################################
