@@ -1,40 +1,28 @@
-#FROM ubuntu:xenial
-FROM alpine:3.4
+FROM debian:jessie
 
 #
 # Add the tools
 # 
 RUN 	 \
-    apk add --update python python-dev py-pip \
-    wget curl \
-	subversion \
-	bash vim nano \
-	build-base linux-headers libffi-dev openssl-dev \
-	openssh-client && \
-    pip install --upgrade pip && pip install --upgrade ansible==2.0.2.0 shade &&\
-    apk del build-base python-dev libffi-dev openssl-dev linux-headers &&\
+    apt-get -y update && apt-get -y install \
+    python python-pip  python-dev wget curl subversion \
+	bash vim nano libffi-dev libssh-dev \
+	openssh-client &&\
+    pip install --upgrade pip && pip install --upgrade pytz ansible==2.0.2.0 shade &&\
+    (mkdir -p /usr/local/lib/kubernetes/contrib && cd /usr/local/lib/kubernetes/contrib &&\ 
+	svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/tags/ndslabs-1.0.1/ansible &&\
+		rm -rf ansible/.svn) &&\
+	apt-get -y remove libffi-dev python-dev python-pip subversion &&\
+    apt-get -y autoremove &&\
+    apt-get -y autoclean &&\
+    apt-get -y clean all &&\
     rm -rf /var/cache/apk/* 
 
 #
-# Add the openstack inventory script for anisble
-#
-ADD https://raw.githubusercontent.com/ansible/ansible/devel/contrib/inventory/openstack.py /etc/ansible/hosts/openstack.py
-RUN chmod a+x /etc/ansible/hosts/openstack.py 
-
-#
-# NDS fork of contrib/ansible
-# 
-WORKDIR /usr/local/lib/kubernetes/contrib
-RUN svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/tags/ndslabs-1.0.1/ansible && rm -rf ansible/.svn
-
-#
-## Kubectl
+# Kubectl
 #
 ADD http://storage.googleapis.com/kubernetes-release/release/v1.3.5/bin/linux/amd64/kubectl /usr/local/bin/kubectl
 RUN chmod 555 /usr/local/bin/kubectl
-
-
-
 
 #
 # Add the nds stuff
