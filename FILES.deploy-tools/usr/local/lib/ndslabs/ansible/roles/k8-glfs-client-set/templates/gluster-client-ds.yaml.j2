@@ -1,52 +1,82 @@
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: glusterfs-client
+  name: glfs-client-{{ clusterfs_vol_name }}
+  namespace: kube-system
   labels:
-    app: glusterfs-client
+    app: glfs-client-{{ clusterfs_vol_name }}
 spec:
   template:
     metadata:
       labels:
-        name: glusterfs-client
+        name: glfs-client-{{ clusterfs_vol_name }}
     spec:
-      nodeSelector:
-        ndslabs-node-role: compute
-      hostPID: true
-      hostIPC: true
       hostNetwork: true
       containers:
         - image: {{ gluster_image_name }}
           imagePullPolicy: Always
-          name: glusterfs-client
-          command: ["client", "{{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ clusterfs_vol_name }}", "{{ clusterfs_vol_path }}"]
+          name: glfs-client
+          command:
+            - entrypoint
+            - client
+          readinessProbe:
+            exec:
+              command:
+              - readiness
           lifecycle:
             preStop:
               exec:
-                command: ["cleanup", "{{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ clusterfs_vol_name }}", "{{ clusterfs_vol_path }}"]
+                command: 
+                  - stop-client
           securityContext:
             privileged: true
           volumeMounts:
+            - name: etc-glfs
+              mountPath: /etc/glfs
+            - name: var-lib-glusterd
+              mountPath: /var/lib/glusterd
+            - name: var-log-glfs
+              mountPath: /var/log/glfs
             - name: hostroot
               mountPath: /media/host
               readOnly: true
             - name: run
               mountPath: /run
+            - name: host-proc
+              mountPath: /media-host/proc
             - name: dev
               mountPath: /dev
-            - name: var
-              mountPath: /var
+            - name: mnt-dir
+              mountPath: /var/glfs
+            - name: glconfig
+              mountPath: /etc/glconfig
       volumes:
+        - name: var-lib-glusterd
+          hostPath:
+              path: /var/lib/glusterd
+        - name: etc-glfs
+          hostPath:
+              path: /etc/glfs
+        - name: var-log-glfs
+          hostPath:
+              path: /var/log/glfs
         - name: hostroot
           hostPath:
               path: /
         - name: run
           hostPath:
               path: /run
+        - name: host-proc
+          hostPath:
+              path: /proc
         - name: dev
           hostPath:
               path: /dev
-        - name: var
+        - name: mnt-dir
           hostPath:
-              path: /var
+              path: /var/glfs
+        - name: glconfig
+          configMap:
+            name: glfs-config-{{ clusterfs_vol_name }}
+
 

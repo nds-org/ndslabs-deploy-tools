@@ -1,0 +1,37 @@
+#
+# Destroy all glfs state and data in the cluster
+# All gluster clients and servers should be down
+#
+#  This is NON-RECOVERABLE and will DESTROY ALL DATA
+#
+
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - ansible_host_vars_setup
+
+- name: glfs server state directories
+  hosts: glfs
+  become: true
+  tasks:
+    - file: path="/var/lib/glusterd" state=absent
+    - file: path="/var/lib/glusterd" state=directory
+    - file: path="/var/log/glusterfs" state=absent
+    - file: path="/var/log/glusterfs" state=directory
+    - file: path="/etc/glusterfs" state=absent
+    - file: path="/etc/glusterfs" state=directory
+    - file: path="/media/brick0/brick" state=absent
+    - file: path="/media/brick0/brick" state=directory
+
+- name: glfs node state directories
+  hosts: cluster
+  become: true
+  tasks:
+  - shell: umount -f /var/glfs/global || true
+  - file: path="/var/glfs" state=absent
+  - file: path="/var/glfs" state=directory mode=0777
+
+
+  
+
+

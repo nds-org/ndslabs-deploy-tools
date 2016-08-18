@@ -1,18 +1,37 @@
+---
 
-- name: Fix hosts file
+- name: Set Update Strategy
   become: true
-  lineinfile: state=present create=yes dest="/etc/hosts" line="127.0.0.1 localhost"
-
-- name: CoreOS no update-engine
-  become: true
-  service: name=update-engine state=stopped enabled=no
+  lineinfile: dest=/etc/coreos/update.conf line="REBOOT_STRATEGY=off"
 
 - name: CoreOS no locksmithd
   become: true
   service: name=locksmithd state=stopped enabled=no
 
+# glfs quotas require CoreOS vers >= 1097, and old OS images are insecure so update....
+- name: Update CoreOS - may take a few minutes
+  become: true
+  command: update_engine_client -update 
+  register: updated
+  ignore_errors: true
+
+- name: Reboot the system
+  become: true
+  command: systemd-run --on-active=5 /usr/bin/systemctl reboot
+  when: updated.rc == 0
+
+- name: Wait for host up after reboot
+  become: false
+  connection: local
+  delegate_to: localhost
+  wait_for: host={{ansible_ssh_host}} port=22 search_regex=OpenSSH delay=10 timeout=120
+  when: updated.rc == 0
+
+- name: Fix hosts file
+  become: true
+  lineinfile: state=present create=yes dest="/etc/hosts" line="127.0.0.1 localhost"
+
 - name: CoreOS set our timezone
   become: true
   command:  timedatectl set-timezone America/Chicago
-
 

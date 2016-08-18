@@ -7,9 +7,33 @@
     - pre-checks
     - ansible_host_vars_setup
 
-##########################################################################################################################
-# Now additional ndslabs setup now that the cluster is running
-##########################################################################################################################
+# Apply Kubernetes node labels for NDS - 
+- name: label K8s nodes
+  hosts: nodes
+  roles:
+    - ndslabs-k8-init-labels
+
+# Deploy global FS - state directories
+- name: glfs state directories
+  hosts: cluster
+  become: true
+  tasks:
+    - file: path="/var/glfs" state=directory
+    - file: path="/var/lib/glusterd" state=directory
+    - file: path="/var/log/glusterfs" state=directory
+    - file: path="/etc/glusterfs" state=directory
+
+- name: Global FS k8s objects
+  hosts: glfs
+  roles:
+    - { role: k8-glfs-server-pods, when: "groups['glfs']|length > 0" }
+
+- name: Global FS k8s objects
+  hosts: masters[0]
+  roles:
+    - { role: k8-glfs-server-pods, when: "groups['glfs']|length > 0" }
+    - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
+
 
 # Fix publicip nodes
 - name: LoadBalancer public interface
@@ -19,23 +43,6 @@
     - os_floating_ip: server={{ ansible_host }}
     - command: nova add-secgroup {{ ansible_host}} {{ security_groups }}
 
-# Apply Kubernetes node labels
-- name: NDSLabs initial labels
-  hosts: nodes
-  roles:
-    - ndslabs-k8-init-labels
-
-# Deploy glfs server daemonset
-- name: NDSLabs GLFS Global Cluster Filesystem Servers
-  hosts: glfs
-  roles:
-    - k8-glfs-server-pods
-
-# Deploy glfs client daemonset
-- name: NDSLabs GLFS Cluster FileSystem Clients
-  hosts: compute
-  roles:
-    - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
 
 # Create or reuse existing TLS certs
 - name: Generate TLS certificates
@@ -66,7 +73,11 @@
     - ndslabs-loadbalancer
 
 # Add the cluster-local registry, mapped to all hosts on localhost:5000
+- name: registry storage
+  hosts: nodes[0]
+  tasks:
+    - file: path="{{ clusterfs_vol_path }}/docker-registry" state=directory
 - name: cluster-local-docker-registry
-  hosts: master1
+  hosts: masters[0]
   roles:
     - k8s-local-docker-registry

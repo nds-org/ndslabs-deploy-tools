@@ -1,16 +1,4 @@
 
-###########################
-#  Create Namespace: kube-system
-###########################
-- name: Kube-System namespace status
-  command: kubectl get ns kube-system
-  register: namespace
-  failed_when: namespace.rc < 0
-  
-- name: Cluster Addon init| create kube-system namespace
-  command: kubectl create -f "/tmp/kube-system-namespace.yaml"
-  when: namespace.rc != 0
-
 
 ################################
 #  Create TLS Secret: ndslabs-tls-secret
