@@ -17,6 +17,7 @@
 # Create or reuse existing TLS certs
 - name: Generate TLS certificates
   hosts: cluster
+  connection: local
   run_once: true
   roles: 
     - generate-tls-certs
@@ -102,20 +103,12 @@
   hosts: glfs
   roles:
     - k8-glfs-server-pods
-    
+  
 # Deploy glfs client daemonset
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: compute
   roles:
     - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
-    
-# Create or reuse existing TLS certs
-- name: Generate TLS certificates
-  hosts: cluster
-  
-  run_once: true
-  roles: 
-    - generate-tls-certs
 
 # Import TLS certs as kubernetes secrets
 - name: Create TLS secret
