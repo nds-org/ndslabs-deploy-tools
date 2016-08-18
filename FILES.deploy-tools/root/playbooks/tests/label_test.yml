@@ -4,32 +4,32 @@
 
 - name: Pre Checks
   hosts: cluster
-  gather_facts: false
+  
   roles: 
     - pre-checks
 
 - name: OpenStack Key
   hosts: cluster
-  gather_facts: false
+  
   run_once: true
   roles: 
     - openstack-key
 
 - name: OpenStack LoadBalancer Security Group
   hosts: publicip
-  gather_facts: false
+  
   roles: 
     - openstack-securitygroup-open
 
 - name: NDSLabs OpenStack Cluster
   hosts: cluster
-  gather_facts: false
+  
   roles: 
     - openstack-system
 
 - name: CoreOS Setup
   hosts: cluster
-  gather_facts: false
+  
   become: true
   roles:
     - pre-ansible

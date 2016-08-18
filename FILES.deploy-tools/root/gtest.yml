@@ -3,14 +3,14 @@
 #
 - name: OpenStack Key
   hosts: cluster
-  gather_facts: false
+  
   run_once: true
   roles: 
     - openstack-key
 
 - name: NDSLabs OpenStack Cluster
   hosts: cluster
-  gather_facts: false
+  
   roles: 
     - openstack-system
 

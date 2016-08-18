@@ -1,0 +1,27 @@
+#
+# NDSLabs cluster - reset to base systems - uninstall kubernetes
+#
+
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - ansible_host_vars_setup
+
+- name: Clean master /tmp
+  hosts: masters
+  tasks:
+    - shell: rm -f /tmp/*
+  ignore_errors: true
+
+########################################################################################
+# Unwind K8s 
+########################################################################################
+- include:  /usr/local/lib/kubernetes/contrib/ansible/playbooks/adhoc/uninstall.yml
+
+- name: Reinstall k8s uninstalled python bootstrap
+  hosts: all
+  become: true
+  roles:
+    - pre-ansible
+
+

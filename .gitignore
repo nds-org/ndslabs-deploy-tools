@@ -4,3 +4,4 @@ nds-build/
 .c9/
 *.swp
 .bash_history
+.vscode/

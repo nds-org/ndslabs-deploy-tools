@@ -1,0 +1,43 @@
+#
+# Deallocate the OpenStack systems
+# Does NOT destroy the key or security groups
+#
+
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - pre-checks
+    - ansible_host_vars_setup
+
+# delete the system
+- name: Remote OpenStack system
+  hosts: cluster
+  connection: local
+  tasks:
+    - os_server: state=absent wait=yes name={{ ansible_host }}
+
+# delete any volumes
+- name: Remove volumes
+  hosts: glfs:&openstack
+  connection: local
+  tasks:
+    - os_volume: state=absent display_name="{{ ansible_host }}-{{vol_name}}"
+
+# Delete the hosts lines
+- name: start with original /etc/hosts
+  hosts: localhost                                                      
+  connection: local               
+  tasks:       
+    - shell: cp /etc/hosts /tmp/hosts
+
+- name: Add cluster host entries
+  hosts: cluster                                                      
+  connection: local               
+  tasks:
+    - lineinfile: state=absent dest=/tmp/hosts line="{{ ansible_ssh_host }} {{ ansible_host }}"
+- name: replace /etc/hosts
+  hosts: localhost                                                      
+  connection: local               
+  tasks:       
+    - shell: cat /tmp/hosts > /etc/hosts
+

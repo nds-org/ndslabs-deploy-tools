@@ -4,26 +4,26 @@
 
 - name: OpenStack Key
   hosts: cluster1
-  gather_facts: false
+  
   run_once: true
   roles: 
     - openstack-key
 
 - name: NDSLabs OpenStack Cluster
   hosts: cluster1
-  gather_facts: false
+  
   roles: 
     - openstack-system
 
 - name: CoreOS Setup
   hosts: coreos
-  gather_facts: false
+  
   roles: 
     - defunctzombie.coreos-bootstrap
 
 - name: OpenStack LoadBalancer Security Group
   hosts: publicip
-  gather_facts: false
+  
   roles: 
     - openstack-securitygroup-open
 

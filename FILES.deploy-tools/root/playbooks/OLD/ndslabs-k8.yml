@@ -1,24 +1,15 @@
 #
-# NDSLabs cluster on OpenStack - HW Setup
+# NDSLabs cluster on OpenStack - deploy ndslabs on kubernetes
 #
-
-- name: prepend logical cluster name for all cluster resources
-  hosts: all 
-  gather_facts: false
-  tasks:
-    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
-
-# Verify OpenStack credentials / check for bad hostname
-- name: Pre Checks
-  hosts: cluster
-  gather_facts: false
-  roles: 
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - ansible_host_vars_setup
     - pre-checks
 
 # Create or reuse existing SSH key
 - name: OpenStack Key
   hosts: cluster
-  gather_facts: false
   run_once: true
   roles: 
     - openstack-key
@@ -26,7 +17,7 @@
 # Create or reuse existing TLS certs
 - name: Generate TLS certificates
   hosts: cluster
-  gather_facts: false
+  connection: local
   run_once: true
   roles: 
     - generate-tls-certs
@@ -34,21 +25,18 @@
 # Create security groups for the loadbalancer
 - name: OpenStack LoadBalancer Security Group
   hosts: publicip
-  gather_facts: false
   roles: 
     - openstack-securitygroup-open
 
 # Grab private IPs and wait for host up
 - name: NDSLabs OpenStack Cluster
   hosts: cluster
-  gather_facts: false
   roles: 
     - openstack-system
 
 # Prepare CoreOS nodes to execute ansible (install pypy, etc)
 - name: CoreOS Setup
   hosts: cluster
-  gather_facts: false
   become: true
   roles:
     - pre-ansible
@@ -98,7 +86,7 @@
 # Fix publicip nodes
 - name: LoadBalancer public interface
   hosts: publicip
-  gather_facts: false
+  
   connection: local
   tasks:
     - os_floating_ip: server={{ ansible_host }}
@@ -115,20 +103,12 @@
   hosts: glfs
   roles:
     - k8-glfs-server-pods
-    
+  
 # Deploy glfs client daemonset
 - name: NDSLabs GLFS Cluster FileSystem Clients
   hosts: compute
   roles:
     - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
-    
-# Create or reuse existing TLS certs
-- name: Generate TLS certificates
-  hosts: cluster
-  gather_facts: false
-  run_once: true
-  roles: 
-    - generate-tls-certs
 
 # Import TLS certs as kubernetes secrets
 - name: Create TLS secret

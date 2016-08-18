@@ -43,7 +43,7 @@
 #- debug: var=glpod
 
 - name: Gluster Init Peer Probe
-  shell: "kubectl exec -it {{ glpod }} gluster peer probe {{ ansible_ssh_host }}"
+  shell: "kubectl exec -t {{ glpod }} gluster peer probe {{ ansible_ssh_host }}"
   delegate_to: "{{ groups['masters'][0] }}"
   register: shellout
   until: shellout.stdout.find("success") != -1
@@ -51,38 +51,38 @@
   delay: 6
   when: gfsinstalling.changed
 
-#- debug: msg="kubectl exec -it {{ glpod }} gluster volume create" 
+#- debug: msg="kubectl exec -t {{ glpod }} gluster volume create" 
 #- debug: msg="{{ clusterfs_vol_name }} stripe 2 replica 2 transport tcp "
 #- debug: msg="{{ hostvars[groups['glfs'][0]]['ansible_ssh_host'] }}:{{ brick_mount_path }}"
 #- debug: msg="{{ groups['glfs'][0]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][f]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][2]['ansible_ssh_host'] }}:{{ brick_mount_path }}{{ groups['glfs'][3]['ansible_ssh_host'] }}:{{ brick_mount_path }}"
 
 - name: Gluster Full Cluster FS Volume 2x2 strip/mirror
-  shell: "kubectl exec -it {{ glpod }} gluster volume create {{ clusterfs_vol_name }} stripe 2 replica 2 transport tcp  {{ hostvars[groups['glfs'][0]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][1]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][3]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick"
+  shell: "kubectl exec -t {{ glpod }} gluster volume create {{ clusterfs_vol_name }} stripe 2 replica 2 transport tcp  {{ hostvars[groups['glfs'][0]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][1]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][2]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][3]]['ansible_ssh_host'] }}:{{ brick_mount_path }}/brick"
   delegate_to: "{{ groups['masters'][0] }}"
   run_once: true
   register: fcreated
   when: gfsinstalling.changed
 
 - name: Gluster Volume NFS off
-  shell: "kubectl exec -it {{ glpod }} gluster volume set {{ clusterfs_vol_name }} nfs.disable on"
+  shell: "kubectl exec -t {{ glpod }} gluster volume set {{ clusterfs_vol_name }} nfs.disable on"
   delegate_to: "{{ groups['masters'][0] }}"
   run_once: true
   when: fcreated.changed
 
 - name: Gluster Start volume
-  shell: "kubectl exec -it {{ glpod }} gluster volume start {{ clusterfs_vol_name }}"
+  shell: "kubectl exec -t {{ glpod }} gluster volume start {{ clusterfs_vol_name }}"
   delegate_to: "{{ groups['masters'][0] }}"
   run_once: true                                                                                                                            
   when: fcreated.changed
 
 - name: Gluster Global volume check                                                                                                         
-  command: "kubectl exec -it {{ glpod }} gluster volume status {{ clusterfs_vol_name }}"                                                    
+  command: "kubectl exec -t {{ glpod }} gluster volume status {{ clusterfs_vol_name }}"                                                    
   delegate_to: "{{ groups['masters'][0] }}"                                                                                                 
   run_once: true                                                                                                                            
   when: fcreated.changed
 
 - name: Gluster enable quota
-  command: "kubectl exec -it {{ glpod }} gluster volume quota {{ clusterfs_vol_name }} enable"
+  command: "kubectl exec -t {{ glpod }} gluster volume quota {{ clusterfs_vol_name }} enable"
   delegate_to: "{{ groups['masters'][0] }}"
   run_once: true 
   when: fcreated.changed

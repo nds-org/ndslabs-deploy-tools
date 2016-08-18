@@ -1,0 +1,105 @@
+#
+# NDSLabs cluster on OpenStack - provision systems in openstack
+#
+
+- name: prepend logical cluster name for all cluster resources
+  hosts: cluster 
+  tasks:
+    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+  roles:
+   - pre-checks
+
+# Create or reuse existing SSH key
+- name: OpenStack Key
+  hosts: cluster
+  run_once: true
+  roles: 
+    - openstack-key
+ 
+# Create security groups for the loadbalancer
+- name: OpenStack LoadBalancer Security Group
+  hosts: publicip
+  roles: 
+    - openstack-securitygroup-open
+
+# Grab private IPs and wait for host up
+- name: NDSLabs OpenStack Cluster
+  hosts: cluster
+  roles: 
+    - openstack-system
+
+# Prepare CoreOS nodes to execute ansible (install pypy, etc)
+- name: CoreOS Setup
+  hosts: cluster
+  become: true
+  roles:
+    - { role: pre-ansible, when oshost is defined and oshost.changed }
+
+# Reprime cache if openstack changed
+- name: Recache facts
+  hosts: all
+  gather_facts: true
+
+# Create cluster /etc/hosts file on nodes
+- name: NDSLabs environment setup
+  hosts: cluster
+  become: true
+  roles:
+    - cluster-addrs-etc-hosts
+
+# Update /etc/hosts for localhost and disable update-engine/locksmithd
+- name: CoreOS NDSLabs Preferences
+  hosts: coreos
+  roles:
+    - coreos-ndslabs-devsystem
+
+# Provision and attach OpenStack volume to glfs nodes
+- name: OpenStack GLFS provision volume and attach
+  hosts: glfs:&openstack
+  roles: 
+    - openstack-volume-attached
+
+# Create brick directory on glfs nodes
+- name: GLFS brick dir
+  hosts: glfs
+  become: true
+  tasks:
+    - file: path=/media/brick0/brick state=directory mode=0777
+
+# Mount OpenStack volume to CoreOS glfs nodes
+- name: CoreOS Mount GLFS
+  hosts: glfs:&coreos
+  roles: 
+    - coreos-mount
+  
+# Save cluster hosts and .ssh/config in the local container
+# Allows direct ssh after provisioning (ssh core@master1)
+- name: keep original hosts file
+  hosts: localhost
+  connection: local
+  tasks:
+    - copy: src=/etc/hosts dest=/etc/hosts.orig force=no
+
+- name: start with original /etc/hosts
+  hosts: localhost                                                      
+  connection: local               
+  tasks:       
+    - shell: cp /etc/hosts.orig /tmp/hosts
+
+- name: Add cluster host entries
+  hosts: cluster                                                      
+  connection: local               
+  tasks:     
+    - lineinfile: dest=/tmp/hosts line="{{ ansible_ssh_host }} {{ ansible_host }}"
+- name: replace /etc/hosts
+  hosts: localhost                                                      
+  connection: local               
+  tasks:       
+    - shell: cat /tmp/hosts > /etc/hosts
+# Add ssh identity for cluster              
+- name: ssh identity for cluster
+  hosts: openstack                                                      
+  connection: local
+  run_once: true             
+  tasks:       
+    - lineinfile: create=yes mode=0600 dest=/root/.ssh/config line="IdentityFile {{ key_path }}/{{ key_name }}.pem"
