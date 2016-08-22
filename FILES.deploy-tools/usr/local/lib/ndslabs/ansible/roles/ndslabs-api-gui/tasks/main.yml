@@ -24,11 +24,11 @@
   when: apiserver.rc != 0
 
 - name: WebUI status
-  command: kubectl get rc ndslabs-gui
+  command: kubectl get rc ndslabs-webui
   register: webui
   failed_when: webui.rc < 0
 
-- name: NDSLabs| create ndslabs-gui
+- name: NDSLabs| create ndslabs-webui
   command: kubectl create -f "/tmp/ndslabs-webui.yaml"
   when: webui.rc != 0
 
