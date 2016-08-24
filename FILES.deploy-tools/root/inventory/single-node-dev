@@ -16,7 +16,7 @@ ndslabs_domain= {{logical_cluster_name}}
 #
 apiserver_image_name=ndslabs/apiserver:latest
 webui_image_name=ndslabs/angular-ui:latest
-loadbal_image_name=ndslabs/nginx-ingress-controller:latest
+loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
 gluster_image_name=ndslabs/gluster:latest
 
 #
