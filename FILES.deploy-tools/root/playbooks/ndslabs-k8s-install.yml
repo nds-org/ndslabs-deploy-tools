@@ -74,7 +74,8 @@
 
 # Add the cluster-local registry, mapped to all hosts on localhost:5000
 - name: registry storage
-  hosts: nodes[0]
+  hosts: compute[0]
+  become: true
   tasks:
     - file: path="{{ clusterfs_vol_path }}/docker-registry" state=directory
 - name: cluster-local-docker-registry

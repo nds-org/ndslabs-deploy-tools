@@ -7,7 +7,7 @@
     - docker-registry-proxy-ds.yaml
 
 - name: run local registry yaml
-  command: kubectl create -f /tmp/{{ item }} || true
+  shell: kubectl create -f /tmp/{{ item }} || true
   with_items:
     - docker-registry-rc.yaml
     - docker-registry-svc.yaml
