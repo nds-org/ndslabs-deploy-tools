@@ -24,4 +24,4 @@ spec:
       volumes:
         - name: image-store
           hostPath:
-              path: "{{ clusterfs_vol_path }}/docker-registry"
+              path: {{ clusterfs_vol_path }}/docker-registry
