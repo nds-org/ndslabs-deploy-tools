@@ -8,6 +8,13 @@
   become: true
   service: name=locksmithd state=stopped enabled=no
 
+- name: fix coreos docker BIP and MTU - make service dir
+  become: true
+  file: path=/etc/systemd/system/docker.service.d state=directory
+- name: fix coreos BIP and MTU - copy the service file
+  become: true
+  copy: src=10-docker0.conf dest=/etc/systemd/system/docker.service.d/10-docker0.conf
+
 # glfs quotas require CoreOS vers >= 1097, and old OS images are insecure so update....
 - name: Update CoreOS - may take a few minutes
   become: true
