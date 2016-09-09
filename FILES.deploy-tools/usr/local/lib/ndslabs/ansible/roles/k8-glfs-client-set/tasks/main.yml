@@ -1,13 +1,16 @@
 
 - name: Gluster Clients DaemonSet Spec
   template: src=gluster-client-ds.yaml.j2 dest=/tmp/gluster-client-ds.yaml
-  delegate_to: "{{ groups['masters'][0] }}"
   register: deploy
-  run_once: true
 
 - name: Gluster Clients Deploy DaemonSet
   command: kubectl create -f  /tmp/gluster-client-ds.yaml
-  delegate_to: "{{ groups['masters'][0] }}"
-  run_once: true
   when:  deploy.changed
 
+- name: Wait for global FS ready
+  shell: "kubectl get pods -lname=glfs-client-{{ clusterfs_vol_name }} -o jsonpath='{.items[*].status.containerStatuses[*].ready}' --namespace=kube-system"
+  register: shellout
+  until: shellout.stdout.find("false") == -1
+  retries: 50
+  delay: 10
+  when: deploy.changed

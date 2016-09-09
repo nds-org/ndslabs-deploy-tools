@@ -9,9 +9,9 @@
 
 - name: Clean master /tmp
   hosts: masters
+  become: true
   tasks:
-    - shell: rm -f /tmp/*
-  ignore_errors: true
+    - shell: rm -f /tmp/* || true 
 
 ########################################################################################
 # Unwind K8s 

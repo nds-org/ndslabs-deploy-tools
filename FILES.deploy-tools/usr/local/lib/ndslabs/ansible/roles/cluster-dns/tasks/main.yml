@@ -2,6 +2,11 @@
 ######################
 #   KubeDNS
 ######################
+- name: DNS copy yaml
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - kube-dns.yaml
+
 - name: DNS status
   command: kubectl get rc kube-dns-v11 --namespace=kube-system
   register: dns

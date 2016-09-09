@@ -1,16 +1,14 @@
 
 - name: deploy local registry yaml
   copy: src={{ item }} dest=/tmp/{{ item }}
-  register: dreg
   with_items:
     - docker-registry-rc.yaml
     - docker-registry-svc.yaml
     - docker-registry-proxy-ds.yaml
 
-- name: deploy local registry yaml
-  command: kubectl create -f /tmp/{{ item }}
+- name: run local registry yaml
+  shell: kubectl create -f /tmp/{{ item }} || true
   with_items:
     - docker-registry-rc.yaml
     - docker-registry-svc.yaml
     - docker-registry-proxy-ds.yaml
-  when: dreg.changed
