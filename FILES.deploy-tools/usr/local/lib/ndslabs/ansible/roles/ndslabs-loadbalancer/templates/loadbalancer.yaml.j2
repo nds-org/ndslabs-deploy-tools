@@ -1,4 +1,11 @@
 apiVersion: v1
+data:
+  server-name-hash-bucket-size: "512"
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-conf
+----
+apiVersion: v1
 kind: ReplicationController
 metadata:
   name: nginx-ilb-rc
@@ -36,6 +43,7 @@ spec:
         - --default-backend-service=default/default-http-backend
         - --running-in-cluster=true
         - --healthz-port=9999
+        - --nginx-configmap=$(POD_NAMESPACE)/nginx-ingress-conf
       hostNetwork: true
       nodeSelector:
           ndslabs-node-role: loadbalancer

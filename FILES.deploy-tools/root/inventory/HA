@@ -12,6 +12,7 @@ kube_version=1.2.4
 kube-ui=true                                          
 kube-dash=true
 key_name={{logical_cluster_name}}
+support_email=ndslabs-support@nationaldataservice.org
 
 #
 # Docker images

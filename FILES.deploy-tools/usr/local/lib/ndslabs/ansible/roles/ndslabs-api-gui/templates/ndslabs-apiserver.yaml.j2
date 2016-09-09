@@ -54,7 +54,9 @@ spec:
           - name: VOLUME_PATH
             value: "{{ clusterfs_vol_path }}"
           - name: VOLUME_NAME
-            value: "{{ clusterfs_vol_name }} "
+            value: "{{ clusterfs_vol_name }}"
+          - name: SUPPORT_EMAIL
+            value: "{{ support_email }}"
       volumes:
        - hostPath:
             path: {{ clusterfs_vol_path }}
