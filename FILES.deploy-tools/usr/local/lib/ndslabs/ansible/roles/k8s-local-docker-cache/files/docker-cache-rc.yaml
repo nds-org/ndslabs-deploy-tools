@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: docker-cache
+spec:
+  replicas: 1
+  selector: 
+    role: docker-cache
+  template:
+    metadata:
+      labels:
+        role: docker-cache
+    spec:
+      containers:
+      - name: cluster-registry
+        image: registry:2
+        ports:
+        - name: registry
+          containerPort: 5001
+        volumeMounts:
+          - name: image-store
+            mountPath: /var/lib/registry
+          - name: config
+            mountPath: /etc/docker/registry
+      volumes:
+        - name: image-store
+          emptyDir: {}
+            #path: /var/glfs/global/docker-cache
+        - name: config
+          configMap:
+            name: docker-cache-config

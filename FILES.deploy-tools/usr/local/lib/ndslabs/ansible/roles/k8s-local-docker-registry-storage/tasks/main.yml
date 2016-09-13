@@ -1,0 +1,20 @@
+---
+
+- name: wait for {{ clusterfs_vol_path }}
+  wait_for:
+    path: "{{ clusterfs_vol_path }}"
+    delay: 5
+
+- name: create {{ clusterfs_vol_path }}/docker-registry
+  become: true
+  file:  
+    path: "{{ clusterfs_vol_path }}/docker-registry"
+    mode: 0777
+    state: directory
+
+- name: create {{ clusterfs_vol_path }}/docker-cache
+  become: true
+  file:  
+    path: "{{ clusterfs_vol_path }}/docker-cache"
+    mode: 0777
+    state: directory

@@ -6,7 +6,7 @@
 logical_cluster_name=ha
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
-image=CoreOSAlpha
+image=CoreOSStable1122
 flavor=r2.medium
 kube_version=1.2.4
 kube-ui=true                                          

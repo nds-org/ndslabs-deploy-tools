@@ -13,6 +13,16 @@
   roles:
     - ndslabs-k8-init-labels
 
+# Docker cache - RC count 1 with host vol,
+- name: Docker cache k8s files
+  hosts: masters[0]
+  roles:
+    - k8s-local-docker-cache
+- name: docker cache config on nodes 
+  hosts: cluster
+  roles:
+    - k8s-local-docker-cache-nodeconfig
+
 # Deploy global FS - state directories
 - name: glfs state directories
   hosts: cluster
@@ -31,9 +41,7 @@
 - name: Global FS k8s objects
   hosts: masters[0]
   roles:
-    - { role: k8-glfs-server-pods, when: "groups['glfs']|length > 0" }
     - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
-
 
 # Fix publicip nodes
 - name: LoadBalancer public interface

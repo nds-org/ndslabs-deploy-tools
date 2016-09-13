@@ -5,6 +5,7 @@
     - docker-registry-rc.yaml
     - docker-registry-svc.yaml
     - docker-registry-proxy-ds.yaml
+  register: dreg
 
 - name: run local registry yaml
   shell: kubectl create -f /tmp/{{ item }} || true
@@ -12,3 +13,4 @@
     - docker-registry-rc.yaml
     - docker-registry-svc.yaml
     - docker-registry-proxy-ds.yaml
+  when: dreg.changed

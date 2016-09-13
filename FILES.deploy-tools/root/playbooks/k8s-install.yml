@@ -15,8 +15,8 @@
   hosts: masters[0]
   tasks:
     - shell: kubectl create namespace kube-system
-    
-- name: start DNS and implicitly kube-system namespace
+
+- name: start DNS
   hosts: masters[0]
   roles:
     - cluster-dns

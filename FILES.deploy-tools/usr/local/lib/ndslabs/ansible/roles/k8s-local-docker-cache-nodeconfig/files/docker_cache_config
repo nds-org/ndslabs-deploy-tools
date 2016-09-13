@@ -1,0 +1,1 @@
+DOCKER_OPTS=" --registry-mirror=http://localhost:5001"

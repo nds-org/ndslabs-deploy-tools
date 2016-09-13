@@ -5,7 +5,7 @@
 logical_cluster_name=dr
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
-image=CoreOSAlpha
+image=CoreOSStable1122
 flavor=m1.small
 kube_version=1.2.4
 kube-ui=true                                          

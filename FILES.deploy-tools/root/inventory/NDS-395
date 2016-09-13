@@ -5,7 +5,7 @@
 logical_cluster_name=example
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
-image=CoreOSAlpha
+image=CoreOSStable1122
 flavor=m1.medium
 kube_version=1.2.4
 key_name={{logical_cluster_name}}
@@ -17,7 +17,7 @@ ndslabs_domain= {{logical_cluster_name}}.ndslabs.org
 apiserver_image_name=ndslabs/apiserver:latest
 webui_image_name=ndslabs/angular-ui:latest
 loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
-gluster_image_name=davidraila/gluster:1.0.1-alpha.NDS-395 
+gluster_image_name=ndslabs/gluster:latest
 
 #
 # Logging and monitoring

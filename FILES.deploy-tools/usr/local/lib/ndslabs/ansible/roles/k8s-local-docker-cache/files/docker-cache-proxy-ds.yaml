@@ -1,12 +1,12 @@
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: kube-registry-proxy
+  name: docker-cache-proxy
 spec:
   template:
     metadata:
       labels:
-        name: cluster-registry-proxy
+        name: docker-cache-proxy
     spec:
       containers:
       - name: kube-registry-proxy
@@ -17,12 +17,12 @@ spec:
             memory: 50Mi
         env:
         - name: REGISTRY_HOST
-          value: cluster-registry
+          value: docker-cache
         - name: REGISTRY_PORT
-          value: "5000"
+          value: "5001"
         - name: FORWARD_PORT
-          value: "5000"
+          value: "5001"
         ports:
         - name: registry
-          containerPort: 5000
-          hostPort: 5000
+          containerPort: 5001
+          hostPort: 5001

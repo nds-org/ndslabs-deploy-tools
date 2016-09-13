@@ -38,8 +38,8 @@
   local_action: shell ssh -i {{key_path}}/{{key_name}}.pem -o BatchMode=yes -o StrictHostKeyChecking=no {{ansible_ssh_user}}@{{ansible_ssh_host}} echo "{{ansible_ssh_host}}"
   register: result
   until: result['stdout'] == "{{ansible_ssh_host}}"
-  retries: 30
-  delay: 5
+  retries: 20
+  delay: 15
 
 - name: register key for host
   set_fact:

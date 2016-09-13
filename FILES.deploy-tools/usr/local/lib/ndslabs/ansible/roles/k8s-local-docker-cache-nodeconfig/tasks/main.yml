@@ -1,0 +1,13 @@
+
+- name: config docker for local cache
+  become: true
+  copy: src={{ item }} dest=/etc/sysconfig/docker
+  with_items:
+    - docker_cache_config
+
+- name: restart docker
+  become: true
+  command: systemctl restart docker
+
+- name: wait for docker
+  wait_for: path=/var/run/docker.pid
