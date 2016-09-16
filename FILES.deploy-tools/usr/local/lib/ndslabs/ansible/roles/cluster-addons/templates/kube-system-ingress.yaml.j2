@@ -3,41 +3,49 @@ kind: Ingress
 metadata:
   name: kube-lma-ingress
   namespace: kube-system
+  annotations:
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: basic-auth
+    ingress.kubernetes.io/auth-realm: NDS Labs
 spec:
   tls:
   - hosts:
-    - www.{{ndslabs_domain}}
+    - kubedash.{{ndslabs_domain}}
+    - kubeui.{{ndslabs_domain}}
+    - prometheus.{{ndslabs_domain}}
+    - kibana.{{ndslabs_domain}}
+    - grafana.{{ndslabs_domain}}
     secretName: ndslabs-tls-secret
   rules:
-  - host: www.kubedash.{{ndslabs_domain}}
+  - host: kubedash.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: kubedash
           servicePort: 80
         path: /
-  - host: www.kubeui.{{ndslabs_domain}}
+  - host: kubeui.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: kubernetes-dashboard
           servicePort: 80
         path: /
-  - host: www.prometheus.{{ndslabs_domain}}
+  - host: prometheus.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: promdash
           servicePort: 9090
         path: /
-  - host: www.kibana.{{ndslabs_domain}}
+  - host: kibana.{{ndslabs_domain}}
     http:
       paths:
       - backend:
           serviceName: kibana-logging
           servicePort: 5601
         path: /
-  - host: www.grafana.{{ndslabs_domain}}
+  - host: grafana.{{ndslabs_domain}}
     http:
       paths:
       - backend:

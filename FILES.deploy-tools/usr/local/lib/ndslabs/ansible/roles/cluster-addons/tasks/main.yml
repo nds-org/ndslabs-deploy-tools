@@ -9,7 +9,6 @@
     - prometheus-service.json
     - pushgateway-service.json
     
-    
 - name: Cluster Addons| populate template
   template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
   with_items:
