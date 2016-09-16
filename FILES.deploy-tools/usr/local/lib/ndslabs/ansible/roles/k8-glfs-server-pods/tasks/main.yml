@@ -46,12 +46,21 @@
   when: gfsinstalling.changed
 
 - name: Gluster Init Peer Probe
-  shell: "kubectl exec -t {{ glpod }} gluster peer probe {{ ansible_ssh_host }}  --namespace=kube-system"
+  shell: kubectl exec -t {{ glpod }} gluster peer probe {{ ansible_ssh_host }} --namespace=kube-system
   delegate_to: "{{ groups['masters'][0] }}"
   register: shellout
   until: shellout.stdout.find("uccess") != -1
   retries: 50
-  delay: 6
+  delay: 10
+  when: gfsinstalling.changed
+
+- name: Gluster wait for peering completion
+  shell: kubectl exec -t {{ glpod }} gluster pool list --namespace=kube-system | tail -n+2 | wc -l
+  delegate_to: "{{ groups['masters'][0] }}"
+  register: shellout
+  until: shellout.stdout.find("4") != -1
+  retries: 50
+  delay: 10
   when: gfsinstalling.changed
 
 - name: Gluster Full Cluster FS Volume 2x2 strip/mirror
