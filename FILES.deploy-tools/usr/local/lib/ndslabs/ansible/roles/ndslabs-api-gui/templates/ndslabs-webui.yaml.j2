@@ -43,6 +43,8 @@ spec:
             value: "/api"
           - name: APISERVER_SECURE
             value: "true"
+          - name: SUPPORT_EMAIL
+            value: "{{ support_email }}"
         readinessProbe:
           httpGet:
             path: /asset/png/favicon-2-32x32.png
