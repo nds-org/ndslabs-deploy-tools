@@ -20,7 +20,7 @@ docker_volume_gb=100
 apiserver_image_name=ndslabs/apiserver:latest
 webui_image_name=ndslabs/angular-ui:latest
 loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
-gluster_image_name=davidraila/gluster:NDS-348
+gluster_image_name=davidraila/gluster:latest
 
 #
 # Logging and monitoring
