@@ -21,20 +21,8 @@
     ansible_ssh_host: "{{ os_host.server.private_v4 }}"
   register: os_priv_addr
 
-#- debug: var=os_host.server.public_v4
-#- debug: var=ansible_ssh_host
-#- debug: var=ansible_host
-
-#- name: Public IP overrides private
-#  set_fact:
-#    ansible_ssh_host: "{{ os_host.server.public_v4 }}"
-#    when: os_host.server.public_v4 != ""
-
-#- debug: var=ansible_ssh_host
-
 - name: Wait for host up
   become: false
-  connection: local
   local_action: shell ssh -i {{key_path}}/{{key_name}}.pem -o BatchMode=yes -o StrictHostKeyChecking=no {{ansible_ssh_user}}@{{ansible_ssh_host}} echo "{{ansible_ssh_host}}"
   register: result
   until: result['stdout'] == "{{ansible_ssh_host}}"
@@ -44,5 +32,3 @@
 - name: register key for host
   set_fact:
     ansible_ssh_private_key_file: "{{key_path}}/{{key_name}}.pem"
-
-#- debug: var=result
