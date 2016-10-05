@@ -1,0 +1,14 @@
+
+- name: Nagios NRPE status
+  command: kubectl get ds nagios-nrpe --namespace=kube-system
+  register: nrpe
+  failed_when: nrpe.rc < 0
+
+- name: Nagios NRPE Daemonset spec
+  template: src=nagios-nrpe-ds.yaml.j2 dest=/tmp/nagios-nrpe-ds.yaml
+  register: deploy
+  when: enablenagios is defined and nrpe.rc != 0
+
+- name: Nagios NRPE Deploy DaemonSet
+  command: kubectl create -f  /tmp/nagios-nrpe-ds.yaml
+  when: enablenagios is defined and deploy.changed

@@ -73,6 +73,12 @@
   roles:
     - cluster-addons
 
+# Nagios NRPE client
+- name: Nagios NRPE client
+  hosts: masters[0]
+  roles:
+    - k8s-nagios-nrpe 
+
 # Deploy NDS Labs and LoadBalancer  
 - name: Start NDSLabs ApiServer and WebUI
   hosts: masters
