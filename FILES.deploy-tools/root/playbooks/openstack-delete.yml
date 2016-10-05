@@ -16,12 +16,19 @@
   tasks:
     - os_server: state=absent wait=yes name={{ ansible_host }}
 
-# delete any volumes
-- name: Remove volumes
-  hosts: glfs:&openstack
+# delete docker vols
+- name: Remove docker volumes
+  hosts: cluster
   connection: local
   tasks:
-    - os_volume: state=absent display_name="{{ ansible_host }}-{{vol_name}}"
+    - os_volume: state=absent display_name="{{ ansible_host }}-docker-volume"
+
+# delete glfs vols
+- name: Remove glfs volumes
+  hosts:  cluster:&glfs
+  connection: local
+  tasks:
+    - os_volume: state=absent display_name="{{ ansible_host }}-{{ vol_name }}"
 
 # Delete the hosts lines
 - name: start with original /etc/hosts
@@ -40,4 +47,41 @@
   connection: local               
   tasks:       
     - shell: cat /tmp/hosts > /etc/hosts
+
+- name: ssh config dir
+  hosts: cluster
+  serial: 1
+  run_once: true
+  tasks:
+    - local_action: 
+        module: file
+        state: directory
+        path: ~/.ssh 
+        mode: 0600
+
+- name: ssh config
+  hosts: cluster
+  serial: 1
+  run_once: true
+  tasks:
+    - local_action: 
+        module: file
+        state: touch
+        path: ~/.ssh/config 
+        mode: 0600
+  
+- name: remove ssh host config
+  hosts: cluster
+  serial: 1
+  tasks:
+    - local_action:
+        module: blockinfile
+        state: absent
+        dest: ~/.ssh/config
+        marker: "# {mark} ANSIBLE MANAGED for {{ ansible_host }}"
+        block: |
+          host {{ ansible_host }}
+            hostname {{ ansible_ssh_host }}
+            user {{ ansible_ssh_user }}
+            IdentityFile {{ key_path }}/{{ key_name }}.pem
 

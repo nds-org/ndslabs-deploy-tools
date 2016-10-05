@@ -6,7 +6,7 @@
   os_volume:
     state: present
     size: "{{ vol_size }}"
-    display_name: "{{ ansible_host }}-{{vol_name}}"
+    display_name: "{{ ansible_host }}-{{ vol_name }}"
   register: osvol
 
 - name: Attach OS volume
@@ -15,7 +15,7 @@
   os_server_volume:
     state: present
     server: "{{ ansible_host }}"
-    volume: "{{ ansible_host }}-{{vol_name}}"
+    volume: "{{ ansible_host }}-{{ vol_name }}"
   register: vol_attached
 
 - name: Register block_dev for mount 
