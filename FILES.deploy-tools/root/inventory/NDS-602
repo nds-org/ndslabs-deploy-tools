@@ -2,16 +2,16 @@
 # Cluster
 #
 [all:vars]
-logical_cluster_name=example
+logical_cluster_name=dr
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
 image=CoreOSStable1122
 flavor=m1.medium
 kube_version=1.2.4
 key_name={{logical_cluster_name}}
-ndslabs_domain= {{logical_cluster_name}}
+ndslabs_domain= {{logical_cluster_name}}.ndslabs.org
 support_email=ndslabs-support@nationaldataservice.org
-docker_volume_gb=50
+docker_volume_size=100
 
 
 #
@@ -20,37 +20,37 @@ docker_volume_gb=50
 apiserver_image_name=ndslabs/apiserver:latest
 webui_image_name=ndslabs/angular-ui:latest
 loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
-gluster_image_name=ndslabs/gluster:latest
+gluster_image_name=davidraila/gluster:NDS-348
 
 #
 # Logging and monitoring
 # 
-#enablegrafana=true
-#enablepromdash=true
 #enablekibana=true
-#enablekubedash=true
+enablegrafana=true
+#enablepromdash=true
 #enablekubeui=true
+enablekubedash=true
 
 #
 # Servers 
 #
 [masters]
-develop
+master1
 
 [etcd:children]
 masters
 
-[loadbal:children]
-dev
+[glfs]
+gfs[1:4]
 
-[compute:children]
-dev
+[compute]
+node1
 
-#[glfs]
-#dev
+[monitor]
+lma
 
-[dev]
-develop
+[loadbal]
+loadbal
 
 #
 # Groups - assigned according to roles
@@ -58,9 +58,10 @@ develop
 
 #Compute nodes
 [nodes:children]
-loadbal
+glfs
 compute
-#glfs
+loadbal
+monitor
 
 #all nodes
 [cluster:children]
@@ -76,10 +77,14 @@ cluster
 [coreos:children]
 cluster
 [publicip:children]
-dev
+loadbal
 
 #
 # Cluster-Specific Group Variables/overrides
 #
-
+[glfs:vars]
+vol_size= 20
+vol_name= brick0
+brick_mount_path= /media/brick0
+service_name=media-brick0.mount
 
