@@ -30,6 +30,7 @@
 
 - name: add to ssh config
   hosts: cluster
+  serial: 1
   roles:
     - host-in-ssh-config
 
