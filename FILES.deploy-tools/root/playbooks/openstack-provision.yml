@@ -28,6 +28,11 @@
   roles: 
     - openstack-system
 
+- name: add to ssh config
+  hosts: cluster
+  roles:
+    - host-in-ssh-config
+
 # Prepare CoreOS nodes to execute ansible (install pypy, etc)
 - name: CoreOS Setup
   hosts: cluster
@@ -52,6 +57,12 @@
   hosts: coreos
   roles:
     - coreos-ndslabs-devsystem
+
+# Provision and attach OpenStack volume for /var/lib/docker
+- name: OpenStack docker provision volume and attach
+  hosts: cluster
+  roles: 
+    - openstack-docker-volume
 
 # Provision and attach OpenStack volume to glfs nodes
 - name: OpenStack GLFS provision volume and attach
@@ -96,10 +107,3 @@
   connection: local               
   tasks:       
     - shell: cat /tmp/hosts > /etc/hosts
-# Add ssh identity for cluster              
-- name: ssh identity for cluster
-  hosts: openstack                                                      
-  connection: local
-  run_once: true             
-  tasks:       
-    - lineinfile: create=yes mode=0600 dest=/root/.ssh/config line="IdentityFile {{ key_path }}/{{ key_name }}.pem"
