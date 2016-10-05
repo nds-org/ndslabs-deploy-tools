@@ -11,8 +11,7 @@ kube_version=1.2.4
 key_name={{logical_cluster_name}}
 ndslabs_domain= {{logical_cluster_name}}
 support_email=ndslabs-support@nationaldataservice.org
-docker_volume_gb=50
-
+docker_volume_gb=100
 
 #
 # Docker images
