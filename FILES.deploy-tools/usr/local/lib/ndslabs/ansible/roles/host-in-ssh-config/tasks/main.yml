@@ -1,0 +1,22 @@
+---
+
+#
+# add ssh alias for direct ssh access to system in ~/.ssh/config
+#
+  
+- local_action: 
+    module: file
+    state: directory
+    path: ~/.ssh mode=0600
+  run_once: true
+
+- local_action:
+    module: blockinfile
+    create: true
+    dest: ~/.ssh/config
+    marker: "# {mark} ANSIBLE MANAGED for {{ ansible_host }}"
+    block: |
+      host {{ ansible_host }}
+        hostname {{ ansible_ssh_host }}
+        user {{ ansible_ssh_user }}
+        IdentityFile {{ key_path }}/{{ key_name }}.pem
