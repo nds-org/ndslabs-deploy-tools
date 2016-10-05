@@ -48,6 +48,28 @@
   tasks:       
     - shell: cat /tmp/hosts > /etc/hosts
 
+- name: ssh config dir
+  hosts: cluster
+  serial: 1
+  run_once: true
+  tasks:
+    - local_action: 
+        module: file
+        state: directory
+        path: ~/.ssh 
+        mode: 0600
+
+- name: ssh config
+  hosts: cluster
+  serial: 1
+  run_once: true
+  tasks:
+    - local_action: 
+        module: file
+        state: touch
+        path: ~/.ssh/config 
+        mode: 0600
+  
 - name: remove ssh host config
   hosts: cluster
   serial: 1

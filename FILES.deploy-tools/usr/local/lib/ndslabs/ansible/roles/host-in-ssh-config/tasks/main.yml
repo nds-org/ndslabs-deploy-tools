@@ -7,7 +7,8 @@
 - local_action: 
     module: file
     state: directory
-    path: ~/.ssh mode=0600
+    path: ~/.ssh 
+    mode: 0600
   run_once: true
 
 - local_action:
