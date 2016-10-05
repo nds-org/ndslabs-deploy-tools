@@ -22,7 +22,7 @@
 - set_fact:  docker_volume_dev="{{ docker_vol_attach.attachments[0].device }}"
   when: dockervol.changed
 
-- name: Format Brick dev
+- name: Format docker volume
   become: true
   filesystem: fstype=xfs dev="{{ docker_volume_dev }}"
   when: dockervol.changed
