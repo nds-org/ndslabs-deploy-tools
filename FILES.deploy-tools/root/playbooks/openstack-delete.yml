@@ -18,17 +18,17 @@
 
 # delete docker vols
 - name: Remove docker volumes
-  hosts: cluster
+  hosts: compute
   connection: local
   tasks:
-    - os_volume: state=absent display_name="{{ ansible_host }}-docker-volume"
+    - os_volume: state=absent wait=yes display_name="{{ ansible_host }}-docker-volume"
 
 # delete glfs vols
 - name: Remove glfs volumes
   hosts:  cluster:&glfs
   connection: local
   tasks:
-    - os_volume: state=absent display_name="{{ ansible_host }}-{{ vol_name }}"
+    - os_volume: state=absent wait=yes display_name="{{ ansible_host }}-{{ vol_name }}"
 
 # Delete the hosts lines
 - name: start with original /etc/hosts
