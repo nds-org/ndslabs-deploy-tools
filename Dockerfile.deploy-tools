@@ -6,7 +6,7 @@ FROM debian:jessie
 RUN 	 \
     apt-get -y update && apt-get -y install \
     python python-pip  python-dev wget curl subversion \
-	bash vim nano libffi-dev libssh-dev \
+	bash vim-tiny nano libffi-dev libssh-dev \
 	openssh-client &&\
     pip install --upgrade pip && pip install --upgrade pytz ansible==2.0.2.0 shade &&\
     (mkdir -p /usr/local/lib/kubernetes/contrib && cd /usr/local/lib/kubernetes/contrib &&\ 

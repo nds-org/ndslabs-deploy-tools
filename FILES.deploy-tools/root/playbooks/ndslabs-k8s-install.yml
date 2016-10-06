@@ -48,7 +48,7 @@
   hosts: publicip
   connection: local
   tasks:
-    - os_floating_ip: server={{ ansible_host }}
+    - os_floating_ip: server={{ ansible_host }} wait=yes
     - command: nova add-secgroup {{ ansible_host}} {{ security_groups }}
 
 

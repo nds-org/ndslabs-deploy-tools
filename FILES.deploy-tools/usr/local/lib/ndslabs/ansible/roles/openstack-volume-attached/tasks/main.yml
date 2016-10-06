@@ -5,6 +5,7 @@
   connection: local
   os_volume:
     state: present
+    wait: yes
     size: "{{ vol_size }}"
     display_name: "{{ ansible_host }}-{{ vol_name }}"
   register: osvol
@@ -14,6 +15,7 @@
   become: false
   os_server_volume:
     state: present
+    wait: yes
     server: "{{ ansible_host }}"
     volume: "{{ ansible_host }}-{{ vol_name }}"
   register: vol_attached

@@ -61,7 +61,7 @@
 
 # Provision and attach OpenStack volume for /var/lib/docker
 - name: OpenStack docker provision volume and attach
-  hosts: cluster
+  hosts: compute
   roles: 
     - openstack-docker-volume
 
