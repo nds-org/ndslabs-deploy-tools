@@ -1,0 +1,91 @@
+#
+# Inventory for beta cluster www.workbench.nationaldataservice.org
+#
+[all:vars]
+logical_cluster_name=workbench
+cluster_name=cluster.local
+native_dns=os.ncsa.edu
+image=CoreOSStable1122
+flavor=m1.medium
+kube_version=1.2.6
+key_name={{ logical_cluster_name }}
+ndslabs_domain={{ logical_cluster_name }}.nationaldataservice.org
+support_email=ndslabs-support@nationaldataservice.org
+docker_volume_gb=100
+
+#
+# Docker images
+#
+apiserver_image_name=ndslabs/apiserver:latest
+webui_image_name=ndslabs/angular-ui:latest
+loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
+gluster_image_name=ndslabs/gluster:latest
+nrpe_image_name=ndslabs/nagios-nrpe:latest
+
+#
+# Logging and monitoring
+#
+enablegrafana=true
+enablekubedash=true
+enablenagios=true
+#enablekibana=true
+#enablepromdash=true
+#enablekubeui=true
+
+#
+# Servers
+#
+[masters]
+master1
+
+[etcd:children]
+masters
+
+[glfs]
+gfs[1:4]
+
+[compute]
+node[1:6]
+
+[monitor]
+lma
+
+[loadbal]
+loadbal
+
+#
+# Groups - assigned according to roles
+#
+[nodes:children]
+glfs
+compute
+loadbal
+monitor
+
+#all nodes
+[cluster:children]
+nodes
+masters
+etcd
+
+[all:children]
+cluster
+
+[openstack:children]
+cluster
+[coreos:children]
+cluster
+[publicip:children]
+loadbal
+
+#
+# Cluster-Specific Group Variables/overrides
+#
+[compute:vars]
+flavor=n-rcd1.xlarge
+
+[glfs:vars]
+vol_size=300
+vol_name=brick0
+brick_mount_path=/media/brick0
+service_name=media-brick0.mount
