@@ -14,7 +14,7 @@ kube-dash=true
 key_name={{logical_cluster_name}}
 support_email=ndslabs-support@nationaldataservice.org
 docker_volume_gb=100
-
+analytics_account=
 
 #
 # Docker images

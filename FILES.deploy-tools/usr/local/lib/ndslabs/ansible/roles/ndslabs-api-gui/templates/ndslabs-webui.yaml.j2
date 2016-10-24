@@ -45,6 +45,8 @@ spec:
             value: "true"
           - name: SUPPORT_EMAIL
             value: "{{ support_email }}"
+          - name: ANALYTICS_ACCOUNT
+            value: "{{ analytics_account }}"
         readinessProbe:
           httpGet:
             path: /asset/png/favicon-2-32x32.png
