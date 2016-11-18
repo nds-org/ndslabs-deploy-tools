@@ -16,7 +16,7 @@ subsets:
 apiVersion: v1
 kind: Service
 metadata:
-  name: gfs-srv-{{ clusterfs_vol_name }}
+  name: glfs-server-{{ clusterfs_vol_name }}
   namespace: kube-system
   labels:
     app: glfs-server-{{ clusterfs_vol_name }}
@@ -41,6 +41,8 @@ spec:
       nodeSelector:
         ndslabs-node-role: glfs
       hostNetwork: true
+      hostIPC: true
+      hostPID: true
       containers:
         - image: {{ gluster_image_name }}
           imagePullPolicy: Always
@@ -48,6 +50,8 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
+            - name: cgroup
+              mountPath: /sys/fs/cgroup
             - name: etc-glusterfs
               mountPath: /etc/glusterfs
             - name: var-lib-glusterd
@@ -80,6 +84,9 @@ spec:
                 command: 
                   - stop-server
       volumes:
+        - name: cgroup
+          hostPath:
+              path: /sys/fs/cgroup
         - name: brick0
           hostPath:
               path: {{ hostvars[groups['glfs'][1]]['brick_mount_path'] }}
