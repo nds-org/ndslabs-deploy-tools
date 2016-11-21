@@ -12,6 +12,8 @@ spec:
         name: glfs-client-{{ clusterfs_vol_name }}
     spec:
       hostNetwork: true
+      hostIPC: true
+      hostPID: true
       containers:
         - image: {{ gluster_image_name }}
           imagePullPolicy: Always
@@ -31,12 +33,12 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
-            - name: etc-glfs
-              mountPath: /etc/glfs
+            - name: cgroup
+              mountPath: /sys/fs/cgroup
             - name: var-lib-glusterd
               mountPath: /var/lib/glusterd
             - name: var-log-glfs
-              mountPath: /var/log/glfs
+              mountPath: /var/log/glusterfs
             - name: hostroot
               mountPath: /media/host
               readOnly: true
@@ -51,15 +53,15 @@ spec:
             - name: glconfig
               mountPath: /etc/glconfig
       volumes:
+        - name: cgroup
+          hostPath:
+              path: /sys/fs/cgroup
         - name: var-lib-glusterd
           hostPath:
               path: /var/lib/glusterd
-        - name: etc-glfs
-          hostPath:
-              path: /etc/glfs
         - name: var-log-glfs
           hostPath:
-              path: /var/log/glfs
+              path: /var/log/glusterfs
         - name: hostroot
           hostPath:
               path: /
