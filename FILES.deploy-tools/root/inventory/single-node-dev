@@ -3,6 +3,46 @@
 #
 [all:vars]
 logical_cluster_name=example
+<<<<<<< a5dc9d8e2c46692d4269eae32a5f7e8127571a63
+=======
+cluster_name=cluster.local
+native_dns=os.ncsa.edu
+image=CoreOSStable1122
+flavor=m1.medium
+kube_version=1.2.4
+key_name={{logical_cluster_name}}
+ndslabs_domain= {{logical_cluster_name}}
+support_email=ndslabs-support@nationaldataservice.org
+docker_volume_gb=100
+
+#
+# Docker images
+#
+apiserver_image_name=ndslabs/apiserver:latest
+webui_image_name=ndslabs/angular-ui:latest
+loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
+gluster_image_name=ndslabs/gluster:latest
+nrpe_image_name=ndslabs/nagios-nrpe:latest
+backup_image_name=davidraila/cluster-backup:NDS-348
+
+#
+# backup vars
+#
+backup_user=centos
+backup_host=132.249.238.215
+backup_path=/ndsbackup
+backup_key=backup.pem
+
+#
+# Logging and monitoring
+# 
+#enablegrafana=true
+#enablepromdash=true
+#enablekibana=true
+#enablekubedash=true
+#enablekubeui=true
+#enablenagios=true
+>>>>>>> add cluster backup
 
 #
 # Servers 

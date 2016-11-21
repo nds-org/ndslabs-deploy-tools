@@ -1,0 +1,16 @@
+#
+# Backup the local provisioning data
+#
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - ansible_host_vars_setup
+
+# Apply Kubernetes node labels for NDS - 
+- name: Backup saved_and_sensitive
+  hosts: localhost
+  tasks:
+    - local_action: command tar Cczf /root/SAVED_AND_SENSITIVE_VOLUME /tmp/SAVED_AND_SENSITIVE.tgz .
+    - shell: "scp -i /root/SAVED_AND_SENSITIVE_VOLUME/{{ backup_key }} -o StrictHostKeyChecking=no /tmp/SAVED_AND_SENSITIVE.tgz 
+    {{ backup_user }}@{{ backup_host }}:/ndsbackup/$(date +%y-%m-%d-%H.%M)-SAVED_AND_SENSITIVE.tgz"
+  

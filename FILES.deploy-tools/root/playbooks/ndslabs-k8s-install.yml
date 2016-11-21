@@ -37,6 +37,7 @@
     - file: path="/var/lib/glusterd" state=directory
     - file: path="/var/log/glusterfs" state=directory
     - file: path="/etc/glusterfs" state=directory
+    - file: path="/var/lib/xfsdump" state=directory
 
 - name: Global FS k8s objects
   hosts: glfs
@@ -101,3 +102,5 @@
   hosts: masters[0]
   roles:
     - k8s-local-docker-registry
+
+- include: /root/playbooks/deploy-cluster-backups.yml
