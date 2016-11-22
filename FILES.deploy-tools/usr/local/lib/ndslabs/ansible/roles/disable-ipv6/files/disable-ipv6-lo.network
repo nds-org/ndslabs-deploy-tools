@@ -1,0 +1,7 @@
+[Match]
+Name=lo
+
+[Network]
+LinkLocalAddressing=ipv4
+IPv6AcceptRA=false
+
