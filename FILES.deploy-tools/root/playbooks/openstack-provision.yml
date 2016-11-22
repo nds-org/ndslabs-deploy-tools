@@ -39,7 +39,7 @@
   hosts: cluster
   become: true
   roles:
-    - { role: pre-ansible, when oshost is defined and oshost.changed }
+    - { role: pre-ansible, when os_host is defined and os_host.changed }
 
 # Reprime cache if openstack changed
 - name: Recache facts
