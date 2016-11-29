@@ -15,24 +15,15 @@
   become: true
   copy: src=10-docker0.conf dest=/etc/systemd/system/docker.service.d/10-docker0.conf
 
-# glfs quotas require CoreOS vers >= 1097, and old OS images are insecure so update....
-- name: Update CoreOS - may take a few minutes
-  become: true
-  command: update_engine_client -update 
-  register: updated
-  ignore_errors: true
+- name: Get CoreOS version
+  shell: "(. /etc/os-release && echo ${VERSION}) | cut -d. -f1"
+  register: os_version
 
-- name: Reboot the system
-  become: true
-  command: systemd-run --on-active=5 /usr/bin/systemctl reboot
-  when: updated.rc == 0
-
-- name: Wait for host up after reboot
-  become: false
-  connection: local
-  delegate_to: localhost
-  wait_for: host={{ansible_ssh_host}} port=22 search_regex=OpenSSH delay=10 timeout=120
-  when: updated.rc == 0
+- name: Check CoreOS version
+  assert:
+    that:
+      - "{{ os_version.stdout }} > 1097"
+    msg:  "FATAL:  CoreOS version lacks rpc.quotad"
 
 - name: Fix hosts file
   become: true
