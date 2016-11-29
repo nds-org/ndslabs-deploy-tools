@@ -12,6 +12,7 @@ key_name={{ logical_cluster_name }}
 ndslabs_domain={{ logical_cluster_name }}.nationaldataservice.org
 support_email=ndslabs-support@nationaldataservice.org
 docker_volume_gb=100
+analytics_account=UA-75497735-3
 
 #
 # Docker images
