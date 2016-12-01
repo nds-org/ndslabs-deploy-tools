@@ -6,7 +6,7 @@
 
 - name: Disable IPV6 lo
   become: true
-  copy: src=disable-ipv6-lo.network dest=/etc/systemd/network/disable-ipv6-l0.network
+  copy: src=disable-ipv6-lo.network dest=/etc/systemd/network/disable-ipv6-lo.network
 
 - name: Disable IPV6 sysctl
   become: true
