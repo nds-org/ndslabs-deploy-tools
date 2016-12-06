@@ -1,5 +1,23 @@
 ---
 
-- name: Disable IPV6
+- name: Disable IPV6 eth0
   become: true
-  lineinfile: state=present create=yes dest="/etc/sysctl.d/10-disable-ipv6.conf" line="net.ipv6.conf.all.disable_ipv6 = 1"
+  copy: src=disable-ipv6-eth0.network dest=/etc/systemd/network/disable-ipv6-eth0.network
+
+- name: Disable IPV6 lo
+  become: true
+  copy: src=disable-ipv6-lo.network dest=/etc/systemd/network/disable-ipv6-lo.network
+
+- name: Disable IPV6 sysctl
+  become: true
+  copy: src=sysctl-disable-ipv6.conf dest=/etc/sysctl.d/sysctl-disable-ipv6.conf
+
+- name: Disable IPV6 restart networkd
+  become: true
+  service: name=systemd-networkd.service   state=restarted
+
+- name: Disable IPV6 sysctl
+  become: true
+  command: sysctl --system
+
+

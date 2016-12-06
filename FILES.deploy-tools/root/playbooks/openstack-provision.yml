@@ -46,6 +46,12 @@
   hosts: all
   gather_facts: true
 
+# Disable IPV6
+- name: Disable IPV6
+  hosts: cluster
+  roles:
+    - disable-ipv6
+
 # Create cluster /etc/hosts file on nodes
 - name: NDSLabs environment setup
   hosts: cluster
