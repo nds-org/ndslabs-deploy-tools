@@ -7,11 +7,11 @@ Tested primarily on openstack - but usable in other environments.
   * Ansible, ansible libraries, playbooks to deploy cluster systems in openstack, kubernetes, and ndslabs PaaS on kubernetes.
 
 # Important information
-  * OpenStack:  You need an openstack "rc" API file
+  * OpenStack:  You need an openstack `openrc.sh` API file
   * SAVED_AND_SENSITIVE_VOLUME, mapped at /root/SAVED_AND_SENSITIVE_VOLUME is used to save provisioned system information, keys, etc. for copying for safe storage.  If you don't provide a volume mount ( -v /my-path:/root/SAVED_AND_SENSITIVE_VOLUME ) and destroy the container, you may lose sensitive information
 
 # Startup:
-  * Create a named container:  docker create --name deploy-test-cluster --it ndslabs/deploy-tools
+  * Create a named container:  docker create --name deploy-test-cluster -it ndslabs/deploy-tools
   * Add your your openstack rc file to the volume mount, if it is not in a mapped volume, and source it: . <my-rc>.sh
   * Test that the OpenStack API's are directly accessible: nova credentials
   * Ansible playbooks used by NDSLabs are in ${HOME} and are available as examples and to copy/modify
