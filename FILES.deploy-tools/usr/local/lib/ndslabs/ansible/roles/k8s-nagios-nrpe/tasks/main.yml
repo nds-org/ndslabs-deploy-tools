@@ -12,3 +12,12 @@
 - name: Nagios NRPE Deploy DaemonSet
   command: kubectl create -f  /tmp/nagios-nrpe-ds.yaml
   when: enablenagios is defined and deploy.changed
+
+- name: Nagios NRPE master container status
+  shell: docker ps | grep nrpe
+  register: docker
+  failed_when: docker.rc < 0
+
+- name: Nagios NRPE deploy master container
+  command: docker run --name=nrpe -d --net=host --pid=host --privileged --restart=unless-stopped -v /:/media/host {{ nrpe_image_name }}
+  when: enablenagios is defined and docker.rc != 0
