@@ -36,8 +36,7 @@
 # Create subdirectories on storage volume
 - name: Storage volume subdirectories
   become: true
-  tasks:
-    - file: path="{{ storage_volume_dev }}/{{ item }}" state=directory
+  file: path="{{ storage_volume_dev }}/{{ item }}" state=directory
   with_items:
     - log
     - kubelet
