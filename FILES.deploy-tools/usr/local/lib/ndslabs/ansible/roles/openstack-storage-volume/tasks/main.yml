@@ -31,7 +31,7 @@
 
 - name: create storage volume mount service for systemd
   become: true
-  template: src=mount.service.j2 dest="/etc/systemd/system/{{ mount_service_name }}.mount"
+  template: src=mount.service.j2 dest="/etc/systemd/system/{{ item.mount_service_name }}.mount"
   with_items:
     -  { dest: /var/log, src: "{{ storage_volume_dev }}/log", mount_service_name: var-log }
     -  { dest: /var/lib/kubelet, src: "{{ storage_volume_dev }}/kubelet", mount_service_name: var-lib-kubelet }
@@ -39,7 +39,7 @@
   
 - name: start storage volume mount service and set to start on startup
   become: true
-  service: name="{{ mount_service_name }}.mount" state=started enabled=yes
+  service: name="{{ item.mount_service_name }}.mount" state=started enabled=yes
   with_items:
     -  { mount_service_name: var-log }
     -  { mount_service_name: var-lib-kubelet }

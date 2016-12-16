@@ -1,10 +1,10 @@
 [Unit]
-Description=Mount {{ src }} on {{ dest }}
+Description=Mount {{ item.src }} on {{ item.dest }}
 After=local-fs.target
 
 [Mount]
-What={{ src }}
-Where={{ dest }}
+What={{ item.src }}
+Where={{ item.dest }}
 Type=xfs
 Options=noatime
 
