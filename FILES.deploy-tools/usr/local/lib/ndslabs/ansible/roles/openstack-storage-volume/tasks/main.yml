@@ -32,31 +32,25 @@
   become: true
   filesystem: fstype=xfs dev="{{ storage_volume_dev }}"
   when: storagevol.changed
-  
-# Create subdirectories on storage volume
-- name: Storage volume subdirectories
-  become: true
-  file: path="{{ storage_volume_dev }}/{{ item }}" state=directory
-  with_items:
-    - log
-    - kubelet
-  when: storagevol.changed
 
 # Create systemd entries for subdirectory bind mounts
 - name: create storage volume mount service for systemd
   become: true
-  template: src=mount.service.j2 dest="/etc/systemd/system/{{ item.mount_service_name }}.mount"
-  with_items:
-    - { dest: /var/log, src: "{{ storage_volume_dev }}/log", mount_service_name: var-log }
-    - { dest: /var/lib/kubelet, src: "{{ storage_volume_dev }}/kubelet", mount_service_name: var-lib-kubelet }
+  template: src=mount.service.j2 dest="/etc/systemd/system/media-storage.mount"
   when: storagevol.changed
   
 # Specify bind mounts to startup with the node
 - name: start storage volume mount service and set to start on startup
   become: true
-  service: name="{{ item.mount_service_name }}.mount" state=started enabled=yes
-  with_items:
-    - { mount_service_name: var-log }
-    - { mount_service_name: var-lib-kubelet }
+  service: name="media-storage.mount" state=started enabled=yes
   when: storagevol.changed
 
+
+# Create subdirectories on storage volume
+- name: Storage volume subdirectories
+  become: true
+  file: path="/media/storage/{{ item }}" state=directory
+  with_items:
+   - log
+   - kubelet
+  when: storagevol.changed
