@@ -1,0 +1,12 @@
+[Unit]
+Description=Mount {{ storage_volume_dev }}/log on /var/log
+After=local-fs.target
+
+[Mount]
+What={{ storage_volume_dev }}/log
+Where=/var/log
+Type=xfs
+Options=noatime
+
+[Install]
+WantedBy=multi-user.target

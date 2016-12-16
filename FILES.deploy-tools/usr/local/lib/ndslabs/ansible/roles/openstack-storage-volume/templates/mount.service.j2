@@ -1,0 +1,12 @@
+[Unit]
+Description=Mount {{ src }} on {{ dest }}
+After=local-fs.target
+
+[Mount]
+What={{ src }}
+Where={{ dest }}
+Type=xfs
+Options=noatime
+
+[Install]
+WantedBy=multi-user.target

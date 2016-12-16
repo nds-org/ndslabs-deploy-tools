@@ -67,9 +67,15 @@
 
 # Provision and attach OpenStack volume for /var/lib/docker
 - name: OpenStack docker provision volume and attach
-  hosts: compute
+  hosts: compute:&openstack:&coreos
   roles: 
     - openstack-docker-volume
+    
+# Provision and attach OpenStack volume for /var/storage
+- name: OpenStack provision storage volume and attach
+  hosts: all
+  roles: 
+    - openstack-storage-volume
 
 # Provision and attach OpenStack volume to glfs nodes
 - name: OpenStack GLFS provision volume and attach
