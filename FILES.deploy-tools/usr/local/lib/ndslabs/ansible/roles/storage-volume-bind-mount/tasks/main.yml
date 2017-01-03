@@ -1,10 +1,15 @@
 ---
 
-# Move any existing files out of {{ src }} onto the storage volume
+# Check if {{ src }} directory already exists
+- name: Check if {{ src }} exists
+  stat: path="{{ src }}"
+  register: existingdata
+
+# Move any existing files out of {{ src }} (if it exists) onto the storage volume
 - name: Move existing data from {{ src }}
   become: true
-  command: mv {{ src }} {{ dest }} 
-  when: storagevol.changed
+  command: mv "{{ src }}" "{{ dest }}" 
+  when: existingdata.stat.exists == True and storagevol.changed
 
 # Recreate {{ src }} as an empty directory
 - name: Create {{ src }} directory

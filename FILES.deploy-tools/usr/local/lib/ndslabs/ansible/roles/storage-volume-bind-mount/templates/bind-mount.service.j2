@@ -1,12 +1,12 @@
 [Unit]
 DefaultDependencies=no
-Description=Mount {{ src }} to {{ dest }}
+Description=Mount {{ dest }}/{{ dir_name }} to {{ src }}
 Conflicts=umount.target
 Before=local-fs.target umount.target
 
 [Mount]
 What={{ src }}
-Where={{ dest }}
+Where={{ dest }}/{{ dir_name }}
 Type=none
 Options=bind
 
