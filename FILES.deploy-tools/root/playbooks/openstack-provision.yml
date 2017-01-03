@@ -77,6 +77,18 @@
   roles: 
     - openstack-storage-volume
 
+# Bind mount /var/log from storage volume
+- name: Bind mount /var/log for all nodes
+  hosts: all
+  roles:
+    - { role: storage-volume-bind-mount, name: var-log.mount, src: /var/log, dest: /media/storage }
+
+# Bind mount /var/lib/kubelet from storage volume
+- name: Bind mount /var/lib/kubelet for all nodes except master
+  hosts: nodes
+  roles:
+    - { role: storage-volume-bind-mount, name: var-lib-kubelet.mount, src: /var/lib/kubelet, dest: /media/storage }
+
 # Provision and attach OpenStack volume to glfs nodes
 - name: OpenStack GLFS provision volume and attach
   hosts: glfs:&openstack

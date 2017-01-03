@@ -33,24 +33,14 @@
   filesystem: fstype=xfs dev="{{ storage_volume_dev }}"
   when: storagevol.changed
 
-# Create systemd entries for subdirectory bind mounts
+# Create systemd entries for XFS storage mount
 - name: create storage volume mount service for systemd
   become: true
-  template: src=mount.service.j2 dest="/etc/systemd/system/media-storage.mount"
+  template: src=xfs-mount.service.j2 dest="/etc/systemd/system/media-storage.mount"
   when: storagevol.changed
   
-# Specify bind mounts to startup with the node
+# Specify XFS mount to startup with the node
 - name: start storage volume mount service and set to start on startup
   become: true
   service: name="media-storage.mount" state=started enabled=yes
-  when: storagevol.changed
-
-
-# Create subdirectories on storage volume
-- name: Storage volume subdirectories
-  become: true
-  file: path="/media/storage/{{ item }}" state=directory
-  with_items:
-   - log
-   - kubelet
   when: storagevol.changed
