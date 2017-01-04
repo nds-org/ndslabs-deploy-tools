@@ -73,19 +73,19 @@
     
 # Provision and attach OpenStack volume for /var/storage
 - name: OpenStack provision storage volume and attach
-  hosts: all
+  hosts: all:&openstack:&coreos
   roles: 
     - openstack-storage-volume
 
 # Bind mount /var/log from storage volume
 - name: Bind mount /var/log for all nodes
-  hosts: all
+  hosts: all:&coreos
   roles:
     - { role: storage-volume-bind-mount, name: var-log.mount, src: /var/log, dest: /media/storage, dir_name: log }
 
 # Bind mount /var/lib/kubelet from storage volume
 - name: Bind mount /var/lib/kubelet for all nodes except master
-  hosts: nodes
+  hosts: nodes:&coreos
   roles:
     - { role: storage-volume-bind-mount, name: var-lib-kubelet.mount, src: /var/lib/kubelet, dest: /media/storage, dir_name: kubelet }
 
