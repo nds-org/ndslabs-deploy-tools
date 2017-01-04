@@ -14,7 +14,7 @@ spec:
     targetPort: db
   selector:
     k8s-app: elasticsearch-logging
-----
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -32,7 +32,7 @@ spec:
   selector:
     k8s-app: kibana-logging
   type: NodePort
-----
+---
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -78,7 +78,7 @@ spec:
       volumes:
       - name: es-persistent-storage
         emptyDir: {}
-----
+---
 apiVersion: v1
 kind: ReplicationController
 metadata:

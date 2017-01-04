@@ -7,11 +7,11 @@
     - ndslabs.pem
 
 - name: Secret status - default
-  command: kubectl get secret ndslabs-tls-secret
+  command: /opt/bin/kubectl get secret ndslabs-tls-secret
   register: defaultsecret
   failed_when: defaultsecret.rc < 0
 
 - name: NDSLabs TLS Secret| create ndslabs-tls-secret - default
-  command: kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt=/tmp/ndslabs.cert --from-file=tls.key=/tmp/ndslabs.key
+  command: /opt/bin/kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt=/tmp/ndslabs.cert --from-file=tls.key=/tmp/ndslabs.key
   when: defaultsecret.rc != 0
   

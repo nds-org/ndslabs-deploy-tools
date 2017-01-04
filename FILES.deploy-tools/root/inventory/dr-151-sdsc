@@ -1,0 +1,53 @@
+#
+# Cluster
+#
+[all:vars]
+logical_cluster_name=dr
+site=sdsc
+
+#
+# Servers - Define names/counts of each type of system
+#
+[masters]
+master1
+
+[etcd:children]
+masters
+
+[glfs]
+gfs[1:4]
+
+[compute]
+node1
+
+[monitor]
+lma
+
+[loadbal]
+loadbal
+
+#
+# Groups - assigned according to roles, should not need to be changed typically
+#
+[nodes:children]
+glfs
+compute
+loadbal
+monitor
+
+#all nodes
+[cluster:children]
+nodes
+masters
+etcd
+
+[all:children]
+cluster
+
+[openstack:children]
+cluster
+[coreos:children]
+cluster
+[publicip:children]
+loadbal
+

@@ -1,0 +1,8 @@
+---
+flavor: "{{ flavor_medium }}"
+
+k8_initial_labels: "ndslabs-node-role=glfs"
+
+vol_size: 100
+vol_name: brick0
+brick_mount_path: /media/brick0

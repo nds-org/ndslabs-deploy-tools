@@ -9,13 +9,13 @@
     - config.yml
 
 - name: deploy cache configmap with cache
-  command: kubectl create configmap docker-cache-config --from-file /tmp/{{ item }}
+  command: /opt/bin/kubectl create configmap docker-cache-config --from-file /tmp/{{ item }}
   with_items:
     - config.yml
   when: dreg.changed
 
 - name: deploy cache into kubernetes
-  command: kubectl create -f /tmp/{{ item }}
+  command: /opt/bin/kubectl create -f /tmp/{{ item }}
   with_items:
     - docker-cache-rc.yaml
     - docker-cache-svc.yaml

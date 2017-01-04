@@ -3,11 +3,11 @@
 #   KubeUI
 ######################
 - name: Kube UI status
-  command: kubectl get svc kubernetes-dashboard --namespace=kube-system
+  command: /opt/bin/kubectl get svc kubernetes-dashboard --namespace=kube-system
   register: kubeui
   failed_when: kubeui.rc < 0
 
 - name: Cluster Addon - KubeUI| create kube-ui
-  command: kubectl create --namespace=kube-system -f "/tmp/kube-ui.yaml"
+  command: /opt/bin/kubectl create --namespace=kube-system -f "/tmp/kube-ui.yaml"
   when: enablekubeui is defined and kubeui.rc != 0
 

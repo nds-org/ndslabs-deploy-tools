@@ -3,7 +3,7 @@
 - name: check for bad hostname
   become: false
   connection: local
-  shell: echo "{{ ansible_host }}"
+  shell: echo "{{ logical_cluster_name }}-{{ inventory_hostname }}"
   register:  hname
 
 - fail: msg="Hostname not RFC compliant, see RFC 606 and 608 and thank the the TTY for not having an underscore key!"

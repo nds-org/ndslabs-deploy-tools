@@ -1,0 +1,21 @@
+---
+
+- name: Set template name for CoreOS
+  set_fact:
+    template_string: "{{ mount_point  | replace('/', '', 1) | replace('/', '-')  }}"
+  when: device_attached.changed
+
+- name: Install systemd mount template for "{{ volume_name }}" in CoreOS
+  become: true
+  template: src=mount.service.j2 dest=/etc/systemd/system/{{ template_string }}.mount
+  when: device_attached.changed
+
+- name: notify systemd for "{{ volume_name }}"
+  become: true
+  command: systemctl daemon-reload
+  when: device_attached.changed
+
+- name: startup {{ template_string }} mount service on CoreOS
+  become: true
+  service: name={{ template_string }}.mount state=started enabled=yes
+  when: device_attached.changed

@@ -7,6 +7,11 @@
     - pre-checks
     - ansible_host_vars_setup
 
+- name: include site vars
+  hosts: cluster
+  tasks:
+    - include_vars: "{{ inventory_dir }}/site_vars/{{ site }}.yml"
+
 # Apply Kubernetes node labels for NDS - 
 - name: label K8s nodes
   hosts: nodes
@@ -48,8 +53,8 @@
   hosts: publicip
   connection: local
   tasks:
-    - os_floating_ip: server={{ ansible_host }} wait=yes
-    - command: nova add-secgroup {{ ansible_host}} {{ security_groups }}
+    - os_floating_ip: server={{ logical_cluster_name }}-{{ inventory_hostname }} wait=yes
+    - command: nova add-secgroup {{ logical_cluster_name }}-{{ inventory_hostname }} {{ security_groups }}
 
 
 # Create or reuse existing TLS certs
@@ -68,7 +73,7 @@
     - k8-tls-secret
 
 # Deploy Kubernetes Addons: DNS + LMA
-- name: Kubernetes Cluster Addons
+- name: Kubernetes Cluster Add-ons | ndslabs flavor
   hosts: masters
   roles:
     - cluster-addons
@@ -81,7 +86,7 @@
 
 # Deploy NDS Labs and LoadBalancer  
 - name: Start NDSLabs ApiServer and WebUI
-  hosts: masters
+  hosts: masters[0]
   roles:
     - ndslabs-api-gui
     - ndslabs-loadbalancer

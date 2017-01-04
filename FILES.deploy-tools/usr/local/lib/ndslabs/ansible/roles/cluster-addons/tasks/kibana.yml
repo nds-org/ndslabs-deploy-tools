@@ -10,16 +10,16 @@
 #      - others?
 #######################
 - name: Elasticsearch status
-  command: kubectl get svc elasticsearch-logging --namespace=kube-system
+  command: /opt/bin/kubectl get svc elasticsearch-logging --namespace=kube-system
   register: elastic
   failed_when: elastic.rc < 0
 
 - name: Kibana status
-  command: kubectl get svc kibana-logging --namespace=kube-system
+  command: /opt/bin/kubectl get svc kibana-logging --namespace=kube-system
   register: kibana
   failed_when: kibana.rc < 0
 
 - name: Cluster Logging - Kibana| create kibana stack
-  command: kubectl create --namespace=kube-system -f "/tmp/kibana.yaml"
+  command: /opt/bin/kubectl create --namespace=kube-system -f "/tmp/kibana.yaml"
   when: enablekibana is defined and (elastic.rc != 0 or kibana.rc != 0)
 

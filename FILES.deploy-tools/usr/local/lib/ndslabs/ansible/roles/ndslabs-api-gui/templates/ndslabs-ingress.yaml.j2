@@ -7,10 +7,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - www.{{ndslabs_domain}}
+    - www.{{ ndslabs_domain }}
     secretName: ndslabs-tls-secret
   rules:
-  - host: www.{{ndslabs_domain}}
+  - host: www.{{ ndslabs_domain }}
     http:
       paths:
       - path: /api

@@ -6,24 +6,13 @@
 logical_cluster_name=ha
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
-image=CoreOSStable1122
+image=CoreOSStable1185
 flavor=r2.medium
-kube_version=1.2.4
 kube-ui=true                                          
 kube-dash=true
-key_name={{logical_cluster_name}}
+key_name={{ logical_cluster_name }}
 support_email=ndslabs-support@nationaldataservice.org
 docker_volume_gb=100
-analytics_account=
-
-#
-# Docker images
-#
-apiserver_image_name=ndslabs/apiserver:latest
-webui_image_name=ndslabs/angular-ui:latest
-loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
-gluster_image_name=ndslabs/gluster:latest
-nrpe_image_name=ndslabs/nagios-nrpe:latest
 
 [compute:vars]
 flavor=n-rc1.large

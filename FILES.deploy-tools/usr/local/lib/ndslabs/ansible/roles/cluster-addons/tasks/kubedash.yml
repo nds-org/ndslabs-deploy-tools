@@ -3,12 +3,12 @@
 #   Kubernetes Dashboard
 ##########################
 - name: Kube Dashboard status
-  command: kubectl get svc kubedash --namespace=kube-system
+  command: /opt/bin/kubectl get svc kubedash --namespace=kube-system
   register: kubedash
   failed_when: kubedash.rc < 0
 
 - name: Cluster Addon - Kubernetes Dashboard| create kube-dash 
-  command: kubectl create --namespace=kube-system -f "/tmp/kube-dash.yaml"
+  command: /opt/bin/kubectl create --namespace=kube-system -f "/tmp/kube-dash.yaml"
   when: enablekubedash is defined and kubedash.rc != 0
 
 

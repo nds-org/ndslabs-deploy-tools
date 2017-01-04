@@ -1,0 +1,59 @@
+---
+
+# Provision openstack vol, format, make persistent mount
+# args:
+#   volume_name - logical name for openstack
+#   volume_size - size in GB
+#   filesystem_format - filesystem type
+#   mount_point - where it gets mounted
+
+- name: OpenStack volume mount "{{ volume_name }}" "{{ volume_size }}" GB as "{{ filesystem_format }}" on "{{ mount_point }} "
+  become: false
+  connection: local
+  os_volume:
+    state: present
+    wait: yes
+    size: "{{ volume_size  }}"
+    display_name: "{{ logical_cluster_name }}-{{ inventory_hostname }}-{{ volume_name }}"
+  register: vol_created
+
+- name: Attach "{{ volume_name }}"
+  connection: local
+  become: false
+  os_server_volume:
+    state: present
+    wait: yes
+    server: "{{ logical_cluster_name }}-{{ inventory_hostname }}"
+    volume: "{{ logical_cluster_name }}-{{ inventory_hostname }}-{{ volume_name }}"
+  register: device_attached
+
+- set_fact:  os_device="{{ device_attached.attachments[0].device }}"
+  when: device_attached.changed
+
+- name: Format "{{ os_device }}" as "{{ filesystem_format }}"
+  become: true
+  filesystem: fstype={{ filesystem_format }} dev="{{ os_device }}"
+  when: device_attached.changed
+
+- name: create {{ mount_point }} 
+  become: true
+  file:  
+    path: "{{ mount_point }}"
+    state: directory
+  when: device_attached.changed
+
+# CoreOS can't use ansible mount module'
+- include: coreos_mount.yml
+  when: is_coreos
+
+# Other OS's use mount module'
+- name: install mount for non-coreos
+  become: true
+  mount: 
+    name: "{{ mount_path }}"
+    src: "{{ os_device }}"
+    fstype: "{{ filesystem_format }}"
+    state: present
+  when: not is_coreos
+
+  

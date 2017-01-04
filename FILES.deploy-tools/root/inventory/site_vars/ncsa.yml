@@ -1,0 +1,18 @@
+---
+
+#
+# Per-site configuration variables
+#
+native_dns: os.ncsa.edu
+
+backup_user: centos
+backup_host: 132.249.238.215
+backup_path: /ndsbackup
+backup_key: backup.pem
+
+ndslabs_domain: "{{ logical_cluster_name }}.ndslabs.org"
+support_email: ndslabs-support@nationaldataservice.org
+
+flavor_small: m1.large          # 40G disk 8Gmem, 4cpu
+flavor_medium: m4.large         # 40G disk 16Gmem 8cpu
+flavor_large: m4.large     # 80GdiskG disk 64Gmem 24cpu

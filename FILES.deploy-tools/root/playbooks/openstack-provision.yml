@@ -2,10 +2,13 @@
 # NDSLabs cluster on OpenStack - provision systems in openstack
 #
 
-- name: prepend logical cluster name for all cluster resources
-  hosts: cluster 
+- name: include site vars
+  hosts: cluster
   tasks:
-    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+    - include_vars: "{{ inventory_dir }}/site_vars/{{ site }}.yml"
+
+- name: checks and variables setup
+  hosts: cluster
   roles:
    - pre-checks
 
@@ -19,12 +22,14 @@
 # Create security groups for the loadbalancer
 - name: OpenStack LoadBalancer Security Group
   hosts: publicip
+  run_once: true
   roles: 
     - openstack-securitygroup-open
 
-# Grab private IPs and wait for host up
+# Provision
 - name: NDSLabs OpenStack Cluster
-  hosts: cluster
+  hosts: openstack
+  serial: 3 # be gentle to openstack
   roles: 
     - openstack-system
 
@@ -69,13 +74,13 @@
 - name: OpenStack docker provision volume and attach
   hosts: compute:&openstack:&coreos
   roles: 
-    - openstack-docker-volume
+    - { role: openstack-volume-mount, volume_name: 'dockervol', volume_size: "{{ docker_volume_gb }}", mount_point: '/var/lib/docker', filesystem_format: 'xfs' }
     
-# Provision and attach OpenStack volume for /var/storage
+# Provision and attach OpenStack volume for /media/storage
 - name: OpenStack provision storage volume and attach
   hosts: all:&openstack:&coreos
   roles: 
-    - openstack-storage-volume
+    - { role: openstack-volume-mount, volume_name: 'storagevol', volume_size: "{{ storage_volume_gb }}", mount_point: '/media/storage', filesystem_format: 'xfs' }
 
 # Bind mount /var/log from storage volume
 - name: Bind mount /var/log for all nodes
@@ -83,52 +88,19 @@
   roles:
     - { role: storage-volume-bind-mount, name: var-log.mount, src: /var/log, dest: /media/storage, dir_name: log }
 
-# Bind mount /var/lib/kubelet from storage volume
+# Bind mount /var/lib/kubelet from storage volume except master
 - name: Bind mount /var/lib/kubelet for all nodes except master
   hosts: nodes:&coreos
   roles:
     - { role: storage-volume-bind-mount, name: var-lib-kubelet.mount, src: /var/lib/kubelet, dest: /media/storage, dir_name: kubelet }
 
-# Provision and attach OpenStack volume to glfs nodes
-- name: OpenStack GLFS provision volume and attach
+# Mount a GLFS brick and make the brick dir
+- name: GLFS volume mount
   hosts: glfs:&openstack
-  roles: 
-    - openstack-volume-attached
-
-# Create brick directory on glfs nodes
-- name: GLFS brick dir
-  hosts: glfs
   become: true
   tasks:
-    - file: path=/media/brick0/brick state=directory mode=0777
-
-# Mount OpenStack volume to CoreOS glfs nodes
-- name: CoreOS Mount GLFS
-  hosts: glfs:&coreos
+    - file: path={{ brick_mount_path }}/brick state=directory mode=0777
   roles: 
-    - coreos-mount
+    - { role: openstack-volume-mount, volume_name: 'glfs', volume_size: "{{ vol_size }}",  mount_point: "{{ brick_mount_path }}", filesystem_format: 'xfs' }
+
   
-# Save cluster hosts and .ssh/config in the local container
-# Allows direct ssh after provisioning (ssh core@master1)
-- name: keep original hosts file
-  hosts: localhost
-  connection: local
-  tasks:
-    - copy: src=/etc/hosts dest=/etc/hosts.orig force=no
-
-- name: start with original /etc/hosts
-  hosts: localhost                                                      
-  connection: local               
-  tasks:       
-    - shell: cp /etc/hosts.orig /tmp/hosts
-
-- name: Add cluster host entries
-  hosts: cluster                                                      
-  connection: local               
-  tasks:     
-    - lineinfile: dest=/tmp/hosts line="{{ ansible_ssh_host }} {{ ansible_host }}"
-- name: replace /etc/hosts
-  hosts: localhost                                                      
-  connection: local               
-  tasks:       
-    - shell: cat /tmp/hosts > /etc/hosts

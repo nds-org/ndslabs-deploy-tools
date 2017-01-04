@@ -12,7 +12,7 @@ spec:
       protocol: TCP
 #      nodePort: 30001
 #  type: NodePort
-----
+---
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -42,7 +42,7 @@ spec:
           - name: KUBERNETES_ADDR
             value: "https://{{ ansible_default_ipv4.address }}:443"
           - name: CORS_ORIGIN_ADDR
-            value: "https://www.{{ndslabs_domain}}"
+            value: "https://www.{{ ndslabs_domain }}"
           - name: SPEC_GIT_REPO
             value: "https://github.com/nds-org/ndslabs-specs.git"
           - name: SPEC_GIT_BRANCH
@@ -50,7 +50,7 @@ spec:
           - name: INGRESS
             value: "LoadBalancer"
           - name: DOMAIN
-            value: "{{ndslabs_domain}}"
+            value: "{{ ndslabs_domain }}"
           - name: VOLUME_PATH
             value: "{{ clusterfs_vol_path }}"
           - name: VOLUME_NAME
