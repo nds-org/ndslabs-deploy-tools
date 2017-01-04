@@ -5,21 +5,21 @@
     - loadbalancer.yaml
 
 - name: Loadbalancer status
-  command: kubectl get rc nginx-ilb-rc
+  command: /opt/bin/kubectl get rc nginx-ilb-rc
   register: loadbalancer
   failed_when: loadbalancer.rc < 0
 
 - name: Default-http-backend status
-  command: kubectl get rc default-http-backend
+  command: /opt/bin/kubectl get rc default-http-backend
   register: backend
   failed_when: backend.rc < 0
 
 - name: Loadbalancer| create default-http-backend
-  command: kubectl create -f "/tmp/default-backend.yaml"
+  command: /opt/bin/kubectl create -f "/tmp/default-backend.yaml"
   when: backend.rc != 0
 
 - name: Loadbalancer| create loadbalancer
-  command: kubectl create -f "/tmp/loadbalancer.yaml"
+  command: /opt/bin/kubectl create -f "/tmp/loadbalancer.yaml"
   when: loadbalancer.rc != 0
 
 

@@ -1,23 +1,22 @@
----
-
 #
 # add ssh alias for direct ssh access to system in ~/.ssh/config
+# /root/.ssh is linked to /root/SAVED_AND_SENSITIVE_VOLUME/.ssh
 #
-  
-- local_action: 
+- local_action:
     module: file
+    path: /root/SAVED_AND_SENSITIVE_VOLUME/.ssh
     state: directory
-    path: ~/.ssh 
-    mode: 0600
-  run_once: true
+    mode: 0700
 
 - local_action:
     module: blockinfile
+    follow: true
+    mode: 0600
     create: true
     dest: ~/.ssh/config
-    marker: "# {mark} ANSIBLE MANAGED for {{ ansible_host }}"
+    marker: "# {mark} ANSIBLE MANAGED for {{ logical_cluster_name }}-{{ inventory_hostname }}"
     block: |
-      host {{ ansible_host }}
-        hostname {{ ansible_ssh_host }}
-        user {{ ansible_ssh_user }}
+      host {{ logical_cluster_name }}-{{ inventory_hostname }}
+        hostname {{ ansible_host }}
+        user {{ ansible_user }}
         IdentityFile {{ key_path }}/{{ key_name }}.pem

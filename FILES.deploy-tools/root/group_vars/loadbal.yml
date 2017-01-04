@@ -1,3 +1,0 @@
----
-k8_initial_labels: "ndslabs-node-role=loadbalancer"
-security_groups: "k8s_loadbalancer"

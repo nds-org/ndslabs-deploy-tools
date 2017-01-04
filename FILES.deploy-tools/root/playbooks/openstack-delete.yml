@@ -3,72 +3,35 @@
 # Does NOT destroy the key or security groups
 #
 
-- name: setup ansible host vars
-  hosts: all
-  roles:
-    - pre-checks
-    - ansible_host_vars_setup
-
 # delete the system
-- name: Remote OpenStack system
+- name: Remove OpenStack system
   hosts: cluster
   connection: local
   tasks:
-    - os_server: state=absent wait=yes name={{ ansible_host }}
+    - os_server: state=absent wait=yes name={{ logical_cluster_name }}-{{ inventory_hostname }}
+
+# delete the fact cache
+- name: Remove fact cache
+  hosts: cluster
+  tasks:
+    - local_action: 
+        module: file
+        state: absent
+        path: /root/SAVED_AND_SENSITIVE/inventory_cache/{{ inventory_hostname }}
 
 # delete docker vols
 - name: Remove docker volumes
   hosts: compute
   connection: local
   tasks:
-    - os_volume: state=absent wait=yes display_name="{{ ansible_host }}-docker-volume"
+    - os_volume: state=absent wait=yes display_name="{{ logical_cluster_name }}-{{ inventory_hostname }}-dockervol"
 
 # delete glfs vols
 - name: Remove glfs volumes
   hosts:  cluster:&glfs
   connection: local
   tasks:
-    - os_volume: state=absent wait=yes display_name="{{ ansible_host }}-{{ vol_name }}"
-
-# Delete the hosts lines
-- name: start with original /etc/hosts
-  hosts: localhost                                                      
-  connection: local               
-  tasks:       
-    - shell: cp /etc/hosts /tmp/hosts
-
-- name: Add cluster host entries
-  hosts: cluster                                                      
-  connection: local               
-  tasks:
-    - lineinfile: state=absent dest=/tmp/hosts line="{{ ansible_ssh_host }} {{ ansible_host }}"
-- name: replace /etc/hosts
-  hosts: localhost                                                      
-  connection: local               
-  tasks:       
-    - shell: cat /tmp/hosts > /etc/hosts
-
-- name: ssh config dir
-  hosts: cluster
-  serial: 1
-  run_once: true
-  tasks:
-    - local_action: 
-        module: file
-        state: directory
-        path: ~/.ssh 
-        mode: 0600
-
-- name: ssh config
-  hosts: cluster
-  serial: 1
-  run_once: true
-  tasks:
-    - local_action: 
-        module: file
-        state: touch
-        path: ~/.ssh/config 
-        mode: 0600
+    - os_volume: state=absent wait=yes display_name="{{ logical_cluster_name }}-{{ inventory_hostname }}-glfs"
   
 - name: remove ssh host config
   hosts: cluster
@@ -78,10 +41,10 @@
         module: blockinfile
         state: absent
         dest: ~/.ssh/config
-        marker: "# {mark} ANSIBLE MANAGED for {{ ansible_host }}"
+        marker: "# {mark} ANSIBLE MANAGED for {{ logical_cluster_name }}-{{ inventory_hostname }}"
         block: |
-          host {{ ansible_host }}
-            hostname {{ ansible_ssh_host }}
-            user {{ ansible_ssh_user }}
+          host {{ logical_cluster_name }}-{{ inventory_hostname }}
+            hostname {{ ansible_host }}
+            user {{ ansible_user }}
             IdentityFile {{ key_path }}/{{ key_name }}.pem
-
+      failed_when: false

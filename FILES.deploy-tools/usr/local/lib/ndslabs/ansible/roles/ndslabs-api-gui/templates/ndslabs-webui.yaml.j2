@@ -13,7 +13,7 @@ spec:
       protocol: TCP
 #      nodePort: 30000
 #  type: NodePort
-----
+---
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -36,7 +36,7 @@ spec:
           protocol: TCP
         env:
           - name: APISERVER_HOST
-            value: "www.{{ndslabs_domain}}"
+            value: "www.{{ ndslabs_domain }}"
           - name: APISERVER_PORT
             value: ""
           - name: APISERVER_PATH

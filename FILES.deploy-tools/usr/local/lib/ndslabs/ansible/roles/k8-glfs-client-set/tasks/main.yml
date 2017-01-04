@@ -4,11 +4,11 @@
   register: deploy
 
 - name: Gluster Clients Deploy DaemonSet
-  command: kubectl create -f  /tmp/gluster-client-ds.yaml
+  command: /opt/bin/kubectl create -f  /tmp/gluster-client-ds.yaml
   when:  deploy.changed
 
 - name: Wait for global FS read
-  shell: kubectl get pods -lname=glfs-client-{{ clusterfs_vol_name }} -o jsonpath='{.items[*].status.containerStatuses[*].ready}' --namespace=kube-system
+  shell: /opt/bin/kubectl get pods -lname=glfs-client-{{ clusterfs_vol_name }} -o jsonpath='{.items[*].status.containerStatuses[*].ready}' --namespace=kube-system
   register: shellout
   until: shellout.stdout.find("false") == -1
   retries: 50

@@ -1,6 +1,6 @@
 ---
 
-- name: pull the kubeconfig from the master
+- name: pull kubectl and kubeconfig from master
   fetch: src="{{ item }}" dest=/root/SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}
   with_items:
     - /etc/hosts 
@@ -8,16 +8,10 @@
     - /etc/kubernetes/config
     - /etc/kubernetes/apiserver
 
+
 #
-# This relies on the clusters added to /etc/hosts from local-etc-hosts-cluster-include
+# local kubectl
 #
 - name: set kubectl command
   set_fact: 
-    kubectl: "kubectl --kubeconfig=/root/SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name}}/{{ inventory_hostname }}/etc/kubernetes/kubectl.kubeconfig"
-
-#
-# should be blockinfile prolly elsewhere
-#
-- name: Cluster hosts/IP in local hosts
-  connection: local
-  local_action: shell cat /root/SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name}}/{{ inventory_hostname }}/etc/hosts >> /etc/hosts
+    kubectl: "kubectl --kubeconfig=/root/SAVED_AND_SENSITIVE_VOLUME/cluster-info/{{ logical_cluster_name }}/{{ inventory_hostname }}/etc/kubernetes/kubectl.kubeconfig"

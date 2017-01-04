@@ -3,15 +3,15 @@
 #   Grafana and InfluxDB
 ##########################
 - name: Grafana status
-  command: kubectl get svc monitoring-grafana --namespace=kube-system
+  command: /opt/bin/kubectl get svc monitoring-grafana --namespace=kube-system
   register: grafana
   failed_when: grafana.rc < 0
 
 - name: InfluxDB status
-  command: kubectl get svc monitoring-influxdb --namespace=kube-system
+  command: /opt/bin/kubectl get svc monitoring-influxdb --namespace=kube-system
   register: heapster
   failed_when: heapster.rc < 0
 
 - name: Cluster Profiling - Grafana| create grafana stack
-  command: kubectl create --namespace=kube-system -f "/tmp/grafana.yaml"
+  command: /opt/bin/kubectl create --namespace=kube-system -f "/tmp/grafana.yaml"
   when: enablegrafana is defined and (grafana.rc != 0 or heapster.rc != 0)

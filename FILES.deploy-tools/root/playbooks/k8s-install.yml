@@ -7,17 +7,13 @@
     - ansible_host_vars_setup
 
 ##########################################################################################################################
-# Now to kubernetes, back again after to install system services
+# Now to kubernetes install
 ##########################################################################################################################
-- include: /usr/local/lib/kubernetes/contrib/ansible/cluster.yml
+- include: /usr/local/lib/kubernetes/contrib/ansible/playbooks/deploy-cluster.yml
 
-- name: kube-system namespace
-  hosts: masters[0]
+- name: kubectl | get from master
+  hosts: masters
+  run_once: true
   tasks:
-    - shell: kubectl create namespace kube-system
-
-- name: start DNS
-  hosts: masters[0]
-  roles:
-    - cluster-dns
+    - local_action: shell scp -o StrictHostKeyChecking=no -p {{ logical_cluster_name }}-{{ inventory_hostname }}:/opt/bin/kubectl /usr/local/bin/kubectl
 

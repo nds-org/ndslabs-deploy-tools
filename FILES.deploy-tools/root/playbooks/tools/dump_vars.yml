@@ -1,0 +1,14 @@
+#
+# Dump all host vars out in /tmp
+#
+- name: prepend logical cluster name for all cluster resources
+  hosts: cluster 
+  tasks:
+    - set_fact:  ansible_host={{ logical_cluster_name }}-{{ inventory_hostname }}
+  roles:
+   - pre-checks
+
+- name: hostvars
+  hosts: cluster
+  tasks:
+    - local_action: template src=templates/dump_vars.j2 dest=/tmp/{{ inventory_hostname }}.vars

@@ -6,7 +6,7 @@ metadata:
   namespace: kube-system
 subsets:
 - addresses:
-{% for node in groups['glfs'] %}  - ip: {{ hostvars[node]['ansible_ssh_host'] }}
+{% for node in groups['glfs'] %}  - ip: {{ hostvars[node]['ansible_host'] }}
 {% endfor %}
   ports:
   - port: 1

@@ -7,7 +7,7 @@
   os_server:
     state: present
     wait: yes
-    name: "{{ ansible_host }}"
+    name: "{{ logical_cluster_name }}-{{ inventory_hostname }}"
     image: "{{ image }}"
     flavor: "{{ flavor }}"
     key_name: "{{ key_name }}"
@@ -18,17 +18,13 @@
 
 - name: Grab Private IP 
   set_fact:
-    ansible_ssh_host: "{{ os_host.server.private_v4 }}"
+    ansible_host: "{{ os_host.server.private_v4 }}"
   register: os_priv_addr
 
 - name: Wait for host up
   become: false
-  local_action: shell ssh -i {{key_path}}/{{key_name}}.pem -o BatchMode=yes -o StrictHostKeyChecking=no {{ansible_ssh_user}}@{{ansible_ssh_host}} echo "{{ansible_ssh_host}}"
-  register: result
-  until: result['stdout'] == "{{ansible_ssh_host}}"
-  retries: 20
-  delay: 15
+  local_action: wait_for host={{ ansible_host }} port=22
 
 - name: register key for host
   set_fact:
-    ansible_ssh_private_key_file: "{{key_path}}/{{key_name}}.pem"
+    ansible_private_key_file: "{{ key_path }}/{{ key_name }}.pem"

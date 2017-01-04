@@ -2,7 +2,7 @@
 #- debug: var=user_name
 #- debug: var=user_groups
 #- debug: var=ansible_host
-#- debug: var=ansible_ssh_host
+#- debug: var=ansible_host
 #- debug: var=inventory_hostname
 
 - name: User account 
@@ -11,13 +11,13 @@
 
 - name: Set the line match
   set_fact:
-    line_match: "{{ user_name }}@{{ ansible_ssh_host }}:" 
+    line_match: "{{ user_name }}@{{ logical_cluster_name }}-{{ inventory_hostname }}:" 
 #- debug: var=line_match
 
 - name: Lookup saved passwd
   connection: local
   become: false
-  shell: grep ^"{{line_match}}" "{{accounts_file}}" | cut -d':' -f2
+  shell: grep ^"{{ line_match }}" "{{ accounts_file }}" | cut -d':' -f2
   register: filepasswd
   changed_when: False
 - set_fact:
@@ -50,6 +50,6 @@
 
 - name: Update account inventory
   become: false
-  local_action: lineinfile state=present create=yes dest="{{accounts_file}}" line="{{user_name}}@{{ansible_ssh_host}}:{{newpass}}:{{inventory_hostname}}"
+  local_action: lineinfile state=present create=yes dest="{{ accounts_file }}" line="{{ user_name }}@{{ ansible_host }}:{{ newpass }}:{{ inventory_hostname }}"
   when: not pw_on_record
   changed_when: False

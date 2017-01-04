@@ -14,9 +14,9 @@ cluster_name: cluster.local
 # Account name of remote user. Ansible will use this user account to ssh into
 # the managed machines. The user must be able to use sudo without asking
 # for password unless ansible_sudo_pass is set
-#ansible_ssh_user: root
+#ansible_user: root
 
-# password for the ansible_ssh_user. If this is unset you will need to set up
+# password for the ansible_user. If this is unset you will need to set up
 # ssh keys so a password is not needed.
 #ansible_ssh_pass: password
 

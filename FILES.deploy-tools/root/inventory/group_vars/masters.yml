@@ -1,0 +1,3 @@
+---
+
+flavor: "{{ flavor_small }}"

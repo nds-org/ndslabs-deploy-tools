@@ -5,12 +5,11 @@
 logical_cluster_name=dr
 cluster_name=cluster.local
 native_dns=os.ncsa.edu
-image=CoreOSStable1122
+image=CoreOSStable1185
 flavor=m1.small
-kube_version=1.2.4
 kube-ui=true                                          
 kube-dash=true
-key_name={{logical_cluster_name}}
+key_name={{ logical_cluster_name }}
 cluster_fs_hostpath=/media/glfs 
 
 #

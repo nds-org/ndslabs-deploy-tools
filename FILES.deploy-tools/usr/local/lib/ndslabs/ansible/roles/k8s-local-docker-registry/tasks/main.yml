@@ -8,7 +8,7 @@
   register: dreg
 
 - name: run local registry yaml
-  shell: kubectl create -f /tmp/{{ item }} || true
+  shell: /opt/bin/kubectl create -f /tmp/{{ item }} || true
   with_items:
     - docker-registry-rc.yaml
     - docker-registry-svc.yaml

@@ -3,17 +3,17 @@
 #   Prometheus Dashboard
 ###########################
 - name: Prometheus Dashboard status
-  command: kubectl get svc prometheus --namespace=kube-system
+  command: /opt/bin/kubectl get svc prometheus --namespace=kube-system
   register: promdash
   failed_when: promdash.rc < 0
 
 - name: PushGateway status
-  command: kubectl get svc pushgateway --namespace=kube-system
+  command: /opt/bin/kubectl get svc pushgateway --namespace=kube-system
   register: pushgateway
   failed_when: pushgateway.rc < 0
 
 - name: Cluster Metrics - Prometheus Dashboard| create prometheus stack
-  command: kubectl create --namespace=kube-system -f "/tmp/prometheus-service.json" -f "/tmp/pushgateway-service.json" -f "/tmp/prometheus-all.json"
+  command: /opt/bin/kubectl create --namespace=kube-system -f "/tmp/prometheus-service.json" -f "/tmp/pushgateway-service.json" -f "/tmp/prometheus-all.json"
   when: enablepromdash is defined and (promdash.rc != 0 or pushgateway.rc != 0)
 
 

@@ -1,6 +1,6 @@
 
 - name: Nagios NRPE status
-  command: kubectl get ds nagios-nrpe --namespace=kube-system
+  command: /opt/bin/kubectl get ds nagios-nrpe --namespace=kube-system
   register: nrpe
   failed_when: nrpe.rc < 0
 
@@ -10,7 +10,7 @@
   when: enablenagios is defined and nrpe.rc != 0
 
 - name: Nagios NRPE Deploy DaemonSet
-  command: kubectl create -f  /tmp/nagios-nrpe-ds.yaml
+  command: /opt/bin/kubectl create -f  /tmp/nagios-nrpe-ds.yaml
   when: enablenagios is defined and deploy.changed
 
 - name: Nagios NRPE master container status

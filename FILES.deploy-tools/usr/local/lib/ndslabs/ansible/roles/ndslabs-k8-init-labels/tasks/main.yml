@@ -1,6 +1,6 @@
 
 - name: NDSLabs initial system labels
-  command: kubectl label --overwrite=true node "{{ inventory_hostname }}" "{{ item }}"
+  command: /opt/bin/kubectl label --overwrite=true node "{{ inventory_hostname }}" "{{ item }}"
   with_items: "{{ k8_initial_labels }}"
   delegate_to: "{{ groups['masters'][0] }}"
   when: k8_initial_labels is defined

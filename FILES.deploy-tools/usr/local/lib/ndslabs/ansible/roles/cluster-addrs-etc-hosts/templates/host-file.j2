@@ -2,7 +2,7 @@
 
 127.0.0.1	localhost
 {% for node in groups['cluster'] %}
-{{ hostvars[node]['ansible_ssh_host'] }}	{{ node }}  {% if native_dns != "" -%} {{ node }}.{{ native_dns }} {% endif -%}
+{{ hostvars[node]['ansible_host'] }}	{{ node }}  {% if native_dns != "" -%} {{ node }}.{{ native_dns }} {% endif -%}
 
 
 {% endfor %}

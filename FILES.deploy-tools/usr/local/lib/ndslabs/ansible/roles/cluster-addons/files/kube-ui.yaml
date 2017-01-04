@@ -16,7 +16,7 @@ spec:
   - port: 80
     targetPort: 9090
   type: NodePort
-----
+---
 # This file should be kept in sync with cluster/images/hyperkube/dashboard-rc.yaml
 # and cluster/gce/coreos/kube-manifests/addons/dashboard/dashboard-controller.yaml
 apiVersion: v1

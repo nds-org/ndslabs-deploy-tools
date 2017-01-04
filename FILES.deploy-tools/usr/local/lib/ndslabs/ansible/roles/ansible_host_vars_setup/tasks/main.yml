@@ -1,7 +1,6 @@
 ---
 
-- set_fact: ansible_host="{{ logical_cluster_name }}-{{ inventory_hostname }}" 
 - set_fact: ansible_hostname="{{ logical_cluster_name }}"-"{{ inventory_hostname }}"
-- set_fact: ansible_ssh_host="{{ ansible_default_ipv4.address }}"
-- set_fact: ansible_ssh_private_key_file="{{ key_path }}/{{ key_name }}.pem"
+- set_fact: ansible_host="{{ ansible_default_ipv4.address }}"
+- set_fact: ansible_private_key_file="{{ key_path }}/{{ key_name }}.pem"
   

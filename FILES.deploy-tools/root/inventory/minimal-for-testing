@@ -1,38 +1,15 @@
 #
-# Cluster
+# Cluster vars
 #
 [all:vars]
 logical_cluster_name=example
-cluster_name=cluster.local
-native_dns=os.ncsa.edu
-image=CoreOSStable1122
 flavor=m1.medium
-kube_version=1.2.4
-key_name={{logical_cluster_name}}
-ndslabs_domain= {{logical_cluster_name}}.ndslabs.org
-support_email=ndslabs-support@nationaldataservice.org
-docker_volume_gb=100
-analytics_account=
-
 
 #
-# Docker images
+# inventory customizations
 #
-apiserver_image_name=ndslabs/apiserver:latest
-webui_image_name=ndslabs/angular-ui:latest
-loadbal_image_name=gcr.io/google_containers/nginx-ingress-controller:0.8.2
-gluster_image_name=ndslabs/gluster:latest
-nrpe_image_name=ndslabs/nagios-nrpe:latest
-
-#
-# Logging and monitoring
-# 
-#enablekibana=true
-enablegrafana=true
-#enablepromdash=true
-#enablekubeui=true
-enablekubedash=true
-enablenagios=true
+[glfs:vars]
+vol_size=20
 
 #
 # Servers 
@@ -58,11 +35,6 @@ loadbal
 #
 # Groups - assigned according to roles
 #
-
-
-
-
-
 [nodes:children]
 glfs
 compute
@@ -85,12 +57,4 @@ cluster
 [publicip:children]
 loadbal
 
-#
-# Cluster-Specific Group Variables/overrides
-#
-[glfs:vars]
-vol_size= 20
-vol_name= brick0
-brick_mount_path= /media/brick0
-service_name=media-brick0.mount
 
