@@ -1,3 +1,4 @@
 ---
 nrpe_image_name: ndslabs/nagios-nrpe:latest
+enablenagios: true
 # should be rev-locked

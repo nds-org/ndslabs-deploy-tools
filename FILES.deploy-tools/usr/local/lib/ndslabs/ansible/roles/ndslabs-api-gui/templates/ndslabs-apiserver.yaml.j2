@@ -57,6 +57,10 @@ spec:
             value: "{{ clusterfs_vol_name }}"
           - name: SUPPORT_EMAIL
             value: "{{ support_email }}"
+          - name: SMTP_HOST
+            value: "{{ smtp_host }}"
+          - name: SMTP_TLS
+            value: "{{ smtp_tls }}"
       volumes:
        - hostPath:
             path: {{ clusterfs_vol_path }}

@@ -7,3 +7,6 @@ flavor_large: m1.4xlarge            # 20G disk, 64Gram, 16cpu
 native_dns: sdsc.edu
 
 ndslabs_domain: "{{ logical_cluster_name }}.sdsc.ndslabs.org" # ???
+ 
+smtp_host: smtp.sdsc.edu
+smtp_tls: false

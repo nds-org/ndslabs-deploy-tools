@@ -3,7 +3,7 @@ FROM fedora:25
 # Setup ansible and openstack cli, some convenience pkgs
 # 
 RUN dnf -y update && dnf -y install python-openstackclient wget curl rsync \
-	subversion nano openssh-clients ansible python2-shade &&\
+	subversion nano openssh-clients ansible python2-shade findutils &&\
     (mkdir -p /usr/local/lib/kubernetes/contrib && cd /usr/local/lib/kubernetes/contrib &&\ 
 	svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/branches/ndslabs-1.5.1/ansible &&\
 		rm -rf ansible/.svn) &&\
