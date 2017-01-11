@@ -1,0 +1,32 @@
+---
+
+# Check if {{ src }} directory already exists
+- name: Check if {{ src }} exists
+  stat: path="{{ src }}"
+  register: existingdata
+
+# Move any existing files out of {{ src }} (if it exists) onto the storage volume
+- name: Move existing data from {{ src }}
+  become: true
+  become_user: root
+  command: mv "{{ src }}" "{{ dest }}" 
+  when: existingdata.stat.exists == True and device_attached.changed
+
+# Recreate {{ src }} as an empty directory
+- name: Create {{ src }} directory
+  become: true
+  become_user: root
+  file: path="{{ src }}" state=directory
+  when: device_attached.changed
+
+# Create systemd entries for bind mounts
+- name: Create storage bind mount services for systemd
+  become: true
+  template: src=bind-mount.service.j2 dest="/etc/systemd/system/{{ name }}"
+  when: device_attached.changed
+
+# Specify bind mount to startup with the node
+- name: Start storage volume bind mount and set to start on startup
+  become: true
+  service: name="{{ name }}" state=started enabled=yes
+  when: device_attached.changed

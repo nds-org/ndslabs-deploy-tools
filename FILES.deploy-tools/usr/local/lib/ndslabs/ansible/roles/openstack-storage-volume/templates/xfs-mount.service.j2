@@ -1,0 +1,12 @@
+[Unit]
+Description=Mount {{ storage_volume_dev }} on /media/storage
+After=local-fs.target
+ 
+ [Mount]
+What={{ storage_volume_dev }}
+Where=/media/storage
+Type=xfs
+Options=noatime
+ 
+ [Install]
+WantedBy=multi-user.target

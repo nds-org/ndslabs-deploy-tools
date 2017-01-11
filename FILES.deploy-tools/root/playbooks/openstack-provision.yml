@@ -72,9 +72,27 @@
 
 # Provision and attach OpenStack volume for /var/lib/docker
 - name: OpenStack docker provision volume and attach
-  hosts: compute
+  hosts: compute:&openstack:&coreos
   roles: 
     - { role: openstack-volume-mount, volume_name: 'dockervol', volume_size: "{{ docker_volume_gb }}", mount_point: '/var/lib/docker', filesystem_format: 'xfs' }
+    
+# Provision and attach OpenStack volume for /media/storage
+- name: OpenStack provision storage volume and attach
+  hosts: all:&openstack:&coreos
+  roles: 
+    - { role: openstack-volume-mount, volume_name: 'storagevol', volume_size: "{{ storage_volume_gb }}", mount_point: '/media/storage', filesystem_format: 'xfs' }
+
+# Bind mount /var/log from storage volume
+- name: Bind mount /var/log for all nodes
+  hosts: all:&coreos
+  roles:
+    - { role: storage-volume-bind-mount, name: var-log.mount, src: /var/log, dest: /media/storage, dir_name: log }
+
+# Bind mount /var/lib/kubelet from storage volume except master
+- name: Bind mount /var/lib/kubelet for all nodes except master
+  hosts: nodes:&coreos
+  roles:
+    - { role: storage-volume-bind-mount, name: var-lib-kubelet.mount, src: /var/lib/kubelet, dest: /media/storage, dir_name: kubelet }
 
 # Mount a GLFS brick and make the brick dir
 - name: GLFS volume mount

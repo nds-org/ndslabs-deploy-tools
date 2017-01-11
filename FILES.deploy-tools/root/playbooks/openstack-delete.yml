@@ -26,6 +26,14 @@
   tasks:
     - os_volume: state=absent wait=yes display_name="{{ logical_cluster_name }}-{{ inventory_hostname }}-dockervol"
 
+
+# delete storage vols
+- name: Remove storage volumes
+  hosts: all
+  connection: local
+  tasks:
+    - os_volume: state=absent wait=yes display_name="{{ logical_cluster_name }}-{{ inventory_hostname }}-storagevol"
+
 # delete glfs vols
 - name: Remove glfs volumes
   hosts:  cluster:&glfs

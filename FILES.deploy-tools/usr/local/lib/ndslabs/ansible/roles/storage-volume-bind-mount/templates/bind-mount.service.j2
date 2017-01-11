@@ -1,0 +1,14 @@
+[Unit]
+DefaultDependencies=no
+Description=Mount {{ dest }}/{{ dir_name }} to {{ src }}
+Conflicts=umount.target
+Before=local-fs.target umount.target
+
+[Mount]
+Where={{ src }}
+What={{ dest }}/{{ dir_name }}
+Type=none
+Options=bind
+
+[Install]
+WantedBy=local-fs.target

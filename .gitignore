@@ -5,3 +5,4 @@ nds-build/
 *.swp
 .bash_history
 .vscode/
+**/*.retry
