@@ -9,7 +9,7 @@
   copy: dest=/tmp/backup-key.pem src=/root/SAVED_AND_SENSITIVE_VOLUME/{{ backup_key }}
 
 - name: Create cluster key file
-  copy: dest=/tmp/cluster-key.pem src=/root/SAVED_AND_SENSITIVE_VOLUME/{{ key_name }}
+  copy: dest=/tmp/cluster-key.pem src=/root/SAVED_AND_SENSITIVE_VOLUME/{{ key_name }}.pem
 
 - name: Cluster backup create config secrets
   shell: kubectl create secret generic backup-config --from-file=/tmp/backup-config --from-file=/tmp/backup-key.pem --from-file=/tmp/cluster-key.pem --namespace=kube-system
