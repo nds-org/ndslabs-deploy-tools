@@ -1,0 +1,12 @@
+---
+
+flavor_small: m1.large              # 20G disk, 8G ram, 2cpu
+flavor_medium: m1.2xlarge           # 20G disk, 16Gram, 8cpu
+flavor_large: m1.4xlarge            # 20G disk, 64Gram, 16cpu
+
+native_dns: sdsc.edu
+
+ndslabs_domain: "{{ logical_cluster_name }}.sdsc.ndslabs.org" # ???
+ 
+smtp_host: smtp.sdsc.edu
+smtp_tls: false

@@ -12,11 +12,11 @@
   copy: dest=/tmp/cluster-key.pem src=/root/SAVED_AND_SENSITIVE_VOLUME/{{ key_name }}.pem
 
 - name: Cluster backup create config secrets
-  shell: kubectl create secret generic backup-config --from-file=/tmp/backup-config --from-file=/tmp/backup-key.pem --from-file=/tmp/cluster-key.pem --namespace=kube-system
+  shell: /opt/bin/kubectl create secret generic backup-config --from-file=/tmp/backup-config --from-file=/tmp/backup-key.pem --from-file=/tmp/cluster-key.pem --namespace=kube-system
 
 - name: Cluster backup deploy spec
   template: src=cluster-backup-ds.j2 dest=/tmp/cluster-backup-ds.yaml
 
 - name: Cluster backup deploy deploy pods
-  shell: kubectl create -f  /tmp/cluster-backup-ds.yaml --namespace=kube-system
+  shell: /opt/bin/kubectl create -f  /tmp/cluster-backup-ds.yaml --namespace=kube-system
 
