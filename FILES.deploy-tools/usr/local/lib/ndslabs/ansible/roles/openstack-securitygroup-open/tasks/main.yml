@@ -9,7 +9,26 @@
     name: k8s_loadbalancer
     description: security group k8s in-cluster sw load balancer
 
-- name: Security Group Port 80 IPv6
+- name: Remove Security Group Rule - Wide Open IPv6
+  connection: local
+  become: false
+  os_security_group_rule:
+    security_group: k8s_loadbalancer
+    protocol: tcp
+    ethertype: IPv6
+    remote_ip_prefix: ::/0
+    state: absent
+
+- name: Remove Security Group Rule - Wide Open IPv4
+  connection: local
+  become: false
+  os_security_group_rule:
+    security_group: k8s_loadbalancer
+    protocol: tcp
+    remote_ip_prefix: 0.0.0.0/0
+    state: absent
+
+- name: Add Security Group Rule - Port 80 IPv6
   connection: local
   become: false
   os_security_group_rule:
@@ -19,8 +38,9 @@
     port_range_max: 80
     ethertype: IPv6
     remote_ip_prefix: ::/0
+    state: present
 
-- name: Security Group Port 80 IPv4
+- name: Add Security Group Rule - Port 80 IPv4
   connection: local
   become: false
   os_security_group_rule:
@@ -29,8 +49,9 @@
     port_range_min: 80
     port_range_max: 80
     remote_ip_prefix: 0.0.0.0/0
+    state: present
 
-- name: Security Group Port 443 IPv6
+- name: Add Security Group Rule - Port 443 IPv6
   connection: local
   become: false
   os_security_group_rule:
@@ -40,8 +61,9 @@
     port_range_max: 443
     ethertype: IPv6
     remote_ip_prefix: ::/0
+    state: present
 
-- name: Security Group Port 443 IPv4
+- name: Add Security Group Rule - Port 443 IPv4
   connection: local
   become: false
   os_security_group_rule:
@@ -50,3 +72,4 @@
     port_range_min: 443
     port_range_max: 443
     remote_ip_prefix: 0.0.0.0/0
+    state: present
