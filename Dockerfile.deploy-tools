@@ -9,6 +9,7 @@ RUN dnf -y update && dnf -y install python-openstackclient wget curl rsync \
 		rm -rf ansible/.svn) &&\
 	    dnf -y clean all
 
+
 # NDS rules and ansible cfg
 COPY FILES.deploy-tools /
 VOLUME /root/SAVED_AND_SENSITIVE_VOLUME
