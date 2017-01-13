@@ -24,7 +24,7 @@
   hosts: publicip
   run_once: true
   roles: 
-    - openstack-securitygroup-open
+    - openstack-securitygroup
 
 # Provision
 - name: NDSLabs OpenStack Cluster
