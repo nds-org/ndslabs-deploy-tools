@@ -9,11 +9,8 @@ spec:
     component: ndslabs-webui
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 3000
       protocol: TCP
-#      nodePort: 30000
-#  type: NodePort
----
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -32,7 +29,7 @@ spec:
         image: {{ webui_image_name }}
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 3000
           protocol: TCP
         env:
           - name: APISERVER_HOST
@@ -50,7 +47,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /asset/png/favicon-2-32x32.png
-            port: 8080
+            port: 3000
             scheme: HTTP
           initialDelaySeconds: 10
           timeoutSeconds: 120
