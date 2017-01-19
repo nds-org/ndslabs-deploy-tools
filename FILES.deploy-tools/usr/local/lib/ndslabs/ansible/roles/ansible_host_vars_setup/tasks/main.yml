@@ -4,3 +4,7 @@
 - set_fact: ansible_host="{{ ansible_default_ipv4.address }}"
 - set_fact: ansible_private_key_file="{{ key_path }}/{{ key_name }}.pem"
   
+- name: include site vars
+  hosts: cluster
+  tasks:
+    - include_vars: "{{ inventory_dir }}/site_vars/{{ site }}.yml"
