@@ -11,6 +11,20 @@
 ##########################################################################################################################
 - include: /usr/local/lib/kubernetes/contrib/ansible/playbooks/deploy-cluster.yml
 
+# Stop/disable kube-addons.sh
+# Instead of 
+- name: Stop kube-addons.sh
+  hosts: masters
+  become: true
+  tasks:
+    - pause:
+        seconds: 15  # Give time for the addons to deploy
+        prompt:  'Allow add-ons to deploy'
+    - service: 
+        name: kube-addons.service
+        enabled: false
+        state: started
+
 - name: kubectl | get from master
   hosts: masters
   run_once: true
