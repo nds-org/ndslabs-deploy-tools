@@ -1,6 +1,6 @@
 ---
 
-image: CoreOSStable1185
+image: CoreOSStable1235.5
 key_path: /root/SAVED_AND_SENSITIVE_VOLUME
 security_groups: default
 key_name: "{{ logical_cluster_name }}" 
