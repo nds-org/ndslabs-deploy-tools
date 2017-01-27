@@ -1,0 +1,20 @@
+#
+# by-hand deploy cluster backups
+#
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - ansible_host_vars_setup
+
+- name: include site vars
+  hosts: cluster
+  tasks:
+    - include_vars: "{{ inventory_dir }}/site_vars/{{ site }}.yml"
+
+# Deploy backup DS
+# Use just one glfs node to get the glfs vars
+- name: Deploy Cluster Backups
+  hosts: masters[0]
+  roles:
+    - cluster-backup
+
