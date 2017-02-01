@@ -5,9 +5,10 @@ FROM fedora:25
 RUN dnf -y update && dnf -y install python-openstackclient wget curl rsync \
 	subversion nano openssh-clients ansible python2-shade findutils &&\
     (mkdir -p /usr/local/lib/kubernetes/contrib && cd /usr/local/lib/kubernetes/contrib &&\ 
-	svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/branches/ndslabs-1.5.1/ansible &&\
+	svn -q checkout https://github.com/nds-org/ndslabs-kubernetes-contrib.git/branches/ndslabs-1.5.2/ansible &&\
 		rm -rf ansible/.svn) &&\
 	    dnf -y clean all
+
 
 # NDS rules and ansible cfg
 COPY FILES.deploy-tools /

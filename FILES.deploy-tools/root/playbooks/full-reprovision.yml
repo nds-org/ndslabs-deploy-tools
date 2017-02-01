@@ -1,0 +1,13 @@
+#
+# One-play provision - tear down fully (if needed), 
+# rebuild from ground-up fully
+#
+- name: setup ansible host vars
+  hosts: all
+  roles:
+    - ansible_host_vars_setup
+
+- include: openstack-delete.yml
+- include: openstack-provision.yml
+- include: k8s-install.yml
+- include: ndslabs-k8s-install.yml
