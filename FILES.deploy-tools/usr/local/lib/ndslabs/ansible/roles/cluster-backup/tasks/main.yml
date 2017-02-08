@@ -11,12 +11,23 @@
 - name: Create cluster key file
   copy: dest=/tmp/cluster-key.pem src=/root/SAVED_AND_SENSITIVE_VOLUME/{{ key_name }}.pem
 
+- name: Secret status - backup-config
+  shell: /opt/bin/kubectl get secret backup-config --namespace=kube-system
+  register: backupsecret
+  failed_when: backupsecret.rc < 0
+
 - name: Cluster backup create config secrets
   shell: /opt/bin/kubectl create secret generic backup-config --from-file=/tmp/backup-config --from-file=/tmp/backup-key.pem --from-file=/tmp/cluster-key.pem --namespace=kube-system
+  when: backupsecret.rc != 0
 
 - name: Cluster backup deploy spec
   template: src=cluster-backup-ds.j2 dest=/tmp/cluster-backup-ds.yaml
 
-- name: Cluster backup deploy deploy pods
-  shell: /opt/bin/kubectl create -f  /tmp/cluster-backup-ds.yaml --namespace=kube-system
+- name: Daemonset status - cluster-backup-{{ cluster_vol_name }}
+  shell: /opt/bin/kubectl get ds "cluster-backup-{{ clusterfs_vol_name }}" --namespace=kube-system
+  register: backupds
+  failed_when: backupds.rc < 0
 
+- name: Cluster backup daemonset
+  when: backupds.rc != 0
+  shell: /opt/bin/kubectl create -f  /tmp/cluster-backup-ds.yaml --namespace=kube-system
