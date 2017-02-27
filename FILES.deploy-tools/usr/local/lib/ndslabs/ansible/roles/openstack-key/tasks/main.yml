@@ -5,15 +5,23 @@
   os_keypair:
     state: present
     name: "{{ key_name }}"
-  register: newkey
+  register: remotekey
+
+- name: Check if key exists locally
+  stat:
+    path: "{{ key_path }}/{{ key_name }}.pem"
+  register: localkey
+
+- name: Fail if OpenStack key already exists remotely, but not locally
+  failed_when: remotekey.ok == True and localkey.stat.islnk is not defined
 
 - name: Save new key
   connection: local
   become: false
-  local_action: copy mode=0600 content="{{ newkey.key.private_key }}" dest={{ key_path }}/{{ key_name }}.pem
-  when: newkey.changed
+  local_action: copy mode=0600 content="{{ remotekey.key.private_key }}" dest={{ key_path }}/{{ key_name }}.pem
+  when: remotekey.changed
 
 - name: Set Hosts Keyfile
   set_fact:
     ssh_private_key_file: "{{ key_path }}/{{ key_name }}.pem"
-  when: newkey.changed
+  when: remotekey.changed
