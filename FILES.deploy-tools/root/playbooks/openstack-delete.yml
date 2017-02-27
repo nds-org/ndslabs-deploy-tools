@@ -8,7 +8,7 @@
   hosts: cluster
   connection: local
   tasks:
-    - os_server: state=absent wait=yes name={{ logical_cluster_name }}-{{ inventory_hostname }}
+    - os_server: state=absent wait=yes name="{{ logical_cluster_name }}-{{ inventory_hostname }}"
 
 # delete the fact cache
 - name: Remove fact cache
@@ -17,7 +17,7 @@
     - local_action: 
         module: file
         state: absent
-        path: /root/SAVED_AND_SENSITIVE/inventory_cache/{{ inventory_hostname }}
+        path: "/root/SAVED_AND_SENSITIVE/{{ logical_cluster_name }}_cache/{{ inventory_hostname }}"
 
 # delete docker vols
 - name: Remove docker volumes
