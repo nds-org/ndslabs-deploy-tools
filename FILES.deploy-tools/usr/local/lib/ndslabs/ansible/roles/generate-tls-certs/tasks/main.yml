@@ -9,7 +9,7 @@
   connection: local
 
 # Check if a .key file exists. If it does, skip generation and reuse it
-- stat: path="{{ cert_path }}/ndslabs.key"
+- stat: path="{{ cert_path }}/{{ cert_name }}.key"
   connection: local
   register: keyfile
 
@@ -21,45 +21,45 @@
   when: keyfile.stat.exists == False
  
 # If we generated a new key, copy it to the certificates directory
-- local_action: copy content={{ newkey.stdout }} dest="{{ cert_path }}/ndslabs.key"
+- local_action: copy content={{ newkey.stdout }} dest="{{ cert_path }}/{{ cert_name }}.key"
   when: newkey.changed
 
 # Check if a .cert file exists. If it does, skip generation and reuse it
-- stat: path="{{ cert_path }}/ndslabs.cert"
+- stat: path="{{ cert_path }}/{{ cert_name }}.cert"
   connection: local
   register: certfile
   
 # If no .cert exists, generate a new one using the .key from above
 - name: Generate TLS certificates| Generate .cert
   connection: local
-  command: openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.{{ ndslabs_domain }}" -key "{{ cert_path }}/ndslabs.key" -out "{{ cert_path }}/ndslabs.cert"
+  command: openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.{{ ndslabs_domain }}" -key "{{ cert_path }}/{{ cert_name }}.key" -out "{{ cert_path }}/{{ cert_name }}.cert"
   register: newcert
   when: newkey.changed or certfile.stat.exists == False
 
 # Check if a .info file exists. If it does, skip generation and reuse it
-- stat: path="{{ cert_path }}/ndslabs.info"
+- stat: path="{{ cert_path }}/{{ cert_name }}.info"
   connection: local
   register: infofile
 
 # If no .info exists, generate a new one using the .cert from above
 - name: Generate TLS certificates| Generate .info
   connection: local
-  command: openssl x509 -noout -fingerprint -text -in {{ cert_path }}/ndslabs.cert -out {{ cert_path }}/ndslabs.info
+  command: openssl x509 -noout -fingerprint -text -in {{ cert_path }}/{{ cert_name }}.cert -out {{ cert_path }}/{{ cert_name }}.info
   register: newinfo
   when: newcert.changed or infofile.stat.exists == False
 
 # Check if a .pem file exists. If it does, skip generation and reuse it
-- stat: path="{{ cert_path }}/ndslabs.pem"
+- stat: path="{{ cert_path }}/{{ cert_name }}.pem"
   connection: local
   register: pemfile
   
 # If no .pem exists, generate a new one using the .key and .cert from above
 - name: Generate TLS certificates| Generate .pem
   connection: local
-  command: cat "{{ cert_path }}/ndslabs.cert" "{{ cert_path }}/ndslabs.key"
+  command: cat "{{ cert_path }}/{{ cert_name }}.cert" "{{ cert_path }}/{{ cert_name }}.key"
   register: newpem
   when: newkey.changed or newcert.changed or pemfile.stat.exists == False
   
 # Write out the result to a .pem file if one was created
-- local_action: copy content={{ newpem.stdout }} dest="{{ cert_path }}/ndslabs.pem"
+- local_action: copy content={{ newpem.stdout }} dest="{{ cert_path }}/{{ cert_name }}.pem"
   when: newpem.changed
