@@ -8,12 +8,16 @@
   register: remotekey
 
 - name: Check if key exists locally
+  connection: local
   stat:
     path: "{{ key_path }}/{{ key_name }}.pem"
   register: localkey
 
 - name: Fail if OpenStack key already exists remotely, but not locally
-  failed_when: remotekey.ok == True and localkey.stat.islnk is not defined
+  connection: local
+  fail:
+    msg: "ERROR: keypair exists on OpenStack but not locally. Terminating."
+  when: remotekey.changed == False and localkey.stat.islnk is not defined
 
 - name: Save new key
   connection: local
