@@ -1,10 +1,10 @@
 - name: NDSLabs TLS Secret| copy certs
   copy: src="{{ cert_path }}/{{ item }}" dest="/tmp/{{ item }}"
   with_items:
-    - ndslabs.key
-    - ndslabs.cert
-    - ndslabs.info
-    - ndslabs.pem
+    - {{ logical_cluster_name }}.key
+    - {{ logical_cluster_name }}.cert
+    - {{ logical_cluster_name }}.info
+    - {{ logical_cluster_name }}.pem
 
 - name: Secret status - default
   command: /opt/bin/kubectl get secret ndslabs-tls-secret
@@ -12,6 +12,6 @@
   failed_when: defaultsecret.rc < 0
 
 - name: NDSLabs TLS Secret| create ndslabs-tls-secret - default
-  command: /opt/bin/kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt=/tmp/ndslabs.cert --from-file=tls.key=/tmp/ndslabs.key
+  command: /opt/bin/kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt="/tmp/{{ logical_cluster_name }}.cert" --from-file=tls.key="/tmp/{{ logical_cluster_name }}.key"
   when: defaultsecret.rc != 0
   
