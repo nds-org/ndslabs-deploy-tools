@@ -1,10 +1,10 @@
 - name: NDSLabs TLS Secret| copy certs
   copy: src="{{ cert_path }}/{{ item }}" dest="/tmp/{{ item }}"
   with_items:
-    - {{ logical_cluster_name }}.key
-    - {{ logical_cluster_name }}.cert
-    - {{ logical_cluster_name }}.info
-    - {{ logical_cluster_name }}.pem
+    - "{{ logical_cluster_name }}.key"
+    - "{{ logical_cluster_name }}.cert"
+    - "{{ logical_cluster_name }}.info"
+    - "{{ logical_cluster_name }}.pem"
 
 - name: Secret status - default
   command: /opt/bin/kubectl get secret ndslabs-tls-secret
