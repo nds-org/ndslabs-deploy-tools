@@ -1,5 +1,15 @@
 ---
 
+- name: OpenStack system volume for "{{ logical_cluster_name }}-{{ inventory_hostname }}"
+  connection: local
+  become: false
+  os_volume:
+    state: present
+    wait: yes
+    display_name: "{{ logical_cluster_name }}-{{ inventory_hostname }}-bootvol"
+    image: "{{ image }}"
+    size: "{{ sys_vol_size }}"
+  register: os_host_sys_vol
 
 - name: OpenStack System
   connection: local
@@ -8,10 +18,10 @@
     state: present
     wait: yes
     name: "{{ logical_cluster_name }}-{{ inventory_hostname }}"
-    image: "{{ image }}"
     flavor: "{{ flavor }}"
     key_name: "{{ key_name }}"
     auto_ip: false
+    boot_volume: "{{ logical_cluster_name }}-{{ inventory_hostname }}-bootvol"
   register: os_host
 
 #- debug: var=os_host
@@ -23,7 +33,7 @@
 
 - name: Wait for host up
   become: false
-  local_action: wait_for host={{ ansible_host }} port=22
+  local_action: wait_for host={{ ansible_host }} port=22 search_regex=OpenSSH
 
 - name: register key for host
   set_fact:

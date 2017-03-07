@@ -6,3 +6,5 @@ k8_initial_labels: "ndslabs-node-role=glfs"
 vol_size: 100
 vol_name: brick0
 brick_mount_path: /media/brick0
+
+sys_vol_size: 40

@@ -79,6 +79,7 @@
 # Provision and attach OpenStack volume for /media/storage
 - name: OpenStack provision storage volume and attach
   hosts: all:&openstack:&coreos
+  
   roles: 
     - { role: openstack-volume-mount, volume_name: 'storagevol', volume_size: "{{ storage_volume_gb }}", mount_point: '/media/storage', filesystem_format: 'xfs' }
 
@@ -98,9 +99,9 @@
 - name: GLFS volume mount
   hosts: glfs:&openstack
   become: true
+  
   tasks:
     - file: path={{ brick_mount_path }}/brick state=directory mode=0777
   roles: 
     - { role: openstack-volume-mount, volume_name: 'glfs', volume_size: "{{ vol_size }}",  mount_point: "{{ brick_mount_path }}", filesystem_format: 'xfs' }
 
-  

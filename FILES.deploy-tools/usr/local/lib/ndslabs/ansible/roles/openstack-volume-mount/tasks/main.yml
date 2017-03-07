@@ -32,15 +32,15 @@
 
 - name: Format "{{ os_device }}" as "{{ filesystem_format }}"
   become: true
-  filesystem: fstype={{ filesystem_format }} dev="{{ os_device }}"
-  when: device_attached.changed
+  filesystem: fstype={{ filesystem_format }} dev="{{ os_device }}" force=yes
+  when: device_attached.changed and vol_created.changed
 
 - name: create {{ mount_point }} 
   become: true
   file:  
     path: "{{ mount_point }}"
     state: directory
-  when: device_attached.changed
+  when: vol_created.changed
 
 # CoreOS can't use ansible mount module'
 - include: coreos_mount.yml
@@ -56,4 +56,3 @@
     state: present
   when: not is_coreos
 
-  
