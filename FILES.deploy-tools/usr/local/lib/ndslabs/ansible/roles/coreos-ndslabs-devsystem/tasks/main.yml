@@ -4,9 +4,13 @@
   become: true
   lineinfile: dest=/etc/coreos/update.conf line="REBOOT_STRATEGY=off"
 
+- name: Do not update CoreOS
+  become: true
+  systemd: name=update-engine state=stopped masked=yes
+
 - name: CoreOS no locksmithd
   become: true
-  service: name=locksmithd state=stopped enabled=no
+  systemd: name=locksmithd state=stopped masked=yes
 
 - name: fix coreos docker BIP and MTU - make service dir
   become: true
