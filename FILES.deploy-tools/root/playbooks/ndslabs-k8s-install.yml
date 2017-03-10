@@ -54,7 +54,7 @@
   hosts: publicip
   connection: local
   tasks:
-    - os_floating_ip: server={{ logical_cluster_name }}-{{ inventory_hostname }} wait=yes
+    - os_floating_ip: server={{ logical_cluster_name }}-{{ inventory_hostname }} reuse=yes wait=yes
     - command: nova add-secgroup {{ logical_cluster_name }}-{{ inventory_hostname }} {{ security_groups }}
 
 

@@ -3,6 +3,13 @@
 # Does NOT destroy the key or security groups
 #
 
+# disassociate any publicips
+- name: Remove LoadBalancer public interface
+  hosts: publicip
+  connection: local
+  tasks:
+    - os_floating_ip: server={{ logical_cluster_name }}-{{ inventory_hostname }} state=absent reuse=yes wait=yes
+    
 # delete the system
 - name: Remove OpenStack system
   hosts: cluster
