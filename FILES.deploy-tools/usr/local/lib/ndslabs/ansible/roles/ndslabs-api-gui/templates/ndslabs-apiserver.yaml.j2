@@ -60,7 +60,7 @@ spec:
           - name: SMTP_HOST
             value: "{{ smtp_host }}"
           - name: SMTP_TLS
-            value: "{{ smtp_tls }}"
+            value: "{{ smtp_tls | bool | lower }}"
       volumes:
        - hostPath:
             path: {{ clusterfs_vol_path }}
