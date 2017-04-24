@@ -102,5 +102,3 @@
   hosts: masters[0]
   roles:
     - k8s-local-docker-registry
-
-- include: /root/playbooks/deploy-cluster-backups.yml
