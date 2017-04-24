@@ -58,13 +58,13 @@
   shell: /opt/bin/kubectl exec -t {{ glpod }} gluster pool list --namespace=kube-system | tail -n+2 | wc -l
   delegate_to: "{{ groups['masters'][0] }}"
   register: shellout
-  until: shellout.stdout.find("4") != -1
+  until: shellout.stdout.find("2") != -1
   retries: 50
   delay: 10
   when: gfsinstalling.changed
 
 - name: Gluster Full Cluster FS Volume 2x2 strip/mirror
-  shell: "/opt/bin/kubectl exec -t {{ glpod }} gluster volume create {{ clusterfs_vol_name }} replica 2 transport tcp  {{ hostvars[groups['glfs'][0]]['ansible_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][1]]['ansible_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][2]]['ansible_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][3]]['ansible_host'] }}:{{ brick_mount_path }}/brick force --namespace=kube-system"
+  shell: "/opt/bin/kubectl exec -t {{ glpod }} gluster volume create {{ clusterfs_vol_name }} replica 2 transport tcp  {{ hostvars[groups['glfs'][0]]['ansible_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][1]]['ansible_host'] }}:{{ brick_mount_path }}/brick force --namespace=kube-system"
   delegate_to: "{{ groups['masters'][0] }}"
   run_once: true
   register: fcreated

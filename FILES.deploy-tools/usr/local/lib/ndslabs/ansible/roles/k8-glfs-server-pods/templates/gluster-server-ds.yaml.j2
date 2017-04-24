@@ -39,7 +39,7 @@ spec:
         name: glfs-server-{{ clusterfs_vol_name }}
     spec:
       nodeSelector:
-        ndslabs-node-role: glfs
+        ndslabs-role-glfs: "true"
       hostNetwork: true
       hostIPC: true
       hostPID: true

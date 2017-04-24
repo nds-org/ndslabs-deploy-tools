@@ -49,4 +49,4 @@ spec:
         - --nginx-configmap=$(POD_NAMESPACE)/nginx-ingress-conf
       hostNetwork: true
       nodeSelector:
-          ndslabs-node-role: loadbalancer
+          ndslabs-role-loadbal: "true"

@@ -1,3 +1,2 @@
 ---
-k8_initial_labels: "ndslabs-node-role=compute"
 security_groups: "default,remote HTTP,HTTPS,Kubernetes NodePort,Extended HTTP"

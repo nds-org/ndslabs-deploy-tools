@@ -1,6 +1,6 @@
 
 - name: NDSLabs initial system labels
   command: /opt/bin/kubectl label --overwrite=true node "{{ inventory_hostname }}" "{{ item }}"
-  with_items: "{{ k8_initial_labels }}"
+  with_items: "{{ (group_names + ['all']) | intersect(k8_initial_labels.keys()) | map('extract', k8_initial_labels) | sum(start=[]) }}"
   delegate_to: "{{ groups['masters'][0] }}"
   when: k8_initial_labels is defined

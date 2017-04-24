@@ -2,52 +2,42 @@
 # Cluster
 #
 [all:vars]
-logical_cluster_name=dr
-site=sdsc
+logical_cluster_name=minimal
+site=ncsa
 
 #
-# Servers - Define names/counts of each type of system
+# Servers 
 #
 [masters]
 master1
-
 [etcd:children]
 masters
-
 [glfs]
-gfs[1:4]
-
+node[1:2]
 [compute]
+node[1:2]
+[monitor]
+node2
+[loadbal]
 node1
 
-[monitor]
-lma
-
-[loadbal]
-loadbal
-
 #
-# Groups - assigned according to roles, should not need to be changed typically
+# Groups - assigned according to roles 
 #
 [nodes:children]
 glfs
 compute
 loadbal
 monitor
-
-#all nodes
 [cluster:children]
 nodes
 masters
 etcd
-
 [all:children]
 cluster
-
 [openstack:children]
 cluster
 [coreos:children]
 cluster
 [publicip:children]
 loadbal
-

@@ -1,1 +1,10 @@
-/usr/local/lib/kubernetes/contrib/ansible/inventory/group_vars/all.yml
+k8_initial_labels:
+  glfs:
+    - "ndslabs-role-glfs=true"
+  loadbal:
+    - "ndslabs-role-loadbal=true"
+  nodes:
+    - "ndslabs-role-compute=true"
+  monitor:
+    - "ndslabs-role-lma=true"
+

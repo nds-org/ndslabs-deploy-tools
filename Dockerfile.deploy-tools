@@ -10,8 +10,12 @@ RUN dnf -y update && dnf -y install python-openstackclient wget curl rsync \
 	    dnf -y clean all
 
 
+
+
 # NDS rules and ansible cfg
 COPY FILES.deploy-tools /
+
+RUN cat /usr/local/lib/kubernetes/contrib/ansible/inventory/group_vars/all.yml >> /root/inventory/group_vars/all.yml
 VOLUME /root/SAVED_AND_SENSITIVE_VOLUME
 WORKDIR /root
 CMD bash

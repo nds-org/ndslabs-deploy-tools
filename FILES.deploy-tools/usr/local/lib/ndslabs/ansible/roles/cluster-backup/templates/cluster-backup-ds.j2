@@ -13,7 +13,7 @@ spec:
         name: cluster-backup-{{ clusterfs_vol_name }}
     spec:
       nodeSelector:
-        ndslabs-node-role: glfs
+        ndslabs-role-glfs: "true"
       hostNetwork: true
       containers:
         - image: {{ backup_image_name }}
