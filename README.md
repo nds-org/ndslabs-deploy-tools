@@ -1,59 +1,89 @@
-# NDSLabs deploy tools
-Tooling and support for deploying NDSLabs-style Kubernetes developer systems and production clusters based on CoreOS in private clouds.
-Tested primarily on openstack - but usable in other environments.
+# NDS Labs Workbench Deploy Tools
+This repository contains a set of [Ansible](https://www.ansible.com/) scripts to deploy [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/) and the [Labs Workbench](https://github.com/nds-org/ndslabs) onto an OpenStack cluster
 
-# Tools:
-  * Openstack clients: nova, heat, glance, keystone 
-  * Ansible, ansible libraries, playbooks to deploy cluster systems in openstack, kubernetes, and ndslabs PaaS on kubernetes.
+If you don't have access to an OpenStack cluster, there are [plenty of ways to run Kubernetes](https://kubernetes.io/docs/setup/pick-right-solution/)!
 
-# Important information
-  * OpenStack:  You need an openstack `openrc.sh` API file
-  * SAVED_AND_SENSITIVE_VOLUME, mapped at /root/SAVED_AND_SENSITIVE_VOLUME is used to save provisioned system information, keys, etc. for copying for safe storage.  If you don't provide a volume mount ( -v /my-path:/root/SAVED_AND_SENSITIVE_VOLUME ) and destroy the container, you may lose sensitive information
+# Prerequisites
+* [Docker](https://www.docker.com/get-docker)
 
-# Startup:
-  * Create a named container:  docker create --name deploy-test-cluster -it ndslabs/deploy-tools
-  * Add your your openstack rc file to the volume mount, if it is not in a mapped volume, and source it: . <my-rc>.sh
-  * Test that the OpenStack API's are directly accessible: nova credentials
-  * Ansible playbooks used by NDSLabs are in ${HOME} and are available as examples and to copy/modify
+# Build Docker Image
+```bash
+docker build -t ndslabs/deploy-tools .
+```
 
-# Playbooks - under playbooks
-There are 3 layers of install:   1.systems, 2.kubernetes, and 3.ndslabs
-  * openstack-provision.yml, openstack-delete.yml - Render/delete the OpenStack resources (except keys and secgroups)
-  * k8s-install.yml, k8s-delete.yml - install/delete kubernetes onto the systems
-  * ndslabs-k8s-install.yml - deploy the ndslabs PaaS on top of kubernetes
+# Run Docker Image
+```bash
+docker run -it -v /home/core/private:/root/SAVED_AND_SENSITIVE_VOLUME ndslabs/deploy-tools bash 
+```
 
-# Inventory/group_vars:
-  * The inventory file has 3 sections: names, groups, variables
-  * Names are grouped, where groups can override variables such as flavors or storage sizes.
-  * Roles are assigned and parameterized via groups, with common variable values under group_vars and typical user-specified variables in the inventory-file in-line.   Ansible variables specified in multiple places will receive the most-recently encountered value.
+NOTE: You should remember to map some volume to `/root/SAVED_AND_SENSITIVE_VOLUME` containing your `*-openrc.sh` file. This directory is where the ansible output gets stored. This includes SSH private keys, generated TLS certificates, and Ansible's own fact cache. If you forget to map this directory, its contents **WILL BE LOST FOREVER**.
 
+# Provide Your OpenStack Credentials
+The first thing you need to do is to `source` the openrc file of the project you wish to deploy to in OpenStack
 
-# OpenStack resources 
-  * The playbooks will create new resources, such as keys, security-groups, and volumes
-  * Many resources are only saved at creation-time to avoid overwriting - keys/volumes/security-groups.
-  * Failures in multi-step plays may occur for various reasons such as over resource-limits, network-errors, etc.
-  * Failures may result in a resource not being saved.  
-  * Recovering varies by resource type, typically the system involved can be removed by hand using the nova cli or horizon and the full playbook re-run safely, the previously provisioned systems should be skipped.
+NOTE: this file can be retrieved for any OpenStack project which you can access by following the insturctions [here](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux_OpenStack_Platform/4/html/End_User_Guide/cli_openrc.html).
 
-# Create a Cluster:
-  * Copy the inventory/example and adjust naming and resources to your needs.   Typically the numbers of various groups, flavor, image, key_name, etc.    
-  * run ansible-playbook -i inventory/mycluster playbooks/kubernetes-infrastructure.yml
-  * Save and/or safeguard anything saved in SAVED_AND_SENSITIVE_VOLUME
+Assuming you've passed your the openrc.sh files with `-v`, as recommended above:
+```bash
+source /root/SAVED_AND_SENSITIVE_VOLUME/OpenStackProjectName-openrc.sh
+```
 
-# Group/roles/args summary for Infrastructure:
-  * openstack-system: Provisioned in OpenStack (inventory_host)
-  * openstack-securitygroup-open:   provision security-group and rules for fully-open in-cluster ingress SW loadbalancers
-  * openstack-key:   Provision/save key in OpenStack (key_name)
-  * openstack-glfs:   Openstack volume provisionuing for glfs nodes (vol_size, vol_name, mount_path, service_name)
-  * coreos_mount: Mount the glfs brick in coreos(block_dev, mount_path)
-  * format-mount-glfs:  Format and mount the brick (block_dev, mount_path)
-# Group/roles/args for workshop setups
-  * docker-pull-images:  pre-pull images to system once up
-  * with-saved-account: provision a login on the system, set a random password, save user/passwd/IP info
-  * coreos-ndslabs-system:  NDSC5 workshop style systems provisioning
-# Groups/roles/args for Kubernetes Init
-  * k8-etcd
-  * k8-node
-  * k8-master
-# Groups/roles/args for Kubernetes Setup
-  * k8-tls
+# Prepare Your Site
+Some parameters, such as the available flavors (sizes) and images for the deployed OpenStack instances, are properties of the particular installation of OpenStack or the projects to which you are allowed to deploy. We refer to each installation of OpenStack as a "site", and similarly store their variables under `/root/inventory/site_vars`, where each file is named after the site that it represents.
+
+To set up a new site, you can simply copy an existing site and change the names of the images and flavors accordingly.
+
+## Obtain a CoreOS Image
+[Download](https://coreos.com/os/docs/latest/booting-on-openstack.html) the newest stable cloud image of CoreOS for OpenStack and [import](https://docs.openstack.org/user-guide/dashboard-manage-images.html) it into your project.
+
+Currently supported CoreOS version: **1235.6**
+
+NOTE: While newer versions of CoreOS *should* work, due to CoreOS and Docker versions being tied together later versions may not be supported immediately.
+
+## Choosing a Flavor
+Set the site_vars named `flavor_small` / `flavor_medium` / `flavor_large` to flavors that already exist in your OpenStack project, or create new flavors that match these.
+
+# Compose Your Inventory
+Make a copy of the existing example or minimal inventory located in `/root/inventory` and edit it to your liking:
+```bash
+cp inventory/minimal-ncsa inventory/my-cluster
+vi inventory/my-cluster
+```
+
+* The top section pertains to **Cluster Variables** - here you can override any group_vars (NOTE: site_vars cannot yet be overridden)
+* The middle section defines **Servers**, where we choose the names and quantities for each type of node
+* The last section defines **Groups**, which groups the node types that we declared above into several larger groups
+
+## About Group Variables
+Some parameters are different based on the type of node being provisioned - Ansible calls these "groups". The group-specific values can be found under `/root/inventory/group_vars`, where each file is named after the group it represents.
+
+NOTE: these groups can be nested / hierarchical.
+**NOTE**: Raw images should be preferred at OpenStack sites where Ceph is used for the backing volumes, as it will significanlty decrease the time needed to provision and start your cluster.
+
+# Ansible Playbooks
+After adjusting the inventory/site parameters to your liking, run the three Ansible playbooks to bring up a Labs Workbench cluster:
+```bash
+ansible-playbook -i inventory/my-cluster playbooks/openstack-provision.yml && \
+ansible-playbook -i inventory/my-cluster playbooks/k8s-install.yml && \
+ansible-playbook -i inventory/my-cluster playbooks/ndslabs-k8s-install.yml
+```
+
+These commands can be run one at a time, or all at once for provisioning in a single command:
+```bash
+ansible-playbook -i inventory/my-cluster playbooks/openstack-provision.yml playbooks/k8s-install.yml playbooks/ndslabs-k8s-install.yml
+```
+
+## About Playbooks
+Each playbook takes care of a small portion of the installation process:
+* `playbooks/openstack-provision.yml`: Provision OpenStack volumes and instances with chosen flavor / image
+* `playbooks/k8s-install.yml`: Download and install Kubernetes binaries onto each node
+* `playbooks/ndslabs-k8s-install.yml`: Deploy our Kubernetes YAML files to start up services necessary to run Labs Workbench
+
+## About Node Labels
+After running all three playbooks, you should be left with a working cluster.
+
+Labels recognized by the cluster are as follows:
+* *glfs* server nodes must be labelled with `ndslabs-role-glfs=true` for the GLFS server to run there
+* *compute* nodes must be labelled with `ndslabs-role-compute=true` for the Workbench API server to schedule services there
+* *loadbal* nodes must be labelled to know where a public IP is available can run the ingress/loadbalance
+* *lma* nodes must be labelled to know where dedicated resources are set aside to run logging/monitoring/alerts
