@@ -1,2 +1,2 @@
 ---
-gluster_image_name: ndslabs/gluster:1.0.10
+gluster_image_name: ndslabs/gluster:1.0.11
