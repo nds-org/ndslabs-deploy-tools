@@ -1,14 +1,10 @@
-*.pem
-.rnd
-.c9/
-*.swp
 .bash_history
 .ansible/
-.vscode/
-**/*.retry
-**/SAVED_AND_SENSITIVE_VOLUME/
+.rnd
+**/SAVED_AND_SENSITIVE_VOLUME
 .vim/
 .ssh/
 .viminfo
 .novaclient/
 .cinderclient/
+**/*.retry

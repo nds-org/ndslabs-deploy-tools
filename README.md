@@ -83,7 +83,7 @@ Each playbook takes care of a small portion of the installation process:
 After running all three playbooks, you should be left with a working cluster.
 
 Labels recognized by the cluster are as follows:
-* *glfs* server nodes must be labelled with `ndslabs-role-glfs=true` for the GLFS server to run there
+* *glfs* server nodes must be labelled with `ndslabs-role-glfs=true` for the GLFS servers to run there
 * *compute* nodes must be labelled with `ndslabs-role-compute=true` for the Workbench API server to schedule services there
-* *loadbal* nodes must be labelled to know where a public IP is available can run the ingress/loadbalance
-* *lma* nodes must be labelled to know where dedicated resources are set aside to run logging/monitoring/alerts
+* *loadbal* nodes must be labelled with `ndslabs-role-loadbal=true` to know where a public IP is available, so it can run the ingress/loadbalance
+* *lma* nodes should be labelled with `ndslabs-role-lma=true` to know where dedicated resources are set aside to run logging/monitoring/alerts

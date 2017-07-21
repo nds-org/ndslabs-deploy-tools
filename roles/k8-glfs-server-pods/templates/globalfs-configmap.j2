@@ -1,0 +1,17 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    glfs-config-{{ clusterfs_vol_name }}: |
+      export VOLNAME="{{ clusterfs_vol_name }}"
+      export VOLSPEC="{{ clusterfs_vol_config }}"
+      export GFS_SRV_GLOBAL="srv-{{ clusterfs_vol_name }}"
+      export VOLPATH="{{ clusterfs_vol_path }}"
+      export BRICKS="{% for node in groups['glfs'] %}{{ hostvars[node]['ansible_host'] }}:{{ hostvars[groups['glfs'][1]]['brick_mount_path'] }}/brick {% endfor %}"
+      export PEERS="{% for node in groups['glfs'] %}{{ hostvars[node]['ansible_host'] }} {% endfor %}"
+      export DEBUG=true
+  kind: ConfigMap
+  metadata:
+    name: glfs-config-{{ clusterfs_vol_name }}
+    namespace: kube-system
+kind: List

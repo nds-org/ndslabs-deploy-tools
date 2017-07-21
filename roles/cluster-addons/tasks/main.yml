@@ -1,0 +1,12 @@
+
+    
+- name: Cluster Addons| populate template
+  template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
+  with_items:
+    - kube-system-ingress.yaml
+    
+    
+##########################################################################################################################
+# Create ingress rules
+##########################################################################################################################
+- include: /root/roles/cluster-addons/tasks/init.yml

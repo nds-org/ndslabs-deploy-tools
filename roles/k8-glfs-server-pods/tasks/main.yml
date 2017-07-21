@@ -1,0 +1,96 @@
+
+- name: Global FS ConfigFile
+  template: src=globalfs-configmap.j2 dest=/tmp/glfs-config-{{ clusterfs_vol_name }}
+  run_once: true
+  delegate_to: "{{ groups['masters'][0] }}"
+  register: gfsconfig 
+
+#- debug: msg="/opt/bin/kubectl create {{ lookup('template', 'globalfs-configmap.j2') }}"
+- name: Global FS create configmap
+  shell: "/opt/bin/kubectl apply -f /tmp/glfs-config-{{ clusterfs_vol_name }}"
+  when: gfsconfig.changed
+  run_once: true
+  delegate_to: "{{ groups['masters'][0] }}"
+  
+- name: Gluster Server Spec Deploy File
+  template: src=gluster-server-ds.yaml.j2 dest=/tmp/gluster-server-ds.yaml
+  when: gfsconfig.changed
+  run_once: true
+  delegate_to: "{{ groups['masters'][0] }}"
+  
+- name: Gluster Server Pods Deploy
+  shell: "/opt/bin/kubectl apply -f  /tmp/gluster-server-ds.yaml"
+  when: gfsconfig.changed
+  register: gfsinstalling
+  run_once: true
+  delegate_to: "{{ groups['masters'][0] }}"
+
+- name: Gluster Server Wait DS ready
+  shell: /opt/bin/kubectl get pods -lname=glfs-server-{{ clusterfs_vol_name }} -o jsonpath='{.items[*].status.containerStatuses[*].ready}' --namespace=kube-system
+  register: shellout
+  until: shellout.stdout.find("false") == -1
+  retries: 50
+  delay: 10
+  when: gfsinstalling.changed
+  run_once: true
+  delegate_to: "{{ groups['masters'][0] }}"
+
+- name: Gluster Pod Name for peer probe
+  shell: /opt/bin/kubectl get pods -lname=glfs-server-{{ clusterfs_vol_name }} -o jsonpath='{.items[0].metadata.name}' --namespace=kube-system 
+  register: shellout
+  when: gfsinstalling.changed
+  run_once: true
+  delegate_to: "{{ groups['masters'][0] }}"
+- name: Set glpod
+  set_fact:
+    glpod: "{{ shellout['stdout'] }}"
+  when: gfsinstalling.changed
+
+- name: Gluster Init Peer Probe
+  shell: /opt/bin/kubectl exec -t {{ glpod }} gluster peer probe {{ ansible_host }} --namespace=kube-system
+  delegate_to: "{{ groups['masters'][0] }}"
+  register: shellout
+  until: shellout.stdout.find("uccess") != -1
+  retries: 50
+  delay: 10
+  when: gfsinstalling.changed
+
+- name: Gluster wait for peering completion
+  shell: /opt/bin/kubectl exec -t {{ glpod }} gluster pool list --namespace=kube-system | tail -n+2 | wc -l
+  delegate_to: "{{ groups['masters'][0] }}"
+  register: shellout
+  until: shellout.stdout.find("2") != -1
+  retries: 50
+  delay: 10
+  when: gfsinstalling.changed
+
+- name: Gluster Full Cluster FS Volume 2x2 strip/mirror
+  shell: "/opt/bin/kubectl exec -t {{ glpod }} gluster volume create {{ clusterfs_vol_name }} {{ clusterfs_vol_config }}  {{ hostvars[groups['glfs'][0]]['ansible_host'] }}:{{ brick_mount_path }}/brick {{ hostvars[groups['glfs'][1]]['ansible_host'] }}:{{ brick_mount_path }}/brick force --namespace=kube-system || /opt/bin/kubectl exec -t {{ glpod }} gluster volume start {{ clusterfs_vol_name }}"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+  register: fcreated
+  when: gfsinstalling.changed
+
+- name: Gluster Volume NFS off
+  shell: "/opt/bin/kubectl exec -t {{ glpod }} gluster volume set {{ clusterfs_vol_name }} nfs.disable on --namespace=kube-system"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+  when: fcreated.changed
+
+- name: Gluster Start volume
+  shell: "/opt/bin/kubectl exec -t {{ glpod }} gluster volume start {{ clusterfs_vol_name }} --namespace=kube-system"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true                                                                                                                            
+  when: fcreated.changed
+
+- name: Gluster Global volume check                                                                                                         
+  command: "/opt/bin/kubectl exec -t {{ glpod }} gluster volume status {{ clusterfs_vol_name }} --namespace=kube-system"                                                    
+  delegate_to: "{{ groups['masters'][0] }}"                                                                                                 
+  run_once: true                                                                                                                            
+  when: fcreated.changed
+
+- name: Gluster enable quota
+  command: "/opt/bin/kubectl exec -t {{ glpod }} gluster volume quota {{ clusterfs_vol_name }} enable --namespace=kube-system"
+  when: gfsinstalling.changed
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
