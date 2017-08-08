@@ -31,6 +31,9 @@ spec:
         # 1. It serves a 404 page at /
         # 2. It serves 200 on a /healthz endpoint
         image: ndslabs/ndslabs-default-backend
+        env:
+        - name: SUPPORT_EMAIL
+          value: "{{ support_email }}"
         livenessProbe:
           httpGet:
             path: /healthz
