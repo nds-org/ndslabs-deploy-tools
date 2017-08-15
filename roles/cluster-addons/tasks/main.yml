@@ -1,12 +1,47 @@
 
-    
 - name: Cluster Addons| populate template
   template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
   with_items:
     - kube-system-ingress.yaml
+
+- name: Cluster Addons| copy raw files
+  copy: src="{{ item }}" dest="/tmp/{{ item }}"
+  with_items:
+    - dns.yaml
+    - grafana.yaml
     
-    
-##########################################################################################################################
-# Create ingress rules
-##########################################################################################################################
-- include: /root/roles/cluster-addons/tasks/init.yml
+
+################################
+#  Create TLS Secret: ndslabs-tls-secret
+################################
+- name: Secret status - kube-system
+  command: /opt/bin/kubectl get secret ndslabs-tls-secret --namespace=kube-system
+  register: kubesyssecret
+  failed_when: kubesyssecret.rc < 0
+
+- name: NDSLabs TLS Secret| create ndslabs-tls-secret - kube-system
+  command: /opt/bin/kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt="/tmp/{{ logical_cluster_name }}.cert" --from-file=tls.key="/tmp/{{ logical_cluster_name }}.key" --namespace=kube-system
+  when: kubesyssecret.rc != 0
+
+
+################################
+#  Create Ingress Rules: kube-lma-ingress
+################################
+- name: Cluster Addon init| create kube-lma-ingress rules
+  command: /opt/bin/kubectl apply --namespace=kube-system -f "/tmp/kube-system-ingress.yaml"
+
+################################
+#  Create SkyDNS Service / Controller
+################################
+- name: Workbench DNS | create DNS stack
+  command: /opt/bin/kubectl apply -f /tmp/dns.yaml
+
+################################
+#  Create Grafana Service / Controller
+################################
+- name: Workbench LMA | create grafana stack - kube-system
+  command: /opt/bin/kubectl apply -f /tmp/{{ item }}
+  when: cluster_monitoring
+  with_items:
+    - grafana.yaml
+
