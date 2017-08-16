@@ -4,12 +4,6 @@
   with_items:
     - kube-system-ingress.yaml
 
-- name: Cluster Addons| copy raw files
-  copy: src="{{ item }}" dest="/tmp/{{ item }}"
-  with_items:
-    - dns.yaml
-    - grafana.yaml
-    
 
 ################################
 #  Create TLS Secret: ndslabs-tls-secret
@@ -27,41 +21,46 @@
 ################################
 #  Create Ingress Rules: kube-lma-ingress
 ################################
-- name: Cluster Addon init| create kube-lma-ingress rules
+- name: Cluster Addon init | create kube-lma-ingress rules
   command: /opt/bin/kubectl apply --namespace=kube-system -f "/tmp/kube-system-ingress.yaml"
+
 
 ################################
 #  Create SkyDNS Service / Controller
 ################################
-- name: DNS | create DNS stack - kube-system
+- name: Cluster DNS | create DNS stack - kube-system
   command: /opt/bin/kubectl apply -f /etc/kubernetes/addons/dns/
   when: dns_setup
+
 
 ################################
 #  Create Grafana Service / Controller
 ################################
-- name: LMA: Grafana | create grafana stack - kube-system
+- name: Cluster LMA - Grafana | create grafana stack - kube-system
   command: /opt/bin/kubectl apply -f /etc/kubernetes/addons/cluster-monitoring/
   when: cluster_monitoring
+
 
 ################################
 #  Create Kibana Service / Controller
 ################################
-- name: LMA: Kibana | create ELK stack - kube-system
+- name: Cluster LMA - Kibana | create ELK stack - kube-system
   command: /opt/bin/kubectl apply -f /etc/kubernetes/addons/cluster-logging/
   when: cluster_logging
+
 
 ################################
 #  Create Kube UI Service / Controller
 ################################
-- name: LMA: Kube UI | create kube-ui stack - kube-system
+- name: Cluster LMA - Kube UI | create kube-ui stack - kube-system
   command: /opt/bin/kubectl apply -f /etc/kubernetes/addons/kube-ui/
   when: kube_ui
+
 
 ################################
 #  Create Kube Dashboard Service / Controller
 ################################
-- name: LMA: Kubernetes Dashboard | create kube-dash stack - kube-system
+- name: Cluster LMA - Kubernetes Dashboard | create kube-dash stack - kube-system
   command: /opt/bin/kubectl apply -f /etc/kubernetes/addons/kube-dash/
   when: kube_dash
 
