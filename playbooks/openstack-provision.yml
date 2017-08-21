@@ -70,18 +70,18 @@
   roles:
     - coreos-ndslabs-devsystem
 
-# Provision and attach OpenStack volume for /var/lib/docker
-- name: OpenStack docker provision volume and attach
-  hosts: compute:&openstack:&coreos
-  roles: 
-    - { role: openstack-volume-mount, volume_name: 'dockervol', volume_size: "{{ docker_volume_gb }}", mount_point: '/var/lib/docker', filesystem_format: 'xfs' }
-    
 # Provision and attach OpenStack volume for /media/storage
 - name: OpenStack provision storage volume and attach
   hosts: all:&openstack:&coreos
   
   roles: 
     - { role: openstack-volume-mount, volume_name: 'storagevol', volume_size: "{{ storage_volume_gb }}", mount_point: '/media/storage', filesystem_format: 'xfs' }
+
+# Bind mount /var/lib/docker from storage volume
+- name: Bind mount /var/lib/docker for all nodes
+  hosts: all:&coreos
+  roles:
+    - { role: storage-volume-bind-mount, name: var-lib-docker.mount, src: /var/lib/docker, dest: /media/storage, dir_name: docker }
 
 # Bind mount /var/log from storage volume
 - name: Bind mount /var/log for all nodes
