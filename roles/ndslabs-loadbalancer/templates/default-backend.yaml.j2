@@ -8,7 +8,7 @@ spec:
   selector:
     app: default-http-backend
   ports:
-    - port: 8080
+    - port: 80
       protocol: TCP
 ---
 apiVersion: v1
@@ -30,11 +30,14 @@ spec:
         # Any image is permissable as long as:
         # 1. It serves a 404 page at /
         # 2. It serves 200 on a /healthz endpoint
-        image: gcr.io/google_containers/defaultbackend:1.0
+        image: ndslabs/ndslabs-default-backend
+        env:
+        - name: SUPPORT_EMAIL
+          value: "{{ support_email }}"
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 8080
+            port: 80
             scheme: HTTP
           initialDelaySeconds: 30
           timeoutSeconds: 5
