@@ -7,6 +7,5 @@ clusterfs_vol_config: "replica 2 transport tcp"
 cluster_name: cluster.local
 cert_name: "{{ logical_cluster_name }}"
 
-docker_volume_gb: 40
-storage_volume_gb: 20
+storage_volume_gb: 100
 

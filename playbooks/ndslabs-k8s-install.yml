@@ -42,12 +42,12 @@
 - name: Global FS k8s objects
   hosts: glfs
   roles:
-    - { role: k8-glfs-server-pods, when: "groups['glfs']|length > 0" }
+    - { role: k8-glfs-server-pods, when: "'glfs' in groups and groups['glfs']|length > 0" }
 
 - name: Global FS k8s objects
   hosts: masters[0]
   roles:
-    - { role: k8-glfs-client-set, when: "groups['glfs']|length > 0" }
+    - { role: k8-glfs-client-set, when: "'glfs' in groups and groups['glfs']|length > 0" }
 
 # Fix publicip nodes
 - name: LoadBalancer public interface
