@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: backup-shell
+spec:
+  replicas: 1
+  selector:
+    component: backup-shell
+  template:
+    metadata:
+      labels:
+        component: backup-shell
+    spec:
+      hostNetwork: true
+      containers:
+      - name: backup-shell
+        imagePullPolicy: Always
+        image: ndslabs/cluster-backup:latest
+        stdin: true
+        tty: true
+        env:
+         - name: CLUSTER_ID
+           value: "{{ logical_cluster_name }}"
+         - name: ETCD_HOST
+           value: $(NDSLABS_ETCD_SERVICE_HOST)
+         - name: ETCD_PORT
+           value: $(NDSLABS_ETCD_SERVICE_PORT)
+         - name: BACKUP_SRC
+           value: "/var/glfs"
+         - name: BACKUP_DEST
+           value: /ndsbackup
+         - name: BACKUP_HOST
+           value:
+         - name: BACKUP_USER
+           value:
+         - name: BACKUP_KEY
+           value: "/etc/backup-key/ssh-privatekey"
+        volumeMounts:
+         - name: clusterdata
+           mountPath: /var/glfs
+         - name: backupkey
+           readOnly: true
+           mountPath: /etc/backup-key/
+      volumes:
+        - name: clusterdata
+          hostPath:
+              path: /var/glfs
+        - name: backupkey
+          secret:
+            secretName: backup-key
+            defaultMode: 0600

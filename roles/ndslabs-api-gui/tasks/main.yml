@@ -2,6 +2,7 @@
   template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
   with_items:
     - ndslabs-ingress.yaml
+    - ndslabs-etcd.yaml
     - ndslabs-apiserver.yaml
     - ndslabs-webui.yaml
 
@@ -14,22 +15,13 @@
   command: /opt/bin/kubectl create -f "/tmp/ndslabs-ingress.yaml"
   when: ingress.rc != 0
 
-- name: ApiServer status
-  command: /opt/bin/kubectl get rc ndslabs-apiserver
-  register: apiserver
-  failed_when: apiserver.rc < 0
+- name: NDSLabs| create ndslabs-etcd
+  command: /opt/bin/kubectl apply -f "/tmp/ndslabs-etcd.yaml"
 
 - name: NDSLabs| create ndslabs-apiserver
-  command: /opt/bin/kubectl create -f "/tmp/ndslabs-apiserver.yaml"
-  when: apiserver.rc != 0
-
-- name: WebUI status
-  command: /opt/bin/kubectl get rc ndslabs-webui
-  register: webui
-  failed_when: webui.rc < 0
+  command: /opt/bin/kubectl apply -f "/tmp/ndslabs-apiserver.yaml"
 
 - name: NDSLabs| create ndslabs-webui
-  command: /opt/bin/kubectl create -f "/tmp/ndslabs-webui.yaml"
-  when: webui.rc != 0
+  command: /opt/bin/kubectl apply -f "/tmp/ndslabs-webui.yaml"
 
 

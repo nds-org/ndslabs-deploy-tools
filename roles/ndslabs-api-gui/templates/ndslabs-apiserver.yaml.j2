@@ -10,8 +10,6 @@ spec:
   ports:
     - port: 30001
       protocol: TCP
-#      nodePort: 30001
-#  type: NodePort
 ---
 apiVersion: v1
 kind: ReplicationController
@@ -38,7 +36,7 @@ spec:
             mountPath: {{ clusterfs_vol_path }}
         env:
           - name: ETCD_ADDR
-            value: "{{ ansible_default_ipv4.address }}:2379"
+            value: "$(NDSLABS_ETCD_SERVICE_HOST):$(NDSLABS_ETCD_SERVICE_PORT)"
           - name: KUBERNETES_ADDR
             value: "https://{{ ansible_default_ipv4.address }}:443"
           - name: CORS_ORIGIN_ADDR

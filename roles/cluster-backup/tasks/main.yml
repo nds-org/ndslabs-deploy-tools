@@ -1,33 +1,25 @@
 
-# relies on glfs-config-global configmap in cluster from k8-glfs-server-pods
 # Run after glfs server and glfs clients are deployed 
 
-- name: Create Backup config template
-  template: src=backup-config.j2 dest=/tmp/backup-config
-
-- name: Create Backup config key file
+- name: Create Backup key file
   copy: dest=/tmp/backup-key.pem src=/root/SAVED_AND_SENSITIVE_VOLUME/{{ backup_key }}
 
-- name: Create cluster key file
-  copy: dest=/tmp/cluster-key.pem src=/root/SAVED_AND_SENSITIVE_VOLUME/{{ key_name }}.pem
-
-- name: Secret status - backup-config
-  shell: /opt/bin/kubectl get secret backup-config --namespace=kube-system
+- name: Secret status - backup-key
+  shell: /opt/bin/kubectl get secret backup-key
   register: backupsecret
   failed_when: backupsecret.rc < 0
 
 - name: Cluster backup create config secrets
-  shell: /opt/bin/kubectl create secret generic backup-config --from-file=/tmp/backup-config --from-file=/tmp/backup-key.pem --from-file=/tmp/cluster-key.pem --namespace=kube-system
+  shell: /opt/bin/kubectl create secret generic backup-key --from-file=ssh-privatekey=/tmp/backup-key.pem
   when: backupsecret.rc != 0
 
-- name: Cluster backup deploy spec
-  template: src=cluster-backup-ds.j2 dest=/tmp/cluster-backup-ds.yaml
+- name: Cluster backup | copy spec
+  template: src={{ item }}.j2 dest=/tmp/{{ item }}
+  with_items:
+    - backup.job.yaml
+    - backup.shell.yaml
 
-- name: Daemonset status - cluster-backup-{{ cluster_vol_name }}
-  shell: /opt/bin/kubectl get ds "cluster-backup-{{ clusterfs_vol_name }}" --namespace=kube-system
-  register: backupds
-  failed_when: backupds.rc < 0
-
-- name: Cluster backup daemonset
-  when: backupds.rc != 0
-  shell: /opt/bin/kubectl create -f  /tmp/cluster-backup-ds.yaml --namespace=kube-system
+# CronJobs currently throws an error on "kubectl apply" (supposedly fixed in 1.6+)
+# See https://github.com/kubernetes/kubernetes/issues/39872
+- name: Cluster backup | deploy CronJob
+  shell: "/opt/bin/kubectl create -f /tmp/backup.job.yaml || /opt/bin/kubectl replace -f /tmp/backup.job.yaml"

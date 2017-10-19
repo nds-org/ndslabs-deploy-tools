@@ -1,0 +1,49 @@
+apiVersion: batch/v2alpha1
+kind: CronJob
+metadata:
+  name: cluster-backup
+spec:
+#  suspend: true
+  schedule: "@daily"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          hostNetwork: true
+          restartPolicy: OnFailure
+          containers:
+          - image: {{ backup_image_name }}
+            imagePullPolicy: Always
+            name: cluster-backup
+            command: [ "./backup.sh" ]
+            env:
+             - name: CLUSTER_ID
+               value: "{{ logical_cluster_name }}"
+             - name: ETCD_HOST
+               value: $(NDSLABS_ETCD_SERVICE_HOST)
+             - name: ETCD_PORT
+               value: $(NDSLABS_ETCD_SERVICE_PORT)
+             - name: BACKUP_SRC
+               value: "/var/glfs"
+             - name: BACKUP_DEST
+               value: "{{ backup_path }}"
+             - name: BACKUP_HOST
+               value: "{{ backup_host }}"
+             - name: BACKUP_USER
+               value: "{{ backup_user }}"
+             - name: BACKUP_KEY
+               value: "/etc/backup-key/ssh-privatekey"
+            volumeMounts:
+              - name: clusterdata
+                mountPath: /var/glfs
+              - name: backupkey
+                readOnly: true
+                mountPath: /etc/backup-key/
+          volumes:
+            - name: clusterdata
+              hostPath:
+                  path: /var/glfs
+            - name: backupkey
+              secret:
+                secretName: backup-key
+                defaultMode: 0600

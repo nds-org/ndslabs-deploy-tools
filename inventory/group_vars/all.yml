@@ -103,7 +103,7 @@ dns_replicas: 2
 # with caution.
 
 # See kube documentation for apiserver runtime config options.  Example below enables HPA, deployments features.
-# apiserver_extra_args: "--runtime-config=extensions/v1beta1/deployments=true"
+apiserver_extra_args: "--runtime-config=batch/v2alpha1=true"
 
 # our ndslabs-specific labels for Kubernetes nodes
 k8_initial_labels:
