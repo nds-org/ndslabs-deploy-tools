@@ -5,6 +5,6 @@ support_email: ndslabs-support@nationaldataservice.org
 webui_git_dropin_repo: ''
 webui_git_dropin_branch: ''
 
-apiserver_image_name: ndslabs/apiserver:1.0.12
-webui_image_name: ndslabs/angular-ui:1.0.12
+apiserver_image_name: ndslabs/apiserver:1.0.13
+webui_image_name: ndslabs/angular-ui:1.0.13
 loadbal_image_name: gcr.io/google_containers/nginx-ingress-controller:0.8.2
