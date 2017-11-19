@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ANSIBLE_CONFIG := ../ansible.cfg
 export ANSIBLE_CONFIG
 
@@ -93,6 +94,24 @@ workbench-down:
 	kubectl delete clusterrolebinding --ignore-not-found=true permissive-binding
 	rm "certs/${DOMAIN}.cert"
 	rm "certs/${DOMAIN}.key"
+=======
+cluster: kubernetes.tfvars .terraform
+	terraform apply \
+	  -state=kubespray/contrib/terraform/openstack/terraform.tfstate \
+		-var-file=kubernetes.tfvars \
+		kubespray/contrib/terraform/openstack
+
+.terraform:
+		terraform init kubespray/contrib/terraform/openstack
+
+DOMAIN   := $(shell cat config.yaml | grep domain | awk '{print $$2}' | sed s/\"//g)
+		cur-dir2   := $(shell cat config.yaml | grep domain | awk '{print $2}' | sed s/\"//g)
+
+.PHONY : workbench secrets loadbalancer smtp services etcd apiserver webui
+
+workbench: secrets loadbalancer smtp services etcd apiserver webui
+
+>>>>>>> 0734a1e... Add makefile to build workbench
 
 config: config.yaml
 	kubectl apply -f config.yaml
@@ -104,15 +123,24 @@ certs/${DOMAIN}.key: certs config.yaml
 	openssl genrsa 2048 >certs/${DOMAIN}.key
 
 certs/${DOMAIN}.cert: certs certs/${DOMAIN}.key
+<<<<<<< HEAD
 	openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.${DOMAIN}" -key "certs/${DOMAIN}.key" -out "certs/${DOMAIN}.cert"
 
 secrets: certs_dir certs/${DOMAIN}.key certs/${DOMAIN}.cert
 	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=default
 	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=kube-system
+=======
+	openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.$DOMAIN" -key "certs/${DOMAIN}.key" -out "certs/${DOMAIN}.cert"
+
+secrets: certs/${DOMAIN}.key certs/${DOMAIN}.cert
+	kubectl delete secret ndslabs-tls-secret --namespace=default
+	kubectl delete secret ndslabs-tls-secret --namespace=kube-system
+>>>>>>> 0734a1e... Add makefile to build workbench
 
 	kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt="certs/${DOMAIN}.cert" --from-file=tls.key="certs/${DOMAIN}.key" --namespace=default
 	kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt="certs/${DOMAIN}.cert" --from-file=tls.key="certs/${DOMAIN}.key" --namespace=kube-system
 
+<<<<<<< HEAD
 permissive-binding:
 	kubectl delete clusterrolebinding --ignore-not-found=true permissive-binding
 
@@ -123,6 +151,9 @@ permissive-binding:
 	 --group=system:serviceaccounts
 
 loadbalancer: templates/core/loadbalancer.yaml permissive-binding
+=======
+loadbalancer: templates/core/loadbalancer.yaml
+>>>>>>> 0734a1e... Add makefile to build workbench
 	cat templates/core/loadbalancer.yaml | sed -e "s#{{[ ]*DOMAIN[ ]*}}#${DOMAIN}#g" | kubectl apply -f -
 
 smtp: templates/smtp/rc.yaml templates/smtp/svc.yaml
@@ -139,9 +170,12 @@ apiserver: templates/core/apiserver.yaml
 
 webui: templates/core/webui.yaml
 	kubectl apply -f templates/core/webui.yaml
+<<<<<<< HEAD
 
 label-workers:
 	scripts/label_nodes.sh
 
 demo-login:
 	scripts/create_demo_user.sh
+=======
+>>>>>>> 0734a1e... Add makefile to build workbench

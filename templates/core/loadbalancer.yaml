@@ -1,6 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
+<<<<<<< HEAD
   name: ndslabs-auth
   annotations:
     "nginx.ingress.kubernetes.io/auth-url": "https://www.{{ DOMAIN }}/cauth/auth"
@@ -32,6 +33,9 @@ metadata:
   annotations:
     "nginx.ingress.kubernetes.io/ssl-redirect": "true"
     "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
+=======
+  name: ndslabs-ingress
+>>>>>>> 0734a1e... Add makefile to build workbench
 spec:
   tls:
   - hosts:
@@ -95,10 +99,17 @@ spec:
         resources:
           limits:
             cpu: 10m
+<<<<<<< HEAD
             memory: 512Mi
           requests:
             cpu: 10m
             memory: 256Mi
+=======
+            memory: 20Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
+>>>>>>> 0734a1e... Add makefile to build workbench
 ---
 apiVersion: v1
 data:
@@ -128,7 +139,11 @@ spec:
         app: nginx-ingress
     spec:
       containers:
+<<<<<<< HEAD
       - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
+=======
+      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0-beta.17
+>>>>>>> 0734a1e... Add makefile to build workbench
         imagePullPolicy: Always
         name: nginx-ingress
         ports:
@@ -149,6 +164,10 @@ spec:
         - /nginx-ingress-controller
         - --default-backend-service=default/default-http-backend
         - --healthz-port=10254
+<<<<<<< HEAD
         - --configmap=$(POD_NAMESPACE)/nginx-ingress-conf
         - --default-ssl-certificate=$(POD_NAMESPACE)/ndslabs-tls-secret
+=======
+        - --configmap=default/nginx-ingress-conf
+>>>>>>> 0734a1e... Add makefile to build workbench
       hostNetwork: true
