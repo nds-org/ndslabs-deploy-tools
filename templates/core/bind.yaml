@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndslabs-bind
+  labels:
+    component: ndslabs-bind
+spec:
+  ports:
+  - name: bind1
+    port: 53
+    protocol: UDP
+    targetPort: 53
+  - name: bind2
+    port: 10000
+    protocol: TCP
+    targetPort: 10000
+  selector:
+    component: ndslabs-bind
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ndslabs-bind
+spec:
+  replicas: 1
+  selector:
+    component: ndslabs-bind
+  template:
+    metadata:
+      labels:
+        component: ndslabs-bind
+    spec:
+      hostNetwork: true
+      containers:
+      - image: ndslabs/bind:latest
+        name: ndslabs-bind
+        env:
+        - name: EMAIL_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: ndslabs-config
+              key: workbench.support_email
+        - name: DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: ndslabs-config
+              key: workbench.domain
+        - name: IP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: ndslabs-config
+              key: workbench.ip
+        ports:
+        - containerPort: 53
+          name: bind1
+          protocol: UDP
+        - containerPort: 1000
+          name: bind2
+          protocol: TCP
+      restartPolicy: Always

@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ndslabs-config
+  namespace: default
+data:
+  # Enable TLS (HTTPS)?
+  tls.enable: "true"
+
+  # Customize this instance of Workbench
+  workbench.domain: "bgdev.ndslabs.org"
+  workbench.name: "Labs Workbench"
+  workbench.support_email: "ndslabs-support@nationaldataservice.org"
+  workbench.analytics_tracking_id: ""
+
+  # IP address used by DNS service
+  #workbench.ip: ""
+
+  # Drop-in a customized Workbench UI
+  git.dropin_repo: ""
+  git.dropin_branch: ""
+
+  # Customize your Workbench catalogs
+  git.spec_repo: "https://github.com/nds-org/ndslabs-specs.git"
+  git.spec_branch: "master"
+
+  # To enable account approval, you need to configure the SMTP relay below
+  workbench.require_account_approval: "true"
+
+  # If using a local smtp server, use the following. The defaults will only work for NCSA nebula VMs
+  smtp.host: "smtp.ncsa.illinois.edu"
+  smtp.port: "25"
+
+  # FIXME: this is probably insecure, and should likely be using a secret instead
+  # If using gmail as your SMTP service, use the following. If using 2-factor
+  # auth see https://support.google.com/accounts/answer/185833?hl=en
+  smtp.gmail_user: ""
+  smtp.gmail_pass: ""
+
+  # FIXME: this is probably insecure, and should likely be using a secret instead
+  # If using AWS as your SMTP service, use the following
+  smtp.aws_ses_user: ""
+  smtp.aws_ses_password: ""
+
+  # FIXME: this is probably insecure, and should likely be using a secret instead
+  # For all other authenticated SMTP servers, use the following
+  smtp.smarthost_address: ""
+  smtp.smarthost_port: ""
+  smtp.smarthost_user: ""
+  smtp.smarthost_password: ""

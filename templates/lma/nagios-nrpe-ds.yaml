@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: nagios-nrpe
+  namespace: kube-system
+  labels:
+    app: nagios-nrpe
+spec:
+  template:
+    metadata:
+      labels:
+        name: nagios-nrpe
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - image: ndslabs/nagios-nrpe:latest
+          imagePullPolicy: Always
+          name: nagios-nrpe
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: hostroot
+              mountPath: /media/host
+              readOnly: true
+      volumes:
+        - name: hostroot
+          hostPath:
+              path: /

@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cloud9
+  annotations:
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: basic-auth
+    ingress.kubernetes.io/auth-realm: "Authentication Required"
+spec:
+  tls:
+  - hosts:
+    - cloud9.{{ DOMAIN }}
+    secretName: ndslabs-tls-secret
+  rules:
+  - host: cloud9.{{ DOMAIN }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: cloud9
+          servicePort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloud9 
+  labels:
+    component: cloud9
+spec:
+  selector:
+    component: cloud9
+  ports:
+    - port: 8089
+      targetPort: 80
+      protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: cloud9
+spec:
+  replicas: 1
+  selector:
+    component: cloud9
+  template:
+    metadata:
+      labels:
+        component: cloud9
+    spec:
+      volumes:
+       - hostPath:
+            path: "/home/core/ndslabs"
+         name: src
+      containers:
+      - name: cloud9 
+        image: ndslabs/cloud9-nodejs:latest
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: src
+            mountPath: "/workspace"
+        ports:
+        - containerPort: 80
+          protocol: TCP
