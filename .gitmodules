@@ -1,0 +1,3 @@
+[submodule "kubespray"]
+	path = kubespray
+	url = /Users/ben/dev/ncsa/nds/forks/kubespray

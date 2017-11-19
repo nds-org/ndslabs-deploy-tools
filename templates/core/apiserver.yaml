@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ndslabs-apiserver
+spec:
+  replicas: 1
+  selector:
+    component: ndslabs-apiserver
+  template:
+    metadata:
+      labels:
+        component: ndslabs-apiserver
+    spec:
+      volumes:
+       - hostPath:
+            path: "/ndslabs/data/volumes"
+         name: volumes
+      containers:
+      - name: ndslabs-apiserver
+        image: ndslabs/apiserver:1.0.9
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 30001
+          protocol: TCP
+        volumeMounts:
+          - name: volumes
+            mountPath: "/ndslabs/data/volumes"
+        env:
+          - name: VOLUME_NAME
+            value: "global"
+          # We can't substitute configmap values into "volumes" or "volumeMounts" above - use a sketchy sed replacement
+          - name: VOLUME_PATH
+            value: "/ndslabs/data/volumes"
+          - name: SUPPORT_EMAIL
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.support_email
+          - name: REQUIRE_APPROVAL
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.require_account_approval
+          - name: DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.domain
+          - name: SPEC_GIT_REPO
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: git.spec_repo
+          - name: SPEC_GIT_BRANCH
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: git.spec_branch
+          - name: CORS_ORIGIN_ADDR
+            value: "https://www.$(DOMAIN)"
+          - name: ETCD_ADDR
+            value: "$(NDSLABS_ETCD_SERVICE_HOST):$(NDSLABS_ETCD_SERVICE_PORT)"
+          - name: KUBERNETES_ADDR
+            value: "https://$(KUBERNETES_SERVICE_HOST):$(KUBERNETES_SERVICE_PORT_HTTPS)"
+          - name: INGRESS
+            value: "LoadBalancer"
+          - name: SERVICE_TIMEOUT
+            value: "10"
+          - name: TOKEN_PATH
+            value: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+          - name: SMTP_HOST
+            value: "$(NDSLABS_SMTP_SERVICE_HOST)"
+          - name: SMTP_TLS
+            value: "false"

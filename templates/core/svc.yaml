@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndslabs-etcd
+spec:
+  ports:
+  - name: client-port
+    port: 4001
+    nodePort: 32600
+    protocol: TCP
+    targetPort: 4001
+  selector:
+    component: ndslabs-etcd
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndslabs-apiserver
+  labels:
+    component: ndslabs-apiserver
+spec:
+  selector:
+    component: ndslabs-apiserver
+  ports:
+    - port: 30001
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndslabs-webui
+  labels:
+    component: ndslabs-webui
+spec:
+  selector:
+    component: ndslabs-webui
+  ports:
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
