@@ -7,4 +7,4 @@ webui_git_dropin_branch: ''
 
 apiserver_image_name: ndslabs/apiserver:1.0.13
 webui_image_name: ndslabs/angular-ui:1.0.13
-loadbal_image_name: gcr.io/google_containers/nginx-ingress-controller:0.8.2
+loadbal_image_name: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0

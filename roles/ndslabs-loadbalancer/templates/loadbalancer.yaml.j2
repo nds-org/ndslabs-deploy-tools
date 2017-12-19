@@ -46,9 +46,9 @@ spec:
         args:
         - /nginx-ingress-controller
         - --default-backend-service=default/default-http-backend
-        - --running-in-cluster=true
-        - --healthz-port=9999
-        - --nginx-configmap=$(POD_NAMESPACE)/nginx-ingress-conf
+        - --healthz-port=10254
+        - --configmap=$(POD_NAMESPACE)/nginx-ingress-conf
+        - --default-ssl-certificate=$(POD_NAMESPACE)/ndslabs-tls-secret
       hostNetwork: true
       nodeSelector:
           ndslabs-role-loadbal: "true"
