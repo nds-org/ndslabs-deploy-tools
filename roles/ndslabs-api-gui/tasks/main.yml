@@ -1,10 +1,18 @@
 - name: NDSLabs| copy yaml
   template: src="{{ item }}.j2" dest="/tmp/{{ item }}"
   with_items:
+    - ndslabs-configmap.yaml
+    - ndslabs-smtp.yaml
     - ndslabs-ingress.yaml
     - ndslabs-etcd.yaml
     - ndslabs-apiserver.yaml
     - ndslabs-webui.yaml
+
+- name: NDSLabs| create configmap
+  command: /opt/bin/kubectl apply -f "/tmp/ndslabs-configmap.yaml"
+
+- name: NDSLabs| create smtp service
+  command: /opt/bin/kubectl apply -f "/tmp/ndslabs-smtp.yaml"
 
 - name: Ingress status
   command: /opt/bin/kubectl get ing ndslabs-ingress
@@ -23,5 +31,3 @@
 
 - name: NDSLabs| create ndslabs-webui
   command: /opt/bin/kubectl apply -f "/tmp/ndslabs-webui.yaml"
-
-

@@ -1,0 +1,17 @@
+---
+
+flavor_small: m1.small              # 20G disk, 8G ram, 2cpu
+flavor_medium: m1.medium           # 20G disk, 16Gram, 8cpu
+flavor_large: m1.large            # 20G disk, 64Gram, 16cpu
+
+native_dns: utexas.edu
+
+ndslabs_domain: "{{ logical_cluster_name }}.ndslabs.org" 
+
+smtp_host: ''
+smtp_port: ''
+mtu: 8960
+
+network_name: workbench
+
+site_name: tacc

@@ -82,6 +82,7 @@
   hosts: all:&coreos
   roles:
     - { role: storage-volume-bind-mount, name: var-lib-docker.mount, src: /var/lib/docker, dest: /media/storage, dir_name: docker }
+    - var-lib-docker
 
 # Bind mount /var/log from storage volume
 - name: Bind mount /var/log for all nodes

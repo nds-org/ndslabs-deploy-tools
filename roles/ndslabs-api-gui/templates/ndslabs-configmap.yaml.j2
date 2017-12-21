@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ndslabs-config
+  namespace: default
+data:
+  # Enable TLS (HTTPS)?
+  tls.enable: "true"
+
+  # Customize this instance of Workbench
+  workbench.domain: "{{ ndslabs_domain }}"
+  workbench.name: "{{ workbench_name }}"
+  workbench.support_email: "{{ support_email }}"
+  workbench.analytics_tracking_id: "{{ analytics_account }}"
+
+  # Drop-in a customized Workbench UI
+  git.dropin_repo: "{{ webui_git_dropin_branch }}"
+  git.dropin_branch: "{{ webui_git_dropin_repo }}"
+
+  # Customize your Workbench catalogs
+  git.spec_repo: "{{ spec_git_repo }}"
+  git.spec_branch: "{{ spec_git_branch }}"
+
+  # To enable account approval, you need to configure the SMTP relay to use your GMail account to relay e-mails
+  # See https://support.google.com/accounts/answer/185833?hl=en
+  workbench.require_account_approval: "true"
+
+  # If using a local smtp server, use the following. The defaults will only work for NCSA nebula VMs
+  smtp.host: "{{ smtp_host }}"
+  smtp.port: "{{ smtp_port }}"
+
+  # FIXME: this is probably insecure, and should likely be using a secret instead
+  # If using gmail as your SMTP service, use the following. If using 2-factor
+  # auth see https://support.google.com/accounts/answer/185833?hl=en
+  smtp.gmail_user: "{{ gmail_user }}"
+  smtp.gmail_pass: "{{ gmail_password }}"

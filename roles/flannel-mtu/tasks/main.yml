@@ -1,0 +1,24 @@
+---
+
+- name: Update flanneld service
+  become: true
+  template: src=flanneld.service.j2 dest=/etc/systemd/system/flanneld.service
+
+- name: Update flannel subnet.env
+  become: true
+  template: src=workbench-flannel.env.j2 dest=/home/core/workbench-flannel.env
+
+- name: notify flannel of MTU change
+  become: true
+  command: systemctl daemon-reload
+
+- name: Restart flanneld
+  become: true
+  command: systemctl restart flanneld
+
+- name: Restart docker
+  become: true
+  command: systemctl restart docker
+
+- name: Wait for docker
+  wait_for: path=/var/run/docker.pid

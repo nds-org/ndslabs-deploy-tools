@@ -1,0 +1,5 @@
+---
+
+- name: Docker log rotation
+  become: true
+  copy: src=daemon.json dest=/etc/docker/daemon.json

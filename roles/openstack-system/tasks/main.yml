@@ -10,8 +10,9 @@
     image: "{{ image }}"
     size: "{{ sys_vol_size }}"
   register: os_host_sys_vol
+  when: site_name != "tacc"
 
-- name: OpenStack System
+- name: OpenStack System (volume backed instance)
   connection: local
   become: false
   os_server:
@@ -21,8 +22,25 @@
     flavor: "{{ flavor }}"
     key_name: "{{ key_name }}"
     auto_ip: false
+    network: "{{ network_name }}"
     boot_volume: "{{ logical_cluster_name }}-{{ inventory_hostname }}-bootvol"
   register: os_host
+  when: site_name != "tacc"
+
+- name: OpenStack System (ephemeral instance)
+  connection: local
+  become: false
+  os_server:
+    state: present
+    wait: yes
+    name: "{{ logical_cluster_name }}-{{ inventory_hostname }}"
+    flavor: "{{ flavor }}"
+    image: "{{ image }}"
+    key_name: "{{ key_name }}"
+    auto_ip: false
+    network: "{{ network_name }}"
+  register: os_host
+  when: site_name == "tacc"
 
 #- debug: var=os_host
 

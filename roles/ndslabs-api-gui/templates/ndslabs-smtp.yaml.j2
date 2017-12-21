@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndslabs-smtp
+spec:
+  ports:
+  - name: client-port
+    port: 25
+    protocol: TCP
+    targetPort: 25
+  selector:
+    component: ndslabs-smtp
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ndslabs-smtp
+  labels:
+    component: ndslabs-smtp
+spec:
+  replicas: 1
+  selector:
+    component: ndslabs-smtp
+  template:
+    metadata:
+      labels:
+        component: ndslabs-smtp
+    spec:
+      containers:
+      - image: namshi/smtp
+        name: ndslabs-smtp
+        ports:
+        - containerPort: 25
+          name: server
+          protocol: TCP
+        env:
+          - name: GMAIL_USER
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: smtp.gmail_user
+          - name: GMAIL_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: smtp.gmail_pass
+      restartPolicy: Always

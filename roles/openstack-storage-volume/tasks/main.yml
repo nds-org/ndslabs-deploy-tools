@@ -27,16 +27,16 @@
 - set_fact:  storage_volume_dev="{{ storage_vol_attach.attachments[0].device }}"
   when: storagevol.changed
 
-# Format storage volume with xfs
+# Format storage volume with ext4
 - name: Format storage volume
   become: true
-  filesystem: fstype=xfs dev="{{ storage_volume_dev }}"
+  filesystem: fstype=ext4 dev="{{ storage_volume_dev }}"
   when: storagevol.changed
 
 # Create systemd entries for XFS storage mount
 - name: create storage volume mount service for systemd
   become: true
-  template: src=xfs-mount.service.j2 dest="/etc/systemd/system/media-storage.mount"
+  template: src=ext4-mount.service.j2 dest="/etc/systemd/system/media-storage.mount"
   when: storagevol.changed
   
 # Specify XFS mount to startup with the node

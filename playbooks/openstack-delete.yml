@@ -40,7 +40,6 @@
   connection: local
   tasks:
     - os_volume: state=absent wait=yes display_name="{{ logical_cluster_name }}-{{ inventory_hostname }}-storagevol"
-    - os_volume: state=absent wait=yes display_name="{{ logical_cluster_name }}-{{ inventory_hostname }}-bootvol"
 
 # delete glfs vols
 - name: Remove glfs volumes

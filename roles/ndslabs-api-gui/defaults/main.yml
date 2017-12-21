@@ -4,6 +4,13 @@ analytics_account: ''
 support_email: ndslabs-support@nationaldataservice.org
 webui_git_dropin_repo: ''
 webui_git_dropin_branch: ''
+workbench_name: 'Labs Workbench'
+spec_repo: 'https://github.com/nds-org/ndslabs-specs.git'
+spec_branch: 'master' 
+smtp_user: ''
+smtp_password: ''
+gmail_user: ''
+gmail_password: ''
 
 apiserver_image_name: ndslabs/apiserver:1.0.13
 webui_image_name: ndslabs/angular-ui:1.0.13

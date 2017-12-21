@@ -1,0 +1,5 @@
+---
+
+- name: Dropin for Docker volume
+  become: true
+  copy: src=50-docker-depends-on-var-lib-docker.conf dest=/etc/systemd/system/docker.service.d/50-docker-depends-on-var-lib-docker.conf

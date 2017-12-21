@@ -39,16 +39,36 @@ spec:
             value: ""
           - name: APISERVER_PATH
             value: "/api"
+          - name: DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.domain
           - name: APISERVER_SECURE
-            value: "true"
-          - name: SUPPORT_EMAIL
-            value: "{{ support_email }}"
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: tls.enable
           - name: ANALYTICS_ACCOUNT
-            value: "{{ analytics_account }}"
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.analytics_tracking_id
+          - name: SUPPORT_EMAIL
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.support_email
           - name: GIT_DROPIN_REPO
-            value: "{{ webui_git_dropin_repo }}"
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: git.dropin_repo
           - name: GIT_DROPIN_BRANCH
-            value: "{{ webui_git_dropin_branch }}"
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: git.dropin_branch
         readinessProbe:
           httpGet:
             path: /asset/png/favicon-2-32x32.png

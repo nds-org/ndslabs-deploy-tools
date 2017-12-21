@@ -37,3 +37,13 @@
   roles:
     - ndslabs-k8-init-labels
 
+- name: Docker log rotation
+  hosts: cluster
+  roles:
+    - docker-log-rotation
+
+- name: Fix flannel mtu
+  hosts: coreos
+  roles:
+    - flannel-mtu
+

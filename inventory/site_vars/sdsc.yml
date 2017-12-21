@@ -10,3 +10,8 @@ ndslabs_domain: "{{ logical_cluster_name }}.sdsc.ndslabs.org" # ???
  
 smtp_host: smtp.sdsc.edu
 smtp_tls: false
+mtu: 1458
+
+network_name: workbench
+
+site_name: sdsc

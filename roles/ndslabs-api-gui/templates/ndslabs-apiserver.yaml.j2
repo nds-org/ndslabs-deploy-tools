@@ -41,24 +41,41 @@ spec:
             value: "https://{{ ansible_default_ipv4.address }}:443"
           - name: CORS_ORIGIN_ADDR
             value: "https://www.{{ ndslabs_domain }}"
-          - name: SPEC_GIT_REPO
-            value: "https://github.com/nds-org/ndslabs-specs.git"
-          - name: SPEC_GIT_BRANCH
-            value: "master"
           - name: INGRESS
             value: "LoadBalancer"
-          - name: DOMAIN
-            value: "{{ ndslabs_domain }}"
           - name: VOLUME_PATH
             value: "{{ clusterfs_vol_path }}"
           - name: VOLUME_NAME
             value: "{{ clusterfs_vol_name }}"
-          - name: SUPPORT_EMAIL
-            value: "{{ support_email }}"
           - name: SMTP_HOST
-            value: "{{ smtp_host }}"
+            value: "$(NDSLABS_SMTP_SERVICE_HOST)"
           - name: SMTP_TLS
-            value: "{{ smtp_tls | bool | lower }}"
+            value: "false"
+          - name: SUPPORT_EMAIL
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.support_email
+          - name: REQUIRE_APPROVAL
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.require_account_approval
+          - name: DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: workbench.domain
+          - name: SPEC_GIT_REPO
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: git.spec_repo
+          - name: SPEC_GIT_BRANCH
+            valueFrom:
+              configMapKeyRef:
+                name: ndslabs-config
+                key: git.spec_branch
       volumes:
        - hostPath:
             path: {{ clusterfs_vol_path }}

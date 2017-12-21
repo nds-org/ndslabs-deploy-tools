@@ -19,4 +19,8 @@ flavor_large: m4.large     # 80GdiskG disk 64Gmem 24cpu
 
 smtp_host: smtp.ncsa.uiuc.edu
 smtp_tls: true
+mtu: 1454
 
+network_name: workbench
+
+site_name: ncsa

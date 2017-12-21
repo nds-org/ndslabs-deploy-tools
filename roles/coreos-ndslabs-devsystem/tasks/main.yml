@@ -12,12 +12,21 @@
   become: true
   systemd: name=locksmithd state=stopped masked=yes
 
+- name: Update MTU
+  become: true
+  template: src=10-net.rules.j2 dest=/etc/udev/rules.d/10-net.rules
+
+- name: notify systemd of MTU change
+  become: true
+  command: systemctl restart systemd-udev-trigger.service
+
 - name: fix coreos docker BIP and MTU - make service dir
   become: true
   file: path=/etc/systemd/system/docker.service.d state=directory
+
 - name: fix coreos BIP and MTU - copy the service file
   become: true
-  copy: src=10-docker0.conf dest=/etc/systemd/system/docker.service.d/10-docker0.conf
+  template: src=10-docker0.conf.j2 dest=/etc/systemd/system/docker.service.d/10-docker0.conf
 
 - name: Get CoreOS version
   shell: "(. /etc/os-release && echo ${VERSION}) | cut -d. -f1"
@@ -36,4 +45,3 @@
 - name: CoreOS set our timezone
   become: true
   command:  timedatectl set-timezone America/Chicago
-

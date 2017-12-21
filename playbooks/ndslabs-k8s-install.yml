@@ -55,7 +55,7 @@
   connection: local
   tasks:
     - os_floating_ip: server={{ logical_cluster_name }}-{{ inventory_hostname }} reuse=yes wait=yes
-    - command: nova add-secgroup {{ logical_cluster_name }}-{{ inventory_hostname }} {{ security_groups }}
+    - command: openstack server add security group {{ logical_cluster_name }}-{{ inventory_hostname }} {{ security_groups }}
 
 
 # Create or reuse existing TLS certs
