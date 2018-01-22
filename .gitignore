@@ -12,3 +12,4 @@
 .viminfo
 .novaclient/
 .cinderclient/
+certs/

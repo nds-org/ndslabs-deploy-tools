@@ -102,7 +102,7 @@ certs/${DOMAIN}.key: certs config.yaml
 certs/${DOMAIN}.cert: certs certs/${DOMAIN}.key
 	openssl req -new -x509 -nodes -sha1 -days 3650 -subj "/C=US/ST=IL/L=Champaign/O=NCSA/OU=NDS/CN=*.${DOMAIN}" -key "certs/${DOMAIN}.key" -out "certs/${DOMAIN}.cert"
 
-secrets: certs/${DOMAIN}.key certs/${DOMAIN}.cert
+secrets: certs_dir certs/${DOMAIN}.key certs/${DOMAIN}.cert
 	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=default
 	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=kube-system
 
