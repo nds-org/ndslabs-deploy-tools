@@ -13,7 +13,10 @@
 .novaclient/
 .cinderclient/
 certs/
+<<<<<<< HEAD
 *.tfvars
 *.tfstate
 *.tfstate.backup
 config.yaml
+=======
+>>>>>>> 065f018... Add certs-dir target
