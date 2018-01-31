@@ -1,7 +1,37 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: ndslabs-ingress
+  name: ndslabs-auth
+  annotations:
+    "nginx.ingress.kubernetes.io/auth-url": "https://www.{{ DOMAIN }}/cauth/auth"
+    "nginx.ingress.kubernetes.io/auth-signin": "https://www.{{ DOMAIN }}/login/#/"
+    "nginx.ingress.kubernetes.io/ssl-redirect": "true"
+    "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
+spec:
+  tls:
+  - hosts:
+    - www.{{ DOMAIN }}
+    secretName: ndslabs-tls-secret
+  rules:
+  - host: www.{{ DOMAIN }}
+    http:
+      paths:
+      - path: /logs
+        backend:
+          serviceName: ndslabs-webui
+          servicePort: 80
+      - path: /dashboard
+        backend:
+          serviceName: ndslabs-webui
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ndslabs-open
+  annotations:
+    "nginx.ingress.kubernetes.io/ssl-redirect": "true"
+    "nginx.ingress.kubernetes.io/force-ssl-redirect": "true"
 spec:
   tls:
   - hosts:
@@ -19,11 +49,6 @@ spec:
         backend:
           serviceName: ndslabs-webui
           servicePort: 80
-      - path: /etcd
-        backend:
-          serviceName: ndslabs-etcd
-          servicePort: 4001
-
 ---
 apiVersion: v1
 kind: Service
@@ -70,10 +95,10 @@ spec:
         resources:
           limits:
             cpu: 10m
-            memory: 20Mi
+            memory: 512Mi
           requests:
             cpu: 10m
-            memory: 20Mi
+            memory: 256Mi
 ---
 apiVersion: v1
 data:
@@ -103,7 +128,7 @@ spec:
         app: nginx-ingress
     spec:
       containers:
-      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0-beta.17
+      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
         imagePullPolicy: Always
         name: nginx-ingress
         ports:
@@ -124,5 +149,6 @@ spec:
         - /nginx-ingress-controller
         - --default-backend-service=default/default-http-backend
         - --healthz-port=10254
-        - --configmap=default/nginx-ingress-conf
+        - --configmap=$(POD_NAMESPACE)/nginx-ingress-conf
+        - --default-ssl-certificate=$(POD_NAMESPACE)/ndslabs-tls-secret
       hostNetwork: true

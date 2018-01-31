@@ -6,12 +6,10 @@ spec:
   ports:
   - name: client-port
     port: 4001
-    nodePort: 32600
     protocol: TCP
     targetPort: 4001
   selector:
     component: ndslabs-etcd
-  type: NodePort
 ---
 apiVersion: v1
 kind: Service
