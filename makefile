@@ -135,3 +135,7 @@ apiserver: templates/core/apiserver.yaml
 
 webui: templates/core/webui.yaml
 	kubectl apply -f templates/core/webui.yaml
+
+demo-login:
+	scripts/create_demo_user.sh
+	
