@@ -4,5 +4,6 @@
     "description": "demo account description",
     "namespace": "demo",
     "email": "labs@ndslabs.edu",
-    "password": "12345"
+    "password": "12345",
+    "status": "approved"
 }

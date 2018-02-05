@@ -13,3 +13,6 @@
 .novaclient/
 .cinderclient/
 certs/
+*.tfvars
+*.tfstate
+*.tfstate.backup

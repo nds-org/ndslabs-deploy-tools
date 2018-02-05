@@ -1,89 +1,101 @@
 # NDS Labs Workbench Deploy Tools
-This repository contains a set of [Ansible](https://www.ansible.com/) scripts to deploy [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/) and the [Labs Workbench](https://github.com/nds-org/ndslabs) onto an OpenStack cluster
+This repository contains a set of tools that will deploy workbench onto one or
+more nodes. The tools are all coordinate by `Make` so you can execute the steps
+you need for your particular setup.
 
-If you don't have access to an OpenStack cluster, there are [plenty of ways to run Kubernetes](https://kubernetes.io/docs/setup/pick-right-solution/)!
+## Available Deployment Steps
+| Step | Description | Make Target |
+| ------ | ----------- | ----------- |
+| Terraform | Provision VMs on cloud provider using Terraform | `terraform` |
+| Verify VMs | Use the Ansible Ping command to make sure that the hosts have been provisioned correctly and are accessible | `ping` |
+| Install Kubernetes | Use `Kubespray` to install Kubernetes in the cluster | `kubernetes` |
+| NDS Workbench | Deploy the NDS Workbench on the provisioned Kubernetes Cluster | `workbench` |
+| Destroy Workbench | Delete all of the services and pods associated with workbench | `workbench-down` |
+| Demo Account | Create a demo account with a known password. This is not currently complete since it requires a change to `ndslabsctl` to allow for the admin password to be passed in from command line. Currently it creates a shell in the api server pod and displays instructions on how to install the demo user | `demo-login` |
+| Label Worker Nodes | The API Server only starts services on nodes that are labeled. This runs a script to label appropriate nodes as eligible | `label-workers` |
+| Destroy VMs | Use Terraform to destroy the cluster and release the VMs | `clean`
 
-# Prerequisites
-* [Docker](https://www.docker.com/get-docker)
+## Terraform
+Execute this step to use terraform to allocate and commission VMs to host
+your kubernetes cluster. Before running this step you need to create a
+`tfvars` file that specifies the cluster you would like to create. The contents
+of this file are specified in the [Kubespray Terraform README](https://github.com/kubernetes-incubator/kubespray/tree/master/contrib/terraform/openstack).
 
-# Build Docker Image
+You also need to set environment variables to your Openstack credentials also
+shown in the README.
+
+To run the make command you need to provide names for the `tfvars` file to use
+and the `tfstate` to store the results.
+
 ```bash
-docker build -t ndslabs/deploy-tools .
+% make TFVARS=sdsc-single-note.tfvars TFSTATE=sdsc-single-note.tfstate kubernetes
 ```
 
-# Run Docker Image
+Once complete, you can verify your stack with a ping command run on each of the
+provisioned hosts. Ansible will communicate with hosts that have an external
+IP directly. Other hosts will be contacted via the bastion host.
+
+This command depends on the `tfstate` file from the terraform build to resolve
+the inventory
+
+Try this command:
 ```bash
-docker run -it -v /home/core/private:/root/SAVED_AND_SENSITIVE_VOLUME ndslabs/deploy-tools bash 
+% make TFSTATE=sdsc-single-note.tfstate ping
 ```
 
-NOTE: You should remember to map some volume to `/root/SAVED_AND_SENSITIVE_VOLUME` containing your `*-openrc.sh` file. This directory is where the ansible output gets stored. This includes SSH private keys, generated TLS certificates, and Ansible's own fact cache. If you forget to map this directory, its contents **WILL BE LOST FOREVER**.
+## Kubespray Deploy Kubernetes
+Next step is to install kubernetes on the cluster. Before executing this step
+you should customize `k8s-cluster.yml` in the repo's root directory. One setting
+of particular note is `calico_mtu` which should be set to the value which is
+appropriate for the Openstack you are deploying to. You may also edit settings
+in `all.yml` which control cluster-wide settings for the ansible deploy.
 
-# Provide Your OpenStack Credentials
-The first thing you need to do is to `source` the openrc file of the project you wish to deploy to in OpenStack
+Once you are satisfied with the settings, you can request the kubspray deploy
+with:
 
-NOTE: this file can be retrieved for any OpenStack project which you can access by following the insturctions [here](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux_OpenStack_Platform/4/html/End_User_Guide/cli_openrc.html).
-
-Assuming you've passed your the openrc.sh files with `-v`, as recommended above:
+Try this command:
 ```bash
-source /root/SAVED_AND_SENSITIVE_VOLUME/OpenStackProjectName-openrc.sh
+% make TFSTATE=sdsc-single-note.tfstate kubernetes
 ```
 
-# Prepare Your Site
-Some parameters, such as the available flavors (sizes) and images for the deployed OpenStack instances, are properties of the particular installation of OpenStack or the projects to which you are allowed to deploy. We refer to each installation of OpenStack as a "site", and similarly store their variables under `/root/inventory/site_vars`, where each file is named after the site that it represents.
+After Kubernetes is deployed you will still need to follow the instructions in
+the [README](https://github.com/kubernetes-incubator/kubespray/tree/master/contrib/terraform/openstack) to add the new cluster to your kubectl config.
 
-To set up a new site, you can simply copy an existing site and change the names of the images and flavors accordingly.
+## Deploy Workbench
+You must first edit the `config.yml` file in the repo's root directory to set
+values for your workbench.
 
-## Obtain a CoreOS Image
-[Download](https://coreos.com/os/docs/latest/booting-on-openstack.html) the newest stable cloud image of CoreOS for OpenStack and [import](https://docs.openstack.org/user-guide/dashboard-manage-images.html) it into your project.
+The value for `workbench.domain` is particularly important.
 
-Currently supported CoreOS version: **1235.6**
+Deploy workbench with the command:
 
-NOTE: While newer versions of CoreOS *should* work, due to CoreOS and Docker versions being tied together later versions may not be supported immediately.
-
-## Choosing a Flavor
-Set the site_vars named `flavor_small` / `flavor_medium` / `flavor_large` to flavors that already exist in your OpenStack project, or create new flavors that match these.
-
-# Compose Your Inventory
-Make a copy of the existing example or minimal inventory located in `/root/inventory` and edit it to your liking:
 ```bash
-cp inventory/minimal-ncsa inventory/my-cluster
-vi inventory/my-cluster
+% make workbench
 ```
 
-* The top section pertains to **Cluster Variables** - here you can override any group_vars (NOTE: site_vars cannot yet be overridden)
-* The middle section defines **Servers**, where we choose the names and quantities for each type of node
-* The last section defines **Groups**, which groups the node types that we declared above into several larger groups
+## Create a Demo Account
+In order to work with your workbench you need to log into it. The account
+approval workflow can be vexing in a development environment. You can bypass
+this by forcing a demo account into your registry. You can create a demo account
+with the command:
 
-## About Group Variables
-Some parameters are different based on the type of node being provisioned - Ansible calls these "groups". The group-specific values can be found under `/root/inventory/group_vars`, where each file is named after the group it represents.
-
-NOTE: these groups can be nested / hierarchical.
-**NOTE**: Raw images should be preferred at OpenStack sites where Ceph is used for the backing volumes, as it will significanlty decrease the time needed to provision and start your cluster.
-
-# Ansible Playbooks
-After adjusting the inventory/site parameters to your liking, run the three Ansible playbooks to bring up a Labs Workbench cluster:
 ```bash
-ansible-playbook -i inventory/my-cluster playbooks/openstack-provision.yml && \
-ansible-playbook -i inventory/my-cluster playbooks/k8s-install.yml && \
-ansible-playbook -i inventory/my-cluster playbooks/ndslabs-k8s-install.yml
+% make demo-login
 ```
 
-These commands can be run one at a time, or all at once for provisioning in a single command:
+This will copy the account specification file from
+`scripts/account-register.json` into the api server's pod and then launch
+a bash shell in that pod and prompt you to login as admin using ndsctl and
+execute the command to add that user to the registry. This manual step is needed
+until [NDS-1172](https://opensource.ncsa.illinois.edu/jira/browse/NDS-1172) is
+complete.
+
+## Label Compute Nodes
+The API Server needs to know which nodes can run services. Execute:
+
 ```bash
-ansible-playbook -i inventory/my-cluster playbooks/openstack-provision.yml playbooks/k8s-install.yml playbooks/ndslabs-k8s-install.yml
+% make label-workers
 ```
-
-## About Playbooks
-Each playbook takes care of a small portion of the installation process:
-* `playbooks/openstack-provision.yml`: Provision OpenStack volumes and instances with chosen flavor / image
-* `playbooks/k8s-install.yml`: Download and install Kubernetes binaries onto each node
-* `playbooks/ndslabs-k8s-install.yml`: Deploy our Kubernetes YAML files to start up services necessary to run Labs Workbench
-
-## About Node Labels
-After running all three playbooks, you should be left with a working cluster.
-
-Labels recognized by the cluster are as follows:
-* *glfs* server nodes must be labelled with `ndslabs-role-glfs=true` for the GLFS servers to run there
-* *compute* nodes must be labelled with `ndslabs-role-compute=true` for the Workbench API server to schedule services there
-* *loadbal* nodes must be labelled with `ndslabs-role-loadbal=true` to know where a public IP is available, so it can run the ingress/loadbalance
-* *lma* nodes should be labelled with `ndslabs-role-lma=true` to know where dedicated resources are set aside to run logging/monitoring/alerts
+For now this script only works for single node deployments. It will label the
+master node as a worker. Eventually, this script will label the kubernetes
+worker nodes only.

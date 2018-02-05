@@ -1,18 +1,21 @@
 ANSIBLE_CONFIG := ../ansible.cfg
 export ANSIBLE_CONFIG
 
-kubespray/contrib/terraform/openstack/terraform.tfstate: kubernetes.tfvars kubespeay/.terraform
+TFSTATE := terraform.tfstate
+TFVARS := kubernetes.tfvars
+
+terraform: $(TFVARS) kubespray/.terraform
 	mkdir -p kubespray/artifacts
 	cd kubespray; terraform apply \
-	  -state=contrib/terraform/openstack/terraform.tfstate \
-		-var-file=../kubernetes.tfvars \
+	  -state=contrib/terraform/openstack/$(TFSTATE) \
+		-var-file=../$(TFVARS) \
 		contrib/terraform/openstack
 	chmod +x kubespray/artifacts/save_kubernetes_config.sh
 
 clean:
 	cd kubespray; terraform destroy \
-		-state=contrib/terraform/openstack/terraform.tfstate \
-		-var-file=../kubernetes.tfvars \
+		-state=contrib/terraform/openstack/$(TFSTATE) \
+		-var-file=../$(TFVARS) \
 		contrib/terraform/openstack
 
 		rm -Rf ansible_facts
@@ -53,12 +56,13 @@ undeploy:
 kubespeay/.terraform:
 		cd kubespray; terraform init contrib/terraform/openstack
 
-ping: kubespray/contrib/terraform/openstack/terraform.tfstate
-	cd kubespray; ansible --key-file ~/.ssh/cloud.key \
-	                      -i contrib/terraform/openstack/hosts \
-												-m ping all
+ping: kubespray/contrib/terraform/openstack/$(TFSTATE)
+	cd kubespray; \
+	ansible --key-file ~/.ssh/cloud.key \
+              -i contrib/terraform/openstack/hosts \
+							-m ping all
 
-kubernetes: kubespray/contrib/terraform/openstack/terraform.tfstate
+kubernetes: kubespray/contrib/terraform/openstack/$(TFSTATE)
 	cp k8s-cluster.yml kubespray/inventory/group_vars
 	cp all.yml kubespray/inventory/group_vars
 	cd kubespray; ansible-playbook --key-file ~/.ssh/cloud.key \
@@ -136,6 +140,8 @@ apiserver: templates/core/apiserver.yaml
 webui: templates/core/webui.yaml
 	kubectl apply -f templates/core/webui.yaml
 
+label-workers:
+	scripts/label_nodes.sh
+	
 demo-login:
 	scripts/create_demo_user.sh
-	
