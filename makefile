@@ -53,7 +53,7 @@ undeploy:
 	# WEB UI
 	kubectl delete rc --ignore-not-found=true ndslabs-webui
 
-kubespeay/.terraform:
+kubespray/.terraform:
 		cd kubespray; terraform init contrib/terraform/openstack
 
 ping: kubespray/contrib/terraform/openstack/$(TFSTATE)
@@ -113,7 +113,7 @@ secrets: certs_dir certs/${DOMAIN}.key certs/${DOMAIN}.cert
 	kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt="certs/${DOMAIN}.cert" --from-file=tls.key="certs/${DOMAIN}.key" --namespace=default
 	kubectl create secret generic ndslabs-tls-secret --from-file=tls.crt="certs/${DOMAIN}.cert" --from-file=tls.key="certs/${DOMAIN}.key" --namespace=kube-system
 
-permisive-binding:
+permissive-binding:
 	kubectl delete clusterrolebinding --ignore-not-found=true permissive-binding
 
 	kubectl create clusterrolebinding permissive-binding \
@@ -122,7 +122,7 @@ permisive-binding:
 	 --user=kubelet \
 	 --group=system:serviceaccounts
 
-loadbalancer: templates/core/loadbalancer.yaml permisive-binding
+loadbalancer: templates/core/loadbalancer.yaml permissive-binding
 	cat templates/core/loadbalancer.yaml | sed -e "s#{{[ ]*DOMAIN[ ]*}}#${DOMAIN}#g" | kubectl apply -f -
 
 smtp: templates/smtp/rc.yaml templates/smtp/svc.yaml
@@ -142,6 +142,6 @@ webui: templates/core/webui.yaml
 
 label-workers:
 	scripts/label_nodes.sh
-	
+
 demo-login:
 	scripts/create_demo_user.sh

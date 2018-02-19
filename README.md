@@ -1,6 +1,6 @@
 # NDS Labs Workbench Deploy Tools
 This repository contains a set of tools that will deploy workbench onto one or
-more nodes. The tools are all coordinate by `Make` so you can execute the steps
+more nodes. The tools are all coordinated by `Make` so you can execute the steps
 you need for your particular setup.
 
 ## Available Deployment Steps
