@@ -15,5 +15,5 @@ before_script:
 script:
   - cat config.template.yaml| sed -e "s#{{[ ]*DOMAIN[ ]*}}#travis#g" > config.yaml
   - make workbench
-  - echo "BASE_URL $BASE_URL"
   - kubectl get pod
+  - scripts/wait_for_apiserver.sh $BASE_URL 20
