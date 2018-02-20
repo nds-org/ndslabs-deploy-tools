@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ANSIBLE_CONFIG := ../ansible.cfg
 export ANSIBLE_CONFIG
 
