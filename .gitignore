@@ -16,3 +16,4 @@ certs/
 *.tfvars
 *.tfstate
 *.tfstate.backup
+config.yaml

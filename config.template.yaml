@@ -8,7 +8,7 @@ data:
   tls.enable: "true"
 
   # Customize this instance of Workbench
-  workbench.domain: "??????.ndslabs.org"
+  workbench.domain: "?????.ndslabs.org"
   workbench.name: "Labs Workbench"
   workbench.support_email: "ndslabs-support@nationaldataservice.org"
   workbench.analytics_tracking_id: ""
