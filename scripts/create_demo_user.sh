@@ -1,5 +1,7 @@
 #!/bin/bash
 apiserver=$(kubectl get pod | grep -Eow 'ndslabs\-apiserver\-\w*')
+kubectl describe pod $apiserver
+kubectl logs $apiserver
 adminpassword=$(kubectl exec $apiserver cat password.txt)
 echo $apiserver
 echo $adminpassword

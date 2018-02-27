@@ -5,5 +5,5 @@ until $(curl -k --output /dev/null --silent --fail --header "Host: www.${2}" -X 
   sleep ${3}s # wait before checking again
   kubectl get pod
 done
-$ECHO 'Labs Workbench API server successfully started!'
+echo 'Labs Workbench API server successfully started!'
 kubectl get pod

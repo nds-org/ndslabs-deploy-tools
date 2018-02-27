@@ -18,7 +18,7 @@ spec:
       containers:
       - name: ndslabs-apiserver
         image: {{ IMAGE_NAME }}
-        imagePullPolicy: Always
+        imagePullPolicy: {{ PULL_POLICY }}
         securityContext:
           privileged: true
         ports:

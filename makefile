@@ -4,6 +4,7 @@ export ANSIBLE_CONFIG
 TFSTATE := terraform.tfstate
 TFVARS := kubernetes.tfvars
 APISERVER := ndslabs/apiserver:latest
+APISERVER_PULL_POLICY = Always
 WEBUI := ndslabs/angular-ui:latest
 
 terraform: $(TFVARS) kubespray/.terraform
@@ -145,7 +146,10 @@ etcd: templates/core/etcd.yaml
 
 apiserver: templates/core/apiserver.yaml
 	echo "Deploying APIServer: ${APISERVER}"
-	cat templates/core/apiserver.yaml | sed -e "s#{{[ ]*IMAGE_NAME[ ]*}}#${APISERVER}#g" | kubectl apply  -f  -
+	cat templates/core/apiserver.yaml | \
+	sed -e "s#{{[ ]*IMAGE_NAME[ ]*}}#${APISERVER}#g" | \
+	sed -e "s#{{[ ]*PULL_POLICY[ ]*}}#${APISERVER_PULL_POLICY}#g" | \
+		kubectl apply  -f  -
 
 webui: templates/core/webui.yaml
 	echo "Deploying WebUI: ${WEBUI}"
