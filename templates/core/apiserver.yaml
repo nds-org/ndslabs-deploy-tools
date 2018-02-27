@@ -17,7 +17,7 @@ spec:
          name: volumes
       containers:
       - name: ndslabs-apiserver
-        image: ndslabs/apiserver:latest
+        image: {{ IMAGE_NAME }}
         imagePullPolicy: Always
         securityContext:
           privileged: true

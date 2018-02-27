@@ -3,6 +3,8 @@ export ANSIBLE_CONFIG
 
 TFSTATE := terraform.tfstate
 TFVARS := kubernetes.tfvars
+APISERVER := ndslabs/apiserver:latest
+WEBUI := ndslabs/angular-ui:latest
 
 terraform: $(TFVARS) kubespray/.terraform
 	mkdir -p kubespray/artifacts
@@ -74,7 +76,7 @@ kubernetes: kubespray/contrib/terraform/openstack/$(TFSTATE)
 
 DOMAIN   := $(shell cat config.yaml | grep domain | awk '{print $$2}' | sed s/\"//g)
 
-.PHONY : workbench secrets loadbalancer smtp services etcd apiserver webui
+.PHONY : terraform clean workbench secrets loadbalancer smtp services etcd apiserver webui
 
 workbench: secrets config loadbalancer smtp services etcd apiserver webui
 
@@ -101,87 +103,6 @@ kubespray/contrib/terraform/openstack/terraform.tfstate: kubernetes.tfvars kubes
 		-var-file=../kubernetes.tfvars \
 		contrib/terraform/openstack
 	chmod +x kubespray/artifacts/save_kubernetes_config.sh
-
-clean:
-	cd kubespray; terraform destroy \
-		-state=contrib/terraform/openstack/terraform.tfstate \
-		-var-file=../kubernetes.tfvars \
-		contrib/terraform/openstack
-
-		rm -Rf ansible_facts
-
-undeploy:
-	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=default
-	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=kube-system
-
-	kubectl delete configmap --ignore-not-found=true ndslabs-config
-
-	kubectl delete clusterrolebinding --ignore-not-found=true permissive-binding
-	# Load Balancer
-	kubectl delete ingress --ignore-not-found=true ndslabs-ingress
-	kubectl delete service --ignore-not-found=true default-http-backend
-	kubectl delete rc --ignore-not-found=true default-http-backend
-	kubectl delete rc --ignore-not-found=true nginx-ilb-rc
-
-	kubectl delete configmap --ignore-not-found=true nginx-ingress-conf
-
-	# smtp
-	kubectl delete service --ignore-not-found=true ndslabs-smtp
-	kubectl delete rc --ignore-not-found=true ndslabs-smtp
-
-	# services
-	kubectl delete service --ignore-not-found=true ndslabs-etcd
-	kubectl delete service --ignore-not-found=true ndslabs-apiserver
-	kubectl delete service --ignore-not-found=true ndslabs-webui
-
-	# etcd
-	kubectl delete rc --ignore-not-found=true ndslabs-etcd
-
-	# API server
-	kubectl delete rc --ignore-not-found=true ndslabs-apiserver
-
-	# WEB UI
-	kubectl delete rc --ignore-not-found=true ndslabs-webui
-
-kubespeay/.terraform:
-		cd kubespray; terraform init contrib/terraform/openstack
-
-ping: kubespray/contrib/terraform/openstack/terraform.tfstate
-	cd kubespray; ansible --key-file ~/.ssh/cloud.key \
-	                      -i contrib/terraform/openstack/hosts \
-												-m ping all
-
-kubernetes: kubespray/contrib/terraform/openstack/terraform.tfstate
-	cp k8s-cluster.yml kubespray/inventory/group_vars
-	cp all.yml kubespray/inventory/group_vars
-	cd kubespray; ansible-playbook --key-file ~/.ssh/cloud.key \
-																 --become \
-																 -i contrib/terraform/openstack/hosts \
-																 cluster.yml
-
-	kubespray/artifacts/save_kubernetes_config.sh
-
-DOMAIN   := $(shell cat config.yaml | grep domain | awk '{print $$2}' | sed s/\"//g)
-
-.PHONY : workbench secrets loadbalancer smtp services etcd apiserver webui
-
-workbench: secrets config loadbalancer smtp services etcd apiserver webui
-
-workbench-down:
-	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=default
-	kubectl delete secret --ignore-not-found=true ndslabs-tls-secret --namespace=kube-system
-	kubectl delete --ignore-not-found=true -f config.yaml
-	cat templates/core/loadbalancer.yaml | sed -e "s#{{[ ]*DOMAIN[ ]*}}#${DOMAIN}#g" | kubectl delete --ignore-not-found=true -f  -
-	kubectl delete --ignore-not-found=true -f templates/core/svc.yaml
-	kubectl delete --ignore-not-found=true -f templates/core/apiserver.yaml
-	kubectl delete --ignore-not-found=true -f templates/core/bind.yaml
-	kubectl delete --ignore-not-found=true -f templates/core/webui.yaml
-	kubectl delete --ignore-not-found=true -f templates/smtp/
-	kubectl delete --ignore-not-found=true -f templates/core/etcd.yaml
-
-	kubectl delete clusterrolebinding --ignore-not-found=true permissive-binding
-	rm "certs/${DOMAIN}.cert"
-	rm "certs/${DOMAIN}.key"
 
 config: config.yaml
 	kubectl apply -f config.yaml
@@ -223,10 +144,12 @@ etcd: templates/core/etcd.yaml
 	kubectl apply -f templates/core/etcd.yaml
 
 apiserver: templates/core/apiserver.yaml
-	kubectl apply -f templates/core/apiserver.yaml
+	echo "Deploying APIServer: ${APISERVER}"
+	cat templates/core/apiserver.yaml | sed -e "s#{{[ ]*IMAGE_NAME[ ]*}}#${APISERVER}#g" | kubectl apply  -f  -
 
 webui: templates/core/webui.yaml
-	kubectl apply -f templates/core/webui.yaml
+	echo "Deploying WebUI: ${WEBUI}"
+	cat templates/core/webui.yaml | sed -e "s#{{[ ]*IMAGE_NAME[ ]*}}#${WEBUI}#g" | kubectl apply  -f  -
 
 label-workers:
 	scripts/label_nodes.sh

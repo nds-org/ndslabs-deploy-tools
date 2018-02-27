@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: ndslabs-webui
-        image: ndslabs/angular-ui:latest
+        image: {{ IMAGE_NAME }}
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
