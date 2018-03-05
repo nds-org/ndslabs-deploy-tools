@@ -87,9 +87,16 @@ workbench-down:
 	kubectl delete --ignore-not-found=true -f config.yaml
 	cat templates/core/loadbalancer.yaml | sed -e "s#{{[ ]*DOMAIN[ ]*}}#${DOMAIN}#g" | kubectl delete --ignore-not-found=true -f  -
 	kubectl delete --ignore-not-found=true -f templates/core/svc.yaml
-	kubectl delete --ignore-not-found=true -f templates/core/apiserver.yaml
+
+	cat templates/core/apiserver.yaml | \
+	sed -e "s#{{[ ]*IMAGE_NAME[ ]*}}#${APISERVER}#g" | \
+	sed -e "s#{{[ ]*PULL_POLICY[ ]*}}#${APISERVER_PULL_POLICY}#g" | \
+	kubectl delete --ignore-not-found=true -f -
+
 	kubectl delete --ignore-not-found=true -f templates/core/bind.yaml
-	kubectl delete --ignore-not-found=true -f templates/core/webui.yaml
+
+	cat templates/core/webui.yaml | sed -e "s#{{[ ]*IMAGE_NAME[ ]*}}#${WEBUI}#g" | kubectl delete --ignore-not-found=true -f  -
+
 	kubectl delete --ignore-not-found=true -f templates/smtp/
 	kubectl delete --ignore-not-found=true -f templates/core/etcd.yaml
 

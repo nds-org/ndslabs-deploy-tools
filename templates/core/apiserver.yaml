@@ -10,6 +10,18 @@ spec:
     metadata:
       labels:
         component: ndslabs-apiserver
+
+      annotations:
+        pod.beta.kubernetes.io/init-containers: '[
+            {
+              "name": "wait-for-endpoints",
+              "image": "giantswarm/tiny-tools",
+              "imagePullPolicy": "IfNotPresent",
+              "command": ["fish", "-c", "echo \"waiting for etcd endpoints...\"; while true; set endpoints (curl -s --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt --header \"Authorization: Bearer \"(cat /var/run/secrets/kubernetes.io/serviceaccount/token) http
+  s://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT/api/v1/namespaces/default/endpoints/ndslabs-etcd); echo $endpoints | jq \".\"; if test (echo $endpoints | jq -r \".subsets[]?.addresses // [] | length\") -gt 0; exit 0; end; echo \"waiting...\";sleep 1; end"],
+              "args": ["default", "apiserver"]
+            }
+          ]'
     spec:
       volumes:
        - hostPath:
