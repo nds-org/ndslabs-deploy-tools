@@ -18,8 +18,20 @@ flavor_medium: r2.medium        # 40G disk 16Gmem 2cpu
 flavor_large: m4.large     # 80GdiskG disk 64Gmem 24cpu
 
 smtp_host: smtp.ncsa.uiuc.edu
+smtp_port: 25
 smtp_tls: true
 mtu: 1454
+
+flannel_mtu: 1404
+
+# For NDSLabsDev or NDS-hackathon OpenStack project
+image: "CoreOSStable1235.6"
+
+# For NDSLabs OpenStack project
+# image: "CoreOSStable1235"
+
+# For NDS OpenStack Project
+# image: "Container-Linux (1562.1.0)"
 
 network_name: workbench
 

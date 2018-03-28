@@ -42,8 +42,8 @@
   roles:
     - docker-log-rotation
 
-- name: Fix flannel mtu
-  hosts: coreos
-  roles:
-    - flannel-mtu
+#- name: Fix flannel mtu
+#  hosts: coreos
+#  roles:
+#    - flannel-mtu
 

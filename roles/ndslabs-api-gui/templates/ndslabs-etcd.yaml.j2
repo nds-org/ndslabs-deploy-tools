@@ -34,6 +34,11 @@ spec:
         - --advertise-client-urls=http://127.0.0.1:4001
         - --data-dir=/var/etcd/data
         name: ndslabs-etcd
+        env:
+        - name: ETCD_HEARTBEAT_INTERVAL
+          value: "1000"
+        - name: ETCD_ELECTION_TIMEOUT
+          value: "10000"
         ports:
         - containerPort: 4001
           name: server

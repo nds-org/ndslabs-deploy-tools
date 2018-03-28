@@ -24,7 +24,7 @@
     auto_ip: false
     network: "{{ network_name }}"
     boot_volume: "{{ logical_cluster_name }}-{{ inventory_hostname }}-bootvol"
-  register: os_host
+  register: os_host_nontacc
   when: site_name != "tacc"
 
 - name: OpenStack System (ephemeral instance)
@@ -39,8 +39,12 @@
     key_name: "{{ key_name }}"
     auto_ip: false
     network: "{{ network_name }}"
-  register: os_host
+  register: os_host_tacc
   when: site_name == "tacc"
+
+- name: combine os_host variables
+  set_fact:
+    os_host: "{{ os_host_tacc if site_name == 'tacc' else os_host_nontacc }}"
 
 #- debug: var=os_host
 

@@ -75,7 +75,7 @@
   hosts: all:&openstack:&coreos
   
   roles: 
-    - { role: openstack-volume-mount, volume_name: 'storagevol', volume_size: "{{ storage_volume_gb }}", mount_point: '/media/storage', filesystem_format: 'xfs' }
+    - { role: openstack-volume-mount, volume_name: 'storagevol', volume_size: "{{ storage_volume_gb }}", mount_point: '/media/storage', filesystem_format: 'ext4' }
 
 # Bind mount /var/lib/docker from storage volume
 - name: Bind mount /var/lib/docker for all nodes

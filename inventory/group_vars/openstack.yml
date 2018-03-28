@@ -1,6 +1,5 @@
 ---
 
-image: CoreOSStable1235.6
 sys_vol_size: 40
 key_path: /root/SAVED_AND_SENSITIVE_VOLUME
 security_groups: default

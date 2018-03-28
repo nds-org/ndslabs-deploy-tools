@@ -45,3 +45,5 @@ spec:
                 name: ndslabs-config
                 key: smtp.gmail_pass
       restartPolicy: Always
+      nodeSelector:
+          ndslabs-role-loadbal: "true"
