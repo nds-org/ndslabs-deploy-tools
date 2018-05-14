@@ -153,4 +153,4 @@ spec:
         - --default-ssl-certificate=$(POD_NAMESPACE)/ndslabs-tls-secret
       hostNetwork: true
       nodeSelector:
-          ndslabs-role-loadbal: "true"
+          external_ip: "true"
