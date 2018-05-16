@@ -59,16 +59,6 @@ spec:
               configMapKeyRef:
                 name: ndslabs-config
                 key: workbench.support_email
-          - name: GIT_DROPIN_REPO
-            valueFrom:
-              configMapKeyRef:
-                name: ndslabs-config
-                key: git.dropin_repo
-          - name: GIT_DROPIN_BRANCH
-            valueFrom:
-              configMapKeyRef:
-                name: ndslabs-config
-                key: git.dropin_branch
         readinessProbe:
           httpGet:
             path: /asset/png/favicon-2-32x32.png

@@ -2,8 +2,6 @@
 
 analytics_account: ''
 support_email: ndslabs-support@nationaldataservice.org
-webui_git_dropin_repo: ''
-webui_git_dropin_branch: ''
 workbench_name: 'Labs Workbench'
 spec_git_repo: 'https://github.com/nds-org/ndslabs-specs.git'
 spec_git_branch: 'master' 
