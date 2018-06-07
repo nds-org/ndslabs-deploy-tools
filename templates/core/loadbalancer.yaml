@@ -107,7 +107,7 @@ data:
   proxy-read-timeout: "300"
   proxy-send-timeout: "300"
   custom-http-errors: "404,502,503"
-  body-size: 50m
+  proxy-body-size: 50m
 kind: ConfigMap
 metadata:
   name: nginx-ingress-conf
